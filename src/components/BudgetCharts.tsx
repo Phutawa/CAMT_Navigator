@@ -24,7 +24,7 @@ const CustomTooltipStyle: React.CSSProperties = {
   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
 };
 
-// ===================== 1. BAR / BULLET CHART: Allocated vs Used by Department =====================
+// ===================== 1. BAR / BULLET / CAPSULE CHART: Allocated vs Used by Department =====================
 
 interface DeptBarChartProps {
   departments: DepartmentSummary[];
@@ -41,7 +41,7 @@ export const DeptBudgetBarChart = ({
 }: DeptBarChartProps) => {
   const [viewCount, setViewCount] = useState<8 | 15 | 'all'>(8);
   const [sortMode, setSortMode] = useState<'allocated_desc' | 'pct_desc' | 'pct_asc'>('allocated_desc');
-  const [chartMode, setChartMode] = useState<'bullet' | 'bar'>('bullet');
+  const [chartMode, setChartMode] = useState<'capsule' | 'bullet' | 'bar'>('capsule');
 
   const rawData = departments
     .map((d) => {
@@ -147,8 +147,20 @@ export const DeptBudgetBarChart = ({
             </span>
           </div>
 
-          {/* View Mode Toggle (Bullet vs Bar) on far right of Row 1 */}
+          {/* View Mode Toggle (Capsule vs Bullet vs Bar) on far right of Row 1 */}
           <div className="flex items-center bg-[#f1f4f9] rounded-xl p-0.5 text-xs flex-shrink-0">
+            <button
+              onClick={() => setChartMode('capsule')}
+              className={`px-2 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold ${
+                chartMode === 'capsule'
+                  ? 'bg-white text-[#e87722] shadow-xs'
+                  : 'text-[#79564b] hover:text-[#181c20]'
+              }`}
+              title="มุมมองแคปซูลอินโฟกราฟิก (สไตล์รูปตัวอย่าง)"
+            >
+              <span className="material-symbols-outlined text-[15px]">view_stream</span>
+              <span className="hidden sm:inline">แคปซูล</span>
+            </button>
             <button
               onClick={() => setChartMode('bullet')}
               className={`p-1 rounded-lg transition-colors cursor-pointer ${
@@ -189,14 +201,33 @@ export const DeptBudgetBarChart = ({
       {/* Visual Legend & Interactive Toolbar (Row 3: Clean & Spacious) */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 text-[11px] pb-3 mb-2 border-b border-[#ebeef3]">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5">
-            <span className="w-3.5 h-2 rounded-sm bg-[#ffdbc8] border border-[#e87722]/50 inline-block"></span>
-            <span className="text-[#564337] font-semibold">งบจัดสรร (Target)</span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-2 rounded-sm bg-[#2e7d32] inline-block"></span>
-            <span className="text-[#564337] font-semibold">เบิกจ่ายจริง (Actual)</span>
-          </span>
+          {chartMode === 'capsule' ? (
+            <>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#e87722] text-white text-[9px] font-black flex items-center justify-center">1</span>
+                <span className="text-[#564337] font-semibold">อันดับหน่วยงาน</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3.5 h-2 rounded-full bg-[#ffdbc8] border border-[#e87722]/50 inline-block"></span>
+                <span className="text-[#564337] font-semibold">งบจัดสรร (Target)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-2 rounded-full bg-[#2e7d32] inline-block"></span>
+                <span className="text-[#564337] font-semibold">เบิกจ่ายจริง (Actual)</span>
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3.5 h-2 rounded-sm bg-[#ffdbc8] border border-[#e87722]/50 inline-block"></span>
+                <span className="text-[#564337] font-semibold">งบจัดสรร (Target)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-2 rounded-sm bg-[#2e7d32] inline-block"></span>
+                <span className="text-[#564337] font-semibold">เบิกจ่ายจริง (Actual)</span>
+              </span>
+            </>
+          )}
           <span className="text-[10px] text-[#79564b]">
             แสดงผล {displayData.length}/{rawData.length} หน่วยงาน
           </span>
@@ -262,8 +293,106 @@ export const DeptBudgetBarChart = ({
         </div>
       </div>
 
-      {/* VIEW 1: HORIZONTAL BULLET CHART (Default) */}
-      {chartMode === 'bullet' ? (
+      {/* VIEW 1: HORIZONTAL CAPSULE INFOGRAPHIC CHART (Capsule shape + Original Green/Orange Colors) */}
+      {chartMode === 'capsule' ? (
+        <div
+          className={`space-y-2.5 pr-1 flex-1 flex flex-col justify-start ${
+            viewCount === 'all' || displayData.length > 8 ? 'max-h-[460px] overflow-y-auto' : ''
+          }`}
+        >
+          {displayData.map((d, index) => {
+            const allocPct = (d.จัดสรร / maxAllocated) * 100;
+            const spentPctOfMax = (d.เบิกจ่าย / maxAllocated) * 100;
+
+            const badgeStyle =
+              d.pct >= 70
+                ? { bg: '#b8f0c5', text: '#1d5031', border: '#366847' }
+                : d.pct >= 40
+                ? { bg: '#ffdbc8', text: '#743400', border: '#e87722' }
+                : { bg: '#ffdad6', text: '#ba1a1a', border: '#ba1a1a' };
+
+            return (
+              <div
+                key={d.name}
+                className="group relative flex items-center justify-between p-1.5 sm:p-2 pr-3 sm:pr-4 rounded-full border border-[#ddc1b2]/30 bg-[#faf8f6] shadow-2xs transition-all duration-200 hover:shadow-md hover:scale-[1.008] hover:bg-[#fdf9f6] cursor-default"
+              >
+                {/* Left Circular Rank Badge */}
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-white text-sm sm:text-base shadow-sm flex-shrink-0 ring-2 ring-white/70 bg-[#e87722]">
+                  {index + 1}
+                </div>
+
+                {/* Department Info */}
+                <div className="flex flex-col min-w-0 w-36 sm:w-52 ml-2.5 sm:ml-3.5 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="font-mono font-bold text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-[#f1f4f9] text-[#181c20] border border-slate-200 shadow-2xs">
+                      {d.name}
+                    </span>
+                    <span
+                      className="font-bold text-xs text-[#181c20] truncate"
+                      title={`${d.fullName} (${d.en})`}
+                    >
+                      {d.fullName}
+                    </span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-[#564337] mt-0.5 tabular-nums flex items-center gap-1 truncate">
+                    <span className="font-bold text-[#2e7d32]">฿{formatCurrency(d.เบิกจ่าย)}</span>
+                    <span className="text-slate-300">/</span>
+                    <span className="text-slate-500">฿{formatCurrency(d.จัดสรร)}</span>
+                  </div>
+                </div>
+
+                {/* Center: Horizontal Progress Bar (กราฟแนวนอน - สีเขียว/ส้ม) */}
+                <div className="flex-1 relative h-5 sm:h-6 mx-2 sm:mx-3 flex items-center min-w-[70px]">
+                  {/* Background Target Bar (งบจัดสรร / ส้มอ่อน) */}
+                  <div
+                    className="absolute left-0 h-3.5 sm:h-4 rounded-full bg-[#ffdbc8]/80 border border-[#e87722]/40 transition-all duration-300 group-hover:bg-[#ffd5bc]"
+                    style={{ width: `${allocPct}%` }}
+                    title={`งบจัดสรร: ฿${d.จัดสรร.toLocaleString()}`}
+                  >
+                    {/* Target tick line */}
+                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#e87722] rounded-r-full" />
+                  </div>
+
+                  {/* Foreground Actual Bar (เบิกจ่ายจริง / เขียวเข้ม) */}
+                  <div
+                    className="absolute left-0 h-2 sm:h-2.5 rounded-full bg-[#2e7d32] transition-all duration-500 z-10 shadow-xs group-hover:brightness-110"
+                    style={{ width: `${Math.min(allocPct, spentPctOfMax)}%` }}
+                    title={`เบิกจ่ายจริง: ฿${d.เบิกจ่าย.toLocaleString()} (${d.pctFormatted})`}
+                  />
+
+                  {/* Overbudget segment */}
+                  {d.overBudget && (
+                    <div
+                      className="absolute h-2 sm:h-2.5 rounded-r-full bg-[#ba1a1a] z-10"
+                      style={{
+                        left: `${allocPct}%`,
+                        width: `${spentPctOfMax - allocPct}%`,
+                      }}
+                      title="เบิกจ่ายเกินงบจัดสรร!"
+                    />
+                  )}
+                </div>
+
+                {/* Right: Percentage Pill Badge */}
+                <div className="flex items-center gap-2 flex-shrink-0 text-right">
+                  <span
+                    className="px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black tabular-nums shadow-xs border"
+                    style={{
+                      backgroundColor: badgeStyle.bg,
+                      color: badgeStyle.text,
+                      borderColor: `${badgeStyle.border}40`,
+                    }}
+                    title={`อัตราการเบิกจ่ายจริง: ${d.pctFormatted}`}
+                  >
+                    {d.pctFormatted}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : chartMode === 'bullet' ? (
+        /* VIEW 2: HORIZONTAL BULLET CHART (Classic) */
         <div
           className={`space-y-2.5 pr-1 flex-1 flex flex-col justify-start ${
             viewCount === 'all' || displayData.length > 8 ? 'max-h-[380px] overflow-y-auto' : ''
@@ -352,7 +481,7 @@ export const DeptBudgetBarChart = ({
           })}
         </div>
       ) : (
-        /* VIEW 2: HORIZONTAL RECHARTS BAR CHART */
+        /* VIEW 3: HORIZONTAL RECHARTS BAR CHART */
         <div
           className={`flex-1 flex flex-col justify-start ${
             viewCount === 'all' || displayData.length > 8 ? 'max-h-[380px] overflow-y-auto' : ''

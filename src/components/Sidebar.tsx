@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { LOGO_IMG, AVATAR_IMG } from '../data/mockData';
 
 export type NavTab = 'overview' | 'allocation' | 'disbursement' | 'reports' | 'settings';
@@ -17,6 +18,7 @@ export const Sidebar = ({
   isCollapsed,
   onToggleCollapse,
 }: SidebarProps) => {
+  const [showInfo, setShowInfo] = useState(false);
   const navItems: { id: NavTab; label: string; icon: string; badge?: number }[] = [
     { id: 'overview', label: 'แดชบอร์ดภาพรวม', icon: 'dashboard' },
     { id: 'allocation', label: 'จัดสรรงบประมาณ', icon: 'account_balance_wallet' },
@@ -27,21 +29,49 @@ export const Sidebar = ({
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-full bg-[#f1f4f9] z-40 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-r border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-20' : 'w-72'
-      }`}
+      className={`fixed left-0 top-0 h-full bg-[#f1f4f9] z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-r border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-72'
+        }`}
     >
+      {/* Floating Circular Toggle Button (half inside sidebar, half outside on the border) */}
+      <button
+        onClick={onToggleCollapse}
+        className="absolute -right-3.5 top-[26px] z-50 w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/50 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer group"
+        title={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
+        aria-label={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
+      >
+        {isCollapsed ? (
+          <svg
+            className="w-3.5 h-3.5 text-[#564337] group-hover:text-[#181c20] transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        ) : (
+          <svg
+            className="w-3.5 h-3.5 text-[#564337] group-hover:text-[#181c20] transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        )}
+      </button>
+
       <div className="flex flex-col flex-1 overflow-y-auto">
         {/* Brand Header */}
         <div
-          className={`h-20 flex items-center border-b border-[#ddc1b2]/20 transition-all duration-300 ${
-            isCollapsed ? 'justify-center px-2' : 'justify-between px-5'
-          }`}
+          className={`h-20 flex items-center border-b border-[#ddc1b2]/20 transition-all duration-300 ${isCollapsed ? 'justify-center px-2' : 'justify-start px-5'
+            }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
             <img alt="CAMT" className="h-9 w-10 object-contain flex-shrink-0" src={LOGO_IMG} />
             {!isCollapsed && (
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <span className="text-[1.1rem] font-extrabold text-[#181c20] leading-tight tracking-tight whitespace-nowrap">
                   CAMT Navigator
                 </span>
@@ -51,17 +81,6 @@ export const Sidebar = ({
               </div>
             )}
           </div>
-
-          {/* Collapse/Expand Toggle Button */}
-          <button
-            onClick={onToggleCollapse}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20] transition-colors cursor-pointer flex-shrink-0"
-            title={isCollapsed ? 'ขยายเมนู (เต็มจอ -> ปกติ)' : 'ย่อเมนู (เข้าสู่โหมดเต็มจอ)'}
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              {isCollapsed ? 'menu_open' : 'menu'}
-            </span>
-          </button>
         </div>
 
         {/* Institution Badge */}
@@ -99,13 +118,11 @@ export const Sidebar = ({
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
                 title={isCollapsed ? item.label : undefined}
-                className={`w-full flex items-center rounded-xl transition-all text-[0.875rem] font-bold text-left cursor-pointer ${
-                  isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
-                } ${
-                  isActive
+                className={`w-full flex items-center rounded-xl transition-all text-[0.875rem] font-bold text-left cursor-pointer ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
+                  } ${isActive
                     ? 'bg-[#e87722] text-white shadow-sm ring-2 ring-[#e87722]/30'
                     : 'text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20]'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-[22px] flex-shrink-0">{item.icon}</span>
@@ -113,9 +130,8 @@ export const Sidebar = ({
                 </div>
                 {!isCollapsed && item.badge && item.badge > 0 ? (
                   <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                      isActive ? 'bg-white text-[#994700]' : 'bg-[#e87722]/15 text-[#e87722]'
-                    }`}
+                    className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-white text-[#994700]' : 'bg-[#e87722]/15 text-[#e87722]'
+                      }`}
                   >
                     {item.badge}
                   </span>
@@ -127,11 +143,78 @@ export const Sidebar = ({
       </div>
 
       {/* User Footer Profile */}
-      <div className="p-3 bg-white/70 border-t border-[#ddc1b2]/20">
+      <div className="p-3 bg-white/70 border-t border-[#ddc1b2]/20 relative">
+        {/* Info Popup Dialog Styled like Header Notifications (Image 2) */}
+        {showInfo && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowInfo(false)}
+            />
+            <div
+              className={`absolute bottom-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#ddc1b2]/30 overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200 ${isCollapsed
+                ? 'left-full ml-3 bottom-2 w-80'
+                : 'left-3 right-3 sm:right-auto sm:w-80'
+                }`}
+            >
+              <div className="px-4 py-3 border-b border-[#ebeef3] flex justify-between items-center bg-[#f7f9ff]">
+                <h3 className="font-bold text-[#181c20] text-sm flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#e87722] text-[18px]">info</span>
+                  ข้อมูลระบบ
+                </h3>
+                <span className="text-[10px] bg-[#e87722]/10 text-[#e87722] font-bold px-2 py-0.5 rounded-full">
+                  v2.6.9
+                </span>
+              </div>
+              <div className="max-h-[320px] overflow-y-auto">
+                <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
+                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>
+                  <div className="pl-3">
+                    <p className="text-xs text-[#181c20] font-bold">CAMT Navigator Budget System</p>
+                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                      ระบบบริหารงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่
+                    </p>
+                    <p className="text-[10px] text-[#79564b] mt-1.5">CAMT CMU Fiscal Executive Dashboard</p>
+                  </div>
+                </div>
+
+                <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
+                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#366847]"></span>
+                  <div className="pl-3">
+                    <p className="text-xs text-[#181c20] font-bold">การเชื่อมโยงระบบฐานข้อมูล</p>
+                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                      บูรณาการข้อมูลร่วมกับ CMU-ERP, GFMIS, และเกณฑ์ EdPEx Real-time
+                    </p>
+                    <p className="text-[10px] text-[#366847] font-semibold mt-1.5">● สถานะการเชื่อมต่อ: สมบูรณ์ (Real-time)</p>
+                  </div>
+                </div>
+
+                <div className="px-4 py-3 hover:bg-[#f7f9ff] transition-colors relative">
+                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#79564b]"></span>
+                  <div className="pl-3">
+                    <p className="text-xs text-[#181c20] font-bold">ติดต่อสอบถามและการสนับสนุน</p>
+                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                      งานบริหารการเงินและการพัสดุ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี
+                    </p>
+                    <p className="text-[10px] text-[#79564b] mt-1.5">โทร. 053-942649 • finance@camt.cmu.ac.th</p>
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 py-2 border-t border-[#ebeef3] bg-white text-center">
+                <button
+                  onClick={() => setShowInfo(false)}
+                  className="text-[#e87722] text-xs font-bold hover:underline cursor-pointer"
+                >
+                  ปิดหน้าต่างนี้
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
         <div
-          className={`flex items-center rounded-xl bg-white shadow-xs border border-[#ddc1b2]/30 ${
-            isCollapsed ? 'justify-center p-2' : 'justify-between p-2.5'
-          }`}
+          className={`flex items-center rounded-xl bg-white shadow-xs border border-[#ddc1b2]/30 ${isCollapsed ? 'justify-center p-2' : 'justify-between p-2.5'
+            }`}
         >
           <div className="flex items-center gap-2.5 overflow-hidden">
             <img
@@ -153,9 +236,9 @@ export const Sidebar = ({
           {!isCollapsed && (
             <div className="flex items-center gap-1">
               <button
-                onClick={() => alert('CAMT Navigator Budget System v2.6.9\nระบบบริหารงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มช.')}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20]"
-                title="ช่วยเหลือ"
+                onClick={() => setShowInfo(!showInfo)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20] cursor-pointer transition-colors"
+                title="ข้อมูลระบบ"
               >
                 <span className="material-symbols-outlined text-[18px]">help</span>
               </button>

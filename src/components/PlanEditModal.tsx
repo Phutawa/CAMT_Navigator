@@ -19,9 +19,12 @@ export const PlanEditModal = ({
 
   if (!isOpen) return null;
 
-  const handleAmountChange = (code: string, newAmt: number) => {
+  const handleAmountChange = (code: string, rawVal: string) => {
+    const cleanValue = rawVal.replace(/\D/g, '');
+    const normalized = cleanValue.replace(/^0+(?=\d)/, '');
+    const num = normalized === '' ? 0 : Number(normalized);
     setData((prev) =>
-      prev.map((d) => (d.code === code ? { ...d, amount: newAmt } : d))
+      prev.map((d) => (d.code === code ? { ...d, amount: num } : d))
     );
   };
 
@@ -72,8 +75,10 @@ export const PlanEditModal = ({
                   <input
                     type="number"
                     step={50000}
-                    value={dept.amount}
-                    onChange={(e) => handleAmountChange(dept.code, Number(e.target.value))}
+                    value={dept.amount === 0 ? '' : dept.amount}
+                    placeholder="0"
+                    onChange={(e) => handleAmountChange(dept.code, e.target.value)}
+                    onFocus={(e) => e.target.select()}
                     className="w-36 px-2.5 py-1.5 rounded-lg border border-[#ddc1b2]/60 font-bold text-xs text-right outline-none focus:border-[#e87722]"
                   />
                 </div>

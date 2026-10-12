@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { ProjectItem, OFFICIAL_REPORT_2569_DG_P1_001, getOfficialReportForProject } from '../data/mockData';
-import { OfficialProjectReportDocument } from './OfficialProjectReportDocument';
+import { ProjectItem } from '../data/mockData';
 
 interface ReportsScreenProps {
   onExportReport: () => void;
@@ -15,12 +14,9 @@ export const ReportsScreen = ({
   projects = [],
   onExportProjectReport,
 }: ReportsScreenProps) => {
-  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
+  const [activeTab, setActiveTab] = useState<1 | 2>(1);
   const [signState, setSignState] = useState(false);
   const [appliedRecommendations, setAppliedRecommendations] = useState<number[]>([]);
-  const [selectedProjectCode, setSelectedProjectCode] = useState<string>('2569-DG-P1-001');
-  const [reportFilterDept, setReportFilterDept] = useState<string>('all');
-  const [reportSearchQuery, setReportSearchQuery] = useState<string>('');
   const [aiQuery, setAiQuery] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiExpanded, setIsAiExpanded] = useState(false);
@@ -30,8 +26,6 @@ export const ReportsScreen = ({
     const q = customQuery !== undefined ? customQuery : aiQuery;
     if (q.includes('2569') || q.includes('ดิจิทัลเกม') || q.includes('ดูงาน')) {
       setAiResponse('รายงานโครงการ 2569-DG-P1-001: ศึกษาดูงานนักศึกษาดิจิทัลเกม ปี 3 (ปีการศึกษา 2568) วงเงิน ฿386,000 ได้รับการอนุมัติผ่านระบบ CMU ERP เรียบร้อย มีลายเซ็นอนุมัติครบ 4 ลำดับขั้น รหัสบัญชี Fund3D: 0201001 Act3D: 690101010000022 ID3D: 69222D532C00120');
-      setActiveTab(3);
-      setSelectedProjectCode('2569-DG-P1-001');
     } else {
       setAiResponse(`ประมวลผลข้อมูลสำหรับ: "${q}" - จากฐานข้อมูล CMU ERP พบว่าการเบิกจ่ายรวมของวิทยาลัยอยู่ที่ 92.4% มีประสิทธิภาพอยู่ในเกณฑ์ EdPEx ยอดเยี่ยม`);
     }
@@ -89,12 +83,11 @@ export const ReportsScreen = ({
           </div>
         </div>
 
-        {/* Navigation Tabs (3 Consolidated Tabs) */}
+        {/* Navigation Tabs (2 Consolidated Tabs) */}
         <div className="px-4 sm:px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex items-center gap-2 py-2 w-full min-w-0 overflow-x-auto flex-nowrap">
           {[
             { id: 1, label: 'สถิติ & ประสิทธิภาพส่วนงาน (KPIs & Benchmarks)', icon: 'query_stats' },
             { id: 2, label: 'ข้อเสนอแนะนโยบาย (Actions)', icon: 'rate_review' },
-            { id: 3, label: 'แบบฟอร์มทางการ (CMU Form 2569)', icon: 'article' },
           ].map((t) => (
             <button
               key={t.id}
@@ -676,199 +669,7 @@ export const ReportsScreen = ({
             </div>
           )}
 
-          {/* Tab 3: Official Project Report Form 2569 */}
-          {activeTab === 3 && (
-            <div className="space-y-5">
-              {/* Informative Guidance Banner */}
-              <div className="bg-[#FFF7F0] border border-[#ffdbc8] rounded-2xl p-4 text-xs text-[#743400] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#e87722] text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
-                    <span className="material-symbols-outlined text-[20px]">assignment_turned_in</span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-[#181c20] text-sm flex items-center gap-2">
-                      แบบฟอร์มเอกสารเสนอโครงการ/งบประมาณฉบับทางการ 5 หน้า (CMU Form 2569)
-                      <span className="px-2 py-0.5 rounded-full bg-[#ffdbc8] text-[#743400] text-[10px] font-bold">
-                        มาตรฐานกลาง วศ.มช.
-                      </span>
-                    </h4>
-                    <p className="text-[#564337] mt-0.5 leading-relaxed">
-                      เอกสารนี้เป็นแม่แบบทางการ 5 หน้าของ มช. ระบบเชื่อมต่อฐานข้อมูล CMU-ERP และคำนวณรหัสบัญชี 3D, ตารางงบประมาณ EX, และลายเซ็นดิจิทัลสำหรับ <strong>ทุกโครงการ</strong> ในวิทยาลัยศิลปะ สื่อ และเทคโนโลยี โดยโครงการ <strong>2569-DG-P1-001</strong> เป็นตัวอย่างต้นแบบอ้างอิงจริง
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => {
-                      const selectedPrj =
-                        projects.find((p) => p.code === selectedProjectCode) ||
-                        (selectedProjectCode === '2569-DG-P1-001'
-                          ? {
-                              id: 'prj-2569-dg-001',
-                              code: '2569-DG-P1-001',
-                              title: 'โครงการศึกษาดูงานนักศึกษาชั้นปีที่ 3 สาขาวิชาดิจิทัลเกม ประจำปีการศึกษา 2568',
-                              dept: 'หลักสูตรดิจิทัลเกม (BSC-DG)',
-                              category: 'student',
-                              allocated: 386000,
-                              spent: 386000,
-                              head: 'ผู้ช่วยศาสตราจารย์ ดร.ธีรวัฒน์ กำเนิดศิริ',
-                              status: 'approved' as const,
-                              completionPct: 100,
-                              quarter: 'q1' as const,
-                              periodLabel: 'ต.ค. - พ.ย. 2568',
-                            }
-                          : null);
-                      if (onExportProjectReport && selectedPrj) {
-                        onExportProjectReport(selectedPrj);
-                      } else {
-                        window.print();
-                      }
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">print</span>
-                    พิมพ์ / ส่งออกเอกสารนี้
-                  </button>
-                </div>
-              </div>
 
-              {/* Consolidated Unified Filter Bar */}
-              <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#ddc1b2]/40 shadow-xs space-y-2.5">
-                {/* Single Sleek Row: Department Filters + Search Input */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs flex-1">
-                    <span className="text-[11px] text-[#79564b] font-bold whitespace-nowrap">
-                      หมวดสาขา:
-                    </span>
-                    {[
-                      { id: 'all', label: 'ทั้งหมด' },
-                      { id: 'DG', label: 'เกม (DG)' },
-                      { id: 'SE', label: 'ซอฟต์แวร์ (SE)' },
-                      { id: 'ANI', label: 'แอนิเมชัน (ANI)' },
-                      { id: 'DII', label: 'นวัตกรรม (DII)' },
-                      { id: 'RES', label: 'วิจัย (RES)' },
-                      { id: 'STU', label: 'นักศึกษา (STU)' },
-                      { id: 'CEN', label: 'ส่วนกลาง (CEN)' },
-                    ].map((dept) => (
-                      <button
-                        key={dept.id}
-                        onClick={() => setReportFilterDept(dept.id)}
-                        className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-colors whitespace-nowrap cursor-pointer ${
-                          reportFilterDept === dept.id
-                            ? 'bg-[#e87722] text-white shadow-xs'
-                            : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
-                        }`}
-                      >
-                        {dept.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Search Input */}
-                  <div className="relative w-full lg:w-64">
-                    <span className="material-symbols-outlined absolute left-3 top-2 text-[17px] text-slate-400">
-                      search
-                    </span>
-                    <input
-                      type="text"
-                      value={reportSearchQuery}
-                      onChange={(e) => setReportSearchQuery(e.target.value)}
-                      placeholder="ค้นหารหัส/ชื่อโครงการ..."
-                      className="w-full pl-8 pr-7 py-1.5 bg-[#f1f4f9] rounded-xl text-xs text-[#181c20] focus:outline-none focus:ring-2 focus:ring-[#e87722]/50 border border-transparent focus:border-[#e87722]"
-                    />
-                    {reportSearchQuery && (
-                      <button
-                        onClick={() => setReportSearchQuery('')}
-                        className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
-                      >
-                        <span className="material-symbols-outlined text-[15px]">close</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Main Unified Select Dropdown with optgroups */}
-                <div>
-                  <select
-                    value={selectedProjectCode}
-                    onChange={(e) => setSelectedProjectCode(e.target.value)}
-                    className="w-full bg-[#f8fafc] border border-[#cbd5e1] rounded-xl px-3 py-2 text-xs text-[#181c20] font-medium focus:outline-none focus:ring-2 focus:ring-[#e87722]/50 shadow-xs cursor-pointer"
-                  >
-                    <optgroup label="⭐ โครงการยอดนิยม / ตัวอย่างต้นแบบอ้างอิง">
-                      <option value="2569-DG-P1-001">
-                        ⭐ 2569-DG-P1-001 : โครงการศึกษาดูงานนักศึกษาชั้นปีที่ 3 สาขาวิชาดิจิทัลเกม ประจำปีการศึกษา 2568 (฿386,000.00) [โครงการต้นแบบ]
-                      </option>
-                      <option value="PRJ-2569-SE01">
-                        ⭐ PRJ-2569-SE01 : โครงการพัฒนานวัตกรรมซอฟต์แวร์และ AI Lab (฿650,000.00)
-                      </option>
-                      <option value="PRJ-2569-ANI01">
-                        ⭐ PRJ-2569-ANI01 : โครงการจัดซื้อลิขสิทธิ์ซอฟต์แวร์และ VR Render Farm (฿580,000.00)
-                      </option>
-                      <option value="PRJ-2569-RES01">
-                        ⭐ PRJ-2569-RES01 : โครงการวิจัย AI Smart City and Healthcare Diagnostics (฿750,000.00)
-                      </option>
-                      <option value="PRJ-2569-DII02">
-                        ⭐ PRJ-2569-DII02 : โครงการ FinTech Sandbox และระบบบัญชีบล็อกเชน (฿420,000.00)
-                      </option>
-                    </optgroup>
-                    <optgroup label="📂 โครงการทั้งหมดตามตัวกรอง">
-                      {projects
-                        .filter((p) => p.code !== '2569-DG-P1-001')
-                        .filter((p) => {
-                          const matchesDept =
-                            reportFilterDept === 'all' ||
-                            (reportFilterDept === 'DG' &&
-                              (p.code.includes('DG') || p.dept.includes('ดิจิทัลเกม'))) ||
-                            (reportFilterDept === 'SE' &&
-                              (p.code.includes('SE') || p.dept.includes('ซอฟต์แวร์'))) ||
-                            (reportFilterDept === 'ANI' &&
-                              (p.code.includes('ANI') || p.dept.includes('แอนิเมชัน'))) ||
-                            (reportFilterDept === 'DII' &&
-                              (p.code.includes('DII') || p.dept.includes('นวัตกรรม'))) ||
-                            (reportFilterDept === 'RES' &&
-                              (p.code.includes('RES') || p.category === 'research')) ||
-                            (reportFilterDept === 'STU' &&
-                              (p.code.includes('STU') || p.category === 'student')) ||
-                            (reportFilterDept === 'CEN' &&
-                              (p.code.includes('CEN') ||
-                                p.dept.includes('กลาง') ||
-                                p.category === 'org'));
-
-                          const matchesSearch =
-                            !reportSearchQuery ||
-                            p.code.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
-                            p.title.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
-                            p.dept.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
-                            p.head.toLowerCase().includes(reportSearchQuery.toLowerCase());
-
-                          return matchesDept && matchesSearch;
-                        })
-                        .map((p) => (
-                          <option key={p.code} value={p.code}>
-                            {p.code} : {p.title} • {p.dept} (฿{p.allocated.toLocaleString()}.00) — หัวหน้า: {p.head}
-                          </option>
-                        ))}
-                    </optgroup>
-                  </select>
-                </div>
-              </div>
-
-              {/* Official Document Viewer Component */}
-              <div className="flex justify-center">
-                <OfficialProjectReportDocument
-                  reportData={
-                    selectedProjectCode === '2569-DG-P1-001'
-                      ? OFFICIAL_REPORT_2569_DG_P1_001
-                      : getOfficialReportForProject(
-                          projects.find((p) => p.code === selectedProjectCode)
-                        )
-                  }
-                  project={projects.find((p) => p.code === selectedProjectCode)}
-                  interactive={true}
-                />
-              </div>
-            </div>
-          )}
         </div>
 
       </div>

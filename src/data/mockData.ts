@@ -2,7 +2,7 @@ export const AVATAR_IMG =
   "https://lh3.googleusercontent.com/aida/AEtjO1XITrEDfq0rh271hd3hcgntMtK4UuE000nBZqnzVZynx9B0jURKeAk5dZ1QEy8aOboBaLKFFvQKa39yJuhDAvjc9ElOm0eQlONdkIy_spCpSIAM4A36XFlnDxf4D7QWgUGipkcU1JBdc6JRGwZiV97rOLQUQotRlxhUyXIC5HZHvuHXiwIKQpm1DjUiJGxxkU9nAtKC-7oXmoZ5ewOwUtcqzgmdoAn00aC9ti_QKEDBGQE5qr-tD1JVFys";
 
 export const LOGO_IMG =
-  "https://lh3.googleusercontent.com/aida/AEtjO1XxU3199zEp4it35-Yt8047OaNpJl3k8s5-9Jl6TE9MK8GLgqcpVhEpdqtX5NV5bX7pSn2ZbqaHd_I25waa4Qyuvho7S97Ze0YmQ-2i6gv5sNL0gRP2FBkatGEEXqesDNEUgcCQLv3kEByWwvME8eGf7QwcLQk_ejx5XAbAI9wXzuJahEqnTUxHuSyyWOg2Aoay9NKS4_LD9EneaPsUZfX8qHKsn-0M6xkES0BqjQRfegxmigvinBlVfpI";
+  "/camt navigator.png";
 
 export const LAB_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAgjJnzhhwIiY64HSwE67eaJkIKst4TSUEJ2-q-Tku_21apFfu_deYAczX3mCl0Jmmp5gNbvsz42OywEdSkwPO2jeevvxtbJQyb2A-oFjxdhE6Zj4LDtBcYVsGiITfF2Zll-ccBaauj1mVmCJDov_znt4O_5VL4fllwsNgD6JxykQraH3oVy-uv3yRdGHEZeTOAAZCDSDv5jgyFFLtc8bpvTLH2E4eUHU3SMmhgiHU";
@@ -428,8 +428,8 @@ const buildAllSyncedProjects = (): ProjectItem[] => {
         q === 'q1' || q === 'q2'
           ? 'approved'
           : q === 'q3'
-          ? (pct >= 80 ? 'approved' : 'active')
-          : 'pending';
+            ? (pct >= 80 ? 'approved' : 'active')
+            : 'pending';
 
       const completionPct =
         q === 'q1' ? 100 : q === 'q2' ? 92 : q === 'q3' ? pct : 15;
@@ -782,8 +782,8 @@ export const getOfficialReportForProject = (project?: ProjectItem | null): Offic
           project.category === 'student'
             ? '- SO1 : สร้างระบบนิเวศที่เป็นเลิศเพื่อการพัฒนากำลังคนด้านดิจิทัลเชิงสร้างสรรค์ (ด้านการเรียนการสอน)'
             : project.category === 'research'
-            ? '- SO3 : ผลิตผลงานวิจัย นวัตกรรม และทรัพย์สินทางปัญญาสู่การใช้ประโยชน์เชิงพาณิชย์และสังคม'
-            : '- SO2 : ยกระดับหลักสูตรและมาตรฐานวิชาการสู่ความเป็นเลิศระดับสากล',
+              ? '- SO3 : ผลิตผลงานวิจัย นวัตกรรม และทรัพย์สินทางปัญญาสู่การใช้ประโยชน์เชิงพาณิชย์และสังคม'
+              : '- SO2 : ยกระดับหลักสูตรและมาตรฐานวิชาการสู่ความเป็นเลิศระดับสากล',
         ],
       },
     },

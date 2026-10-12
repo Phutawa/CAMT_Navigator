@@ -3,13 +3,12 @@ import { useState } from 'react';
 interface SettingsScreenProps {
   onCommitSuccess: () => void;
   onTestAPISuccess: () => void;
-  onExportReport: () => void;
+  onExportReport?: () => void;
 }
 
 export const SettingsScreen = ({
   onCommitSuccess,
   onTestAPISuccess,
-  onExportReport,
 }: SettingsScreenProps) => {
   const [activeTab, setActiveTab] = useState<'tab-rules' | 'tab-roles' | 'tab-api' | 'tab-audit'>('tab-rules');
   const [testing, setTesting] = useState(false);
@@ -61,16 +60,6 @@ export const SettingsScreen = ({
             <p className="text-[11px] text-[#564337]">
               วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Policy &amp; System Matrix
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-
-            <button
-              onClick={onExportReport}
-              className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
-              title="พิมพ์"
-            >
-              <span className="material-symbols-outlined text-[18px]">print</span>
-            </button>
           </div>
         </div>
 

@@ -26,7 +26,7 @@ export const DisbursementScreen = ({
   onExportReport,
   onOpenProjectModal,
 }: DisbursementScreenProps) => {
-  const [activeTab, setActiveTab] = useState<'tab-overview' | 'tab-departments' | 'tab-commitments' | 'tab-risks'>('tab-overview');
+  const [activeTab, setActiveTab] = useState<'tab-overview' | 'tab-departments' | 'tab-commitments'>('tab-overview');
   const [signed, setSigned] = useState(false);
   const [alertSent, setAlertSent] = useState(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -213,7 +213,6 @@ export const DisbursementScreen = ({
               { id: 'tab-overview', label: `ติดตามเบิกจ่าย ${projects.length} โครงการทั้งหมด`, icon: 'query_stats' },
               { id: 'tab-departments', label: 'รายการโครงการค้างเบิกจ่าย (เกินกำหนด)', icon: 'account_tree' },
               { id: 'tab-commitments', label: 'รายการ PO และใบสำคัญผูกพันงบ', icon: 'receipt_long', badge: commitments.length.toString() },
-              { id: 'tab-risks', label: 'การแจ้งเตือนงบเสี่ยงเบิกจ่ายช้า', icon: 'warning', badge: '3 รายการ', isError: true },
             ].map((t) => (
               <button
                 key={t.id}
@@ -223,20 +222,15 @@ export const DisbursementScreen = ({
                   : 'text-[#564337] hover:bg-[#ebeef3]'
                   }`}
               >
-                <span
-                  className={`material-symbols-outlined text-[18px] ${t.isError && activeTab !== t.id ? 'text-[#ba1a1a]' : ''
-                    }`}
-                >
+                <span className="material-symbols-outlined text-[18px]">
                   {t.icon}
                 </span>
                 <span>{t.label}</span>
                 {t.badge && (
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${t.isError
-                      ? 'bg-[#ffdad6] text-[#93000a]'
-                      : activeTab === t.id
-                        ? 'bg-white text-[#994700]'
-                        : 'bg-[#e0e3e8] text-[#181c20]'
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activeTab === t.id
+                      ? 'bg-white text-[#994700]'
+                      : 'bg-[#e0e3e8] text-[#181c20]'
                       }`}
                   >
                     {t.badge}
@@ -611,50 +605,6 @@ export const DisbursementScreen = ({
             </div>
           )}
 
-          {activeTab === 'tab-risks' && (
-            <div className="space-y-4 text-xs">
-              <div className="p-5 bg-[#ffdad6]/40 border border-[#ba1a1a]/30 rounded-2xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <strong className="text-[#ba1a1a] font-bold text-sm">
-                    1. โครงการพัฒนาห้องปฏิบัติการ VR Lab (ศูนย์ CEL)
-                  </strong>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#ba1a1a] text-white font-bold text-[10px]">
-                    เสี่ยงสูง (High Risk)
-                  </span>
-                </div>
-                <p className="text-[#181c20] leading-relaxed">
-                  คู่สัญญาขอเลื่อนกำหนดส่งมอบฮาร์ดแวร์ VR แว่นแสดงผล 2 ครั้ง อาจกระทบต่อการตรวจรับงวดสุดท้าย
-                  วงเงินคงค้าง ฿480,000 แนะนำเร่งรัดหรือสงวนสิทธิ์ปรับรายวัน
-                </p>
-                <button
-                  onClick={handleSendAlertClick}
-                  className="px-3 py-1 rounded-lg bg-[#ba1a1a] text-white font-bold text-xs hover:bg-[#93000a] cursor-pointer"
-                >
-                  ส่งหนังสือเร่งรัด CEL
-                </button>
-              </div>
-
-              <div className="p-5 bg-[#FFF7F0] border border-[#e87722]/40 rounded-2xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <strong className="text-[#994700] font-bold text-sm">
-                    2. งบอุดหนุนงานวิจัยนวัตกรรมนานาชาติ รอบ 2 (DTA)
-                  </strong>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#e87722] text-white font-bold text-[10px]">
-                    เสี่ยงปานกลาง (Medium)
-                  </span>
-                </div>
-                <p className="text-[#181c20] leading-relaxed">
-                  นักวิจัยยังไม่นำใบเสร็จการนำเสนอผลงานประชุมวิชาการมาเบิกจ่ายตามกำหนด วงเงิน ฿350,000
-                </p>
-                <button
-                  onClick={handleSendAlertClick}
-                  className="px-3 py-1 rounded-lg bg-[#e87722] text-white font-bold text-xs hover:bg-[#994700] cursor-pointer"
-                >
-                  แจ้งเตือนนักวิจัย DTA
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
       </div>

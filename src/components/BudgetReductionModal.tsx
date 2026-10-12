@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProjectItem } from '../data/mockData';
 
 interface BudgetReductionModalProps {
@@ -14,20 +14,43 @@ export const BudgetReductionModal = ({
   onClose,
   onConfirm,
 }: BudgetReductionModalProps) => {
-  const [reduceAmount, setReduceAmount] = useState<number>(50000);
+  const [reduceAmount, setReduceAmount] = useState<string>('50000');
   const [reason, setReason] = useState('โอนคืนเข้ากองทุนสำรองส่วนกลางเพื่อเตรียมงวด Q4');
+
+  useEffect(() => {
+    if (isOpen && project) {
+      const remaining = project.allocated - project.spent;
+      const defaultAmount = remaining > 0 ? Math.min(50000, remaining) : 0;
+      setReduceAmount(defaultAmount > 0 ? defaultAmount.toString() : '');
+      setReason('โอนคืนเข้ากองทุนสำรองส่วนกลางเพื่อเตรียมงวด Q4');
+    }
+  }, [isOpen, project]);
 
   if (!isOpen || !project) return null;
 
   const remaining = project.allocated - project.spent;
+  const numericAmount = reduceAmount === '' ? 0 : Number(reduceAmount);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    if (rawValue === '') {
+      setReduceAmount('');
+      return;
+    }
+    // Remove non-digit characters
+    const cleanValue = rawValue.replace(/\D/g, '');
+    // Remove leading zeros: "06266" -> "6266", "0" -> "0"
+    const normalized = cleanValue.replace(/^0+(?=\d)/, '');
+    setReduceAmount(normalized);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (reduceAmount <= 0 || reduceAmount > remaining) {
+    if (!reduceAmount || isNaN(numericAmount) || numericAmount <= 0 || numericAmount > remaining) {
       alert(`กรุณาระบุจำนวนเงินที่ถูกต้อง (ไม่เกินยอดคงเหลือ ฿${remaining.toLocaleString()})`);
       return;
     }
-    onConfirm(project.id, reduceAmount, reason);
+    onConfirm(project.id, numericAmount, reason);
     onClose();
   };
 
@@ -74,16 +97,18 @@ export const BudgetReductionModal = ({
               </label>
               <input
                 type="number"
-                min={1000}
+                min={1}
                 max={remaining}
-                step={5000}
+                step={1000}
                 value={reduceAmount}
-                onChange={(e) => setReduceAmount(Number(e.target.value))}
+                onChange={handleAmountChange}
+                onFocus={(e) => e.target.select()}
+                placeholder="ระบุจำนวนเงิน"
                 className="w-full px-3 py-2 rounded-xl border border-[#ddc1b2]/60 focus:border-[#e87722] focus:ring-2 focus:ring-[#e87722]/20 font-bold text-sm text-[#181c20] outline-none"
                 required
               />
               <span className="text-[11px] text-[#79564b] mt-1 block">
-                งบประมาณใหม่หลังปรับลด: ฿{(project.allocated - reduceAmount).toLocaleString()}
+                งบประมาณใหม่หลังปรับลด: ฿{(project.allocated - numericAmount).toLocaleString()}
               </span>
             </div>
 
