@@ -208,11 +208,21 @@ export const DeptBudgetBarChart = ({
                 <span className="text-[#564337] font-semibold">อันดับหน่วยงาน</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3.5 h-2 rounded-full bg-[#ffdbc8] border border-[#e87722]/50 inline-block"></span>
+                <span
+                  className="w-4 h-2.5 rounded-full inline-block shadow-2xs"
+                  style={{
+                    background: 'linear-gradient(90deg, #9a4306 0%, #e87722 100%)',
+                  }}
+                />
                 <span className="text-[#564337] font-semibold">งบจัดสรร (Target)</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-2 rounded-full bg-[#2e7d32] inline-block"></span>
+                <span
+                  className="w-4 h-2.5 rounded-full inline-block shadow-2xs"
+                  style={{
+                    background: 'linear-gradient(90deg, #164e22 0%, #3fa64d 100%)',
+                  }}
+                />
                 <span className="text-[#564337] font-semibold">เบิกจ่ายจริง (Actual)</span>
               </span>
             </>
@@ -341,32 +351,36 @@ export const DeptBudgetBarChart = ({
                   </div>
                 </div>
 
-                {/* Center: Horizontal Progress Bar (กราฟแนวนอน - สีเขียว/ส้ม) */}
+                {/* Center: Horizontal Progress Bar (กราฟแนวนอนแคปซูลมนๆ ไล่สีเขียว/ส้ม ขนาดความยาวและความสูงตามเดิม) */}
                 <div className="flex-1 relative h-5 sm:h-6 mx-2 sm:mx-3 flex items-center min-w-[70px]">
-                  {/* Background Target Bar (งบจัดสรร / ส้มอ่อน) */}
+                  {/* Background Target Bar (งบจัดสรร / แคปซูลมนๆ ไล่สีส้ม) */}
                   <div
-                    className="absolute left-0 h-3.5 sm:h-4 rounded-full bg-[#ffdbc8]/80 border border-[#e87722]/40 transition-all duration-300 group-hover:bg-[#ffd5bc]"
-                    style={{ width: `${allocPct}%` }}
+                    className="absolute left-0 h-3.5 sm:h-4 rounded-full transition-all duration-300 shadow-2xs group-hover:brightness-105"
+                    style={{
+                      width: `${allocPct}%`,
+                      background: 'linear-gradient(90deg, #9a4306 0%, #c25e10 35%, #e87722 75%, #f9852c 100%)',
+                    }}
                     title={`งบจัดสรร: ฿${d.จัดสรร.toLocaleString()}`}
-                  >
-                    {/* Target tick line */}
-                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-[#e87722] rounded-r-full" />
-                  </div>
+                  />
 
-                  {/* Foreground Actual Bar (เบิกจ่ายจริง / เขียวเข้ม) */}
+                  {/* Foreground Actual Bar (เบิกจ่ายจริง / แคปซูลมนๆ ไล่สีเขียว ขนาดความสูงเท่ากัน ซ้อนทับด้านหน้า) */}
                   <div
-                    className="absolute left-0 h-2 sm:h-2.5 rounded-full bg-[#2e7d32] transition-all duration-500 z-10 shadow-xs group-hover:brightness-110"
-                    style={{ width: `${Math.min(allocPct, spentPctOfMax)}%` }}
+                    className="absolute left-0 h-3.5 sm:h-4 rounded-full transition-all duration-500 z-10 shadow-xs group-hover:brightness-110"
+                    style={{
+                      width: `${Math.min(allocPct, spentPctOfMax)}%`,
+                      background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
+                    }}
                     title={`เบิกจ่ายจริง: ฿${d.เบิกจ่าย.toLocaleString()} (${d.pctFormatted})`}
                   />
 
                   {/* Overbudget segment */}
                   {d.overBudget && (
                     <div
-                      className="absolute h-2 sm:h-2.5 rounded-r-full bg-[#ba1a1a] z-10"
+                      className="absolute h-3.5 sm:h-4 rounded-r-full z-10 shadow-xs"
                       style={{
                         left: `${allocPct}%`,
                         width: `${spentPctOfMax - allocPct}%`,
+                        background: 'linear-gradient(90deg, #b91c1c 0%, #dc2626 50%, #ef4444 100%)',
                       }}
                       title="เบิกจ่ายเกินงบจัดสรร!"
                     />

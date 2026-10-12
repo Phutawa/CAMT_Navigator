@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AVATAR_IMG, ProjectItem } from '../data/mockData';
 interface HeaderProps {
   searchQuery: string;
@@ -26,10 +26,26 @@ export const Header = ({
   const [showNotif, setShowNotif] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLocalSearch(searchQuery);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotif(false);
+      }
+    };
+
+    if (showNotif) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotif]);
 
   const handleNotificationClick = (tab: 'overview' | 'allocation' | 'disbursement' | 'reports' | 'settings') => {
     if (onNavigate) onNavigate(tab);
@@ -164,7 +180,7 @@ export const Header = ({
           </button>
 
           {/* Notification Button */}
-          <div className="relative">
+          <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotif(!showNotif)}
               className="relative w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-[#ebeef3] shadow-xs border border-[#ddc1b2]/40 transition-colors cursor-pointer"
@@ -214,11 +230,6 @@ export const Header = ({
                       <p className="text-[10px] text-[#79564b] mt-1.5">เมื่อวาน 14:30 น.</p>
                     </div>
                   </div>
-                </div>
-                <div className="px-4 py-2 border-t border-[#ebeef3] bg-white text-center">
-                  <button onClick={() => setShowNotif(false)} className="text-[#e87722] text-xs font-bold hover:underline cursor-pointer">
-                    ปิดหน้าต่างนี้
-                  </button>
                 </div>
               </div>
             )}

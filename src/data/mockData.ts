@@ -1,5 +1,5 @@
 export const AVATAR_IMG =
-  "https://lh3.googleusercontent.com/aida/AEtjO1XITrEDfq0rh271hd3hcgntMtK4UuE000nBZqnzVZynx9B0jURKeAk5dZ1QEy8aOboBaLKFFvQKa39yJuhDAvjc9ElOm0eQlONdkIy_spCpSIAM4A36XFlnDxf4D7QWgUGipkcU1JBdc6JRGwZiV97rOLQUQotRlxhUyXIC5HZHvuHXiwIKQpm1DjUiJGxxkU9nAtKC-7oXmoZ5ewOwUtcqzgmdoAn00aC9ti_QKEDBGQE5qr-tD1JVFys";
+  "/N profile.jpg";
 
 export const LOGO_IMG =
   "/camt navigator.png";

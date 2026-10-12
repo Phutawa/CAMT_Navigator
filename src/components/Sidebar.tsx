@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LOGO_IMG, AVATAR_IMG } from '../data/mockData';
 
 export type NavTab = 'overview' | 'allocation' | 'disbursement' | 'reports' | 'settings';
@@ -19,6 +19,22 @@ export const Sidebar = ({
   onToggleCollapse,
 }: SidebarProps) => {
   const [showInfo, setShowInfo] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(event.target as Node)) {
+        setShowInfo(false);
+      }
+    };
+
+    if (showInfo) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showInfo]);
   const navItems: { id: NavTab; label: string; icon: string; badge?: number }[] = [
     { id: 'overview', label: 'แดชบอร์ดภาพรวม', icon: 'dashboard' },
     { id: 'allocation', label: 'จัดสรรงบประมาณ', icon: 'account_balance_wallet' },
@@ -143,73 +159,60 @@ export const Sidebar = ({
       </div>
 
       {/* User Footer Profile */}
-      <div className="p-3 bg-white/70 border-t border-[#ddc1b2]/20 relative">
+      {/* User Footer Profile */}
+      <div ref={infoRef} className="p-3 bg-white/70 border-t border-[#ddc1b2]/20 relative">
         {/* Info Popup Dialog Styled like Header Notifications (Image 2) */}
         {showInfo && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowInfo(false)}
-            />
-            <div
-              className={`absolute bottom-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#ddc1b2]/30 overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200 ${isCollapsed
-                ? 'left-full ml-3 bottom-2 w-80'
-                : 'left-3 right-3 sm:right-auto sm:w-80'
-                }`}
-            >
-              <div className="px-4 py-3 border-b border-[#ebeef3] flex justify-between items-center bg-[#f7f9ff]">
-                <h3 className="font-bold text-[#181c20] text-sm flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#e87722] text-[18px]">info</span>
-                  ข้อมูลระบบ
-                </h3>
-                <span className="text-[10px] bg-[#e87722]/10 text-[#e87722] font-bold px-2 py-0.5 rounded-full">
-                  v2.6.9
-                </span>
-              </div>
-              <div className="max-h-[320px] overflow-y-auto">
-                <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
-                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>
-                  <div className="pl-3">
-                    <p className="text-xs text-[#181c20] font-bold">CAMT Navigator Budget System</p>
-                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
-                      ระบบบริหารงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่
-                    </p>
-                    <p className="text-[10px] text-[#79564b] mt-1.5">CAMT CMU Fiscal Executive Dashboard</p>
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
-                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#366847]"></span>
-                  <div className="pl-3">
-                    <p className="text-xs text-[#181c20] font-bold">การเชื่อมโยงระบบฐานข้อมูล</p>
-                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
-                      บูรณาการข้อมูลร่วมกับ CMU-ERP, GFMIS, และเกณฑ์ EdPEx Real-time
-                    </p>
-                    <p className="text-[10px] text-[#366847] font-semibold mt-1.5">● สถานะการเชื่อมต่อ: สมบูรณ์ (Real-time)</p>
-                  </div>
-                </div>
-
-                <div className="px-4 py-3 hover:bg-[#f7f9ff] transition-colors relative">
-                  <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#79564b]"></span>
-                  <div className="pl-3">
-                    <p className="text-xs text-[#181c20] font-bold">ติดต่อสอบถามและการสนับสนุน</p>
-                    <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
-                      งานบริหารการเงินและการพัสดุ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี
-                    </p>
-                    <p className="text-[10px] text-[#79564b] mt-1.5">โทร. 053-942649 • finance@camt.cmu.ac.th</p>
-                  </div>
+          <div
+            className={`absolute bottom-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#ddc1b2]/30 overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200 ${isCollapsed
+              ? 'left-full ml-3 bottom-2 w-80'
+              : 'left-3 right-3 sm:right-auto sm:w-80'
+              }`}
+          >
+            <div className="px-4 py-3 border-b border-[#ebeef3] flex justify-between items-center bg-[#f7f9ff]">
+              <h3 className="font-bold text-[#181c20] text-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#e87722] text-[18px]">info</span>
+                ข้อมูลระบบ
+              </h3>
+              <span className="text-[10px] bg-[#e87722]/10 text-[#e87722] font-bold px-2 py-0.5 rounded-full">
+                v2.6.9
+              </span>
+            </div>
+            <div className="max-h-[320px] overflow-y-auto">
+              <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
+                <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>
+                <div className="pl-3">
+                  <p className="text-xs text-[#181c20] font-bold">CAMT Navigator Budget System</p>
+                  <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                    ระบบบริหารงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่
+                  </p>
+                  <p className="text-[10px] text-[#79564b] mt-1.5">CAMT CMU Fiscal Executive Dashboard</p>
                 </div>
               </div>
-              <div className="px-4 py-2 border-t border-[#ebeef3] bg-white text-center">
-                <button
-                  onClick={() => setShowInfo(false)}
-                  className="text-[#e87722] text-xs font-bold hover:underline cursor-pointer"
-                >
-                  ปิดหน้าต่างนี้
-                </button>
+
+              <div className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] transition-colors relative">
+                <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#366847]"></span>
+                <div className="pl-3">
+                  <p className="text-xs text-[#181c20] font-bold">การเชื่อมโยงระบบฐานข้อมูล</p>
+                  <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                    บูรณาการข้อมูลร่วมกับ CMU-ERP, GFMIS, และเกณฑ์ EdPEx Real-time
+                  </p>
+                  <p className="text-[10px] text-[#366847] font-semibold mt-1.5">● สถานะการเชื่อมต่อ: สมบูรณ์ (Real-time)</p>
+                </div>
+              </div>
+
+              <div className="px-4 py-3 hover:bg-[#f7f9ff] transition-colors relative">
+                <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#79564b]"></span>
+                <div className="pl-3">
+                  <p className="text-xs text-[#181c20] font-bold">ติดต่อสอบถามและการสนับสนุน</p>
+                  <p className="text-[11px] text-[#564337] mt-1 leading-relaxed">
+                    งานบริหารการเงินและการพัสดุ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี
+                  </p>
+                  <p className="text-[10px] text-[#79564b] mt-1.5">โทร. 053-942649 • finance@camt.cmu.ac.th</p>
+                </div>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         <div

@@ -281,30 +281,86 @@ export const DisbursementScreen = ({
                 </div>
               </div>
 
-              {/* Multi-stage Progress Breakdown */}
-              <div className="bg-white p-5 rounded-xl border border-[#ddc1b2]/30 space-y-3 shadow-xs">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#181c20]">ความคืบหน้าเทียบเป้าหมาย Q3 (Fiscal Run-Rate)</span>
-                  <span className="text-[#366847]">ทำได้ 48.5% (เป้าหมาย 45%)</span>
+              {/* Multi-stage Progress Breakdown (Capsule Style with Gradients) */}
+              <div className="bg-white p-5 rounded-2xl border border-[#ddc1b2]/30 space-y-3.5 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs font-bold">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[#e87722]">speed</span>
+                    <span className="text-[#181c20]">ความคืบหน้าเทียบเป้าหมาย Q3 (Fiscal Run-Rate)</span>
+                  </div>
+                  <span className="text-[#1d5031] bg-[#b8f0c5]/60 px-2.5 py-0.5 rounded-full border border-[#366847]/20 w-fit text-[11px] font-bold">
+                    ทำได้ 48.5% (เป้าหมาย 45%)
+                  </span>
                 </div>
-                <div className="w-full bg-[#ebeef3] rounded-full h-5 overflow-hidden flex border border-[#ddc1b2]/30">
+
+                {/* Capsule Bar with Layered Overlapping Pills & Gradients */}
+                <div className="relative w-full h-6 sm:h-7 rounded-full bg-[#ebeef3] border border-[#ddc1b2]/30 shadow-inner flex items-center overflow-hidden">
+                  {/* Layer 1: Orange Bar (ผูกพัน PO + เบิกจ่ายจริง = 71.25%) ทรงแคปซูลมนๆ ไล่สีส้ม */}
                   <div
-                    className="h-full bg-[#366847] flex items-center justify-center text-[10px] text-white font-bold"
+                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-500 shadow-2xs"
+                    style={{
+                      width: '71.25%',
+                      background: 'linear-gradient(90deg, #9a4306 0%, #c25e10 35%, #e87722 75%, #f9852c 100%)',
+                    }}
+                    title="เบิกจ่ายจริง + ผูกพัน PO: 71.25% (฿8,550,000)"
+                  />
+
+                  {/* Layer 2: Green Bar (เบิกจ่ายจริง = 48.5%) ซ้อนทับด้านหน้า ทรงแคปซูลมนๆ ไล่สีเขียว */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-500 z-10 shadow-xs"
+                    style={{
+                      width: '48.5%',
+                      background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
+                    }}
+                    title="เบิกจ่ายจริง: 48.5% (฿5,820,000)"
+                  />
+
+                  {/* Text Label 1: เบิกจ่ายจริง (ในแถบเขียว) */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 z-20 flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide drop-shadow-xs px-2 truncate pointer-events-none"
                     style={{ width: '48.5%' }}
                   >
                     เบิกจ่ายจริง 48.5%
                   </div>
+
+                  {/* Text Label 2: ผูกพัน PO (ในแถบส้ม) */}
                   <div
-                    className="h-full bg-[#e87722] flex items-center justify-center text-[10px] text-white font-bold"
-                    style={{ width: '22.75%' }}
+                    className="absolute top-0 bottom-0 z-10 flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide drop-shadow-xs px-1 truncate pointer-events-none"
+                    style={{ left: '48.5%', width: '22.75%' }}
                   >
                     ผูกพัน PO 22.75%
                   </div>
+
+                  {/* Text Label 3: คงเหลือ (ในแถบพื้นหลังสีเทาอ่อน) */}
                   <div
-                    className="h-full bg-[#d7dadf] flex items-center justify-center text-[10px] text-[#564337] font-bold"
-                    style={{ width: '28.75%' }}
+                    className="absolute top-0 bottom-0 z-10 flex items-center justify-center text-[10px] sm:text-[11px] text-[#564337] font-bold tracking-wide px-1 truncate pointer-events-none"
+                    style={{ left: '71.25%', width: '28.75%' }}
                   >
                     คงเหลือ 28.75%
+                  </div>
+                </div>
+
+                {/* Legend Details Row */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-xs text-[#564337]">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="w-3.5 h-2 rounded-full inline-block shadow-2xs"
+                        style={{ background: 'linear-gradient(90deg, #164e22 0%, #3fa64d 100%)' }}
+                      />
+                      <span className="text-[11px] font-semibold">เบิกจ่ายจริง: ฿5,820,000 (48.5%)</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="w-3.5 h-2 rounded-full inline-block shadow-2xs"
+                        style={{ background: 'linear-gradient(90deg, #9a4306 0%, #f9852c 100%)' }}
+                      />
+                      <span className="text-[11px] font-semibold">ผูกพัน PO: ฿2,730,000 (22.75%)</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-2 rounded-full inline-block bg-[#d7dadf]" />
+                      <span className="text-[11px] font-semibold">คงเหลือสำรอง: ฿3,450,000 (28.75%)</span>
+                    </span>
                   </div>
                 </div>
               </div>

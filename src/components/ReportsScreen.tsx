@@ -388,11 +388,14 @@ export const ReportsScreen = ({
                               <span>เบิกจ่ายแล้ว</span>
                               <span className="font-extrabold text-[#181c20] tabular-nums">{card.spent}</span>
                             </div>
-                            <div className="w-full bg-[#ebeef3] h-2 rounded-full overflow-hidden flex">
+                            <div className="w-full bg-[#ebeef3] h-2.5 rounded-full overflow-hidden flex shadow-inner">
                               <div
-                                className="bg-[#366847] h-full rounded-full transition-all duration-500"
-                                style={{ width: card.disbPct }}
-                              ></div>
+                                className="h-full rounded-full transition-all duration-500 shadow-2xs"
+                                style={{
+                                  width: card.disbPct,
+                                  background: 'linear-gradient(90deg, #164e22 0%, #2e7d32 75%, #3fa64d 100%)',
+                                }}
+                              />
                             </div>
                             <div className="flex justify-between text-[10px] text-[#79564b]">
                               <span>กรอบ {card.budget}</span>
@@ -566,11 +569,14 @@ export const ReportsScreen = ({
                           <td className="py-3.5 px-4">
                             <div className="flex flex-col items-center gap-1">
                               <span className="font-extrabold text-xs text-[#366847] tabular-nums">{row.pct}</span>
-                              <div className="w-24 bg-[#ebeef3] h-2 rounded-full overflow-hidden">
+                              <div className="w-24 bg-[#ebeef3] h-2.5 rounded-full overflow-hidden shadow-inner">
                                 <div
-                                  className="bg-[#366847] h-full rounded-full transition-all duration-500"
-                                  style={{ width: row.pct }}
-                                ></div>
+                                  className="h-full rounded-full transition-all duration-500 shadow-2xs"
+                                  style={{
+                                    width: row.pct,
+                                    background: 'linear-gradient(90deg, #164e22 0%, #2e7d32 75%, #3fa64d 100%)',
+                                  }}
+                                />
                               </div>
                             </div>
                           </td>

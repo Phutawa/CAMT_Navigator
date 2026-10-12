@@ -269,13 +269,14 @@ export const OverviewScreen = ({
             <div className="text-3xl font-black text-[#366847] mt-3 tabular-nums">
               {activeSpentPct}%
             </div>
-            <div className="w-full bg-[#ebeef3] rounded-full h-2.5 overflow-hidden mt-3">
+            <div className="w-full bg-[#ebeef3] rounded-full h-3 overflow-hidden mt-3 shadow-inner">
               <div
-                className="bg-[#366847] h-full rounded-full transition-all duration-500"
+                className="h-full rounded-full transition-all duration-500 shadow-xs"
                 style={{
                   width: `${Math.min(100, Number(activeSpentPct))}%`,
+                  background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
                 }}
-              ></div>
+              />
             </div>
           </div>
           <div className="mt-5 pt-3 border-t border-[#ebeef3] text-xs flex justify-between text-[#79564b]">
@@ -477,11 +478,14 @@ export const OverviewScreen = ({
                     </div>
                     <div className="flex items-center gap-3 pt-1 max-w-sm">
                       <span className="text-[11px] text-[#79564b] whitespace-nowrap">ความคืบหน้า:</span>
-                      <div className="w-full bg-[#ebeef3] rounded-full h-2 overflow-hidden">
+                      <div className="w-full bg-[#ebeef3] rounded-full h-2.5 overflow-hidden shadow-inner">
                         <div
-                          className="bg-[#366847] h-full rounded-full transition-all duration-300"
-                          style={{ width: `${prj.completionPct}%` }}
-                        ></div>
+                          className="h-full rounded-full transition-all duration-300 shadow-2xs"
+                          style={{
+                            width: `${prj.completionPct}%`,
+                            background: 'linear-gradient(90deg, #164e22 0%, #2e7d32 75%, #3fa64d 100%)',
+                          }}
+                        />
                       </div>
                       <span className="text-[11px] font-bold text-[#366847] tabular-nums">
                         {prj.completionPct}%

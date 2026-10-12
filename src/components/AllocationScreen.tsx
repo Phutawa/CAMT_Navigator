@@ -224,11 +224,16 @@ export const AllocationScreen = ({
                       <span className="tabular-nums text-[#e87722] text-sm leading-none">฿{st.budget.toLocaleString()}</span>
                       <span className="tabular-nums text-[#79564b] text-[10px] leading-none bg-white px-1.5 py-0.5 rounded shadow-xs">{sharePct}</span>
                     </div>
-                    <div className="w-full bg-[#ebeef3] h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#ebeef3] h-1.5 rounded-full overflow-hidden shadow-inner">
                       <div
-                        className={`${isSelected ? 'bg-[#e87722]' : 'bg-[#b58d80]'} h-full rounded-full transition-all duration-500`}
-                        style={{ width: sharePct }}
-                      ></div>
+                        className="h-full rounded-full transition-all duration-500 shadow-2xs"
+                        style={{
+                          width: sharePct,
+                          background: isSelected
+                            ? 'linear-gradient(90deg, #9a4306 0%, #e87722 100%)'
+                            : 'linear-gradient(90deg, #8a7065 0%, #b58d80 100%)',
+                        }}
+                      />
                     </div>
                   </button>
                 )
@@ -292,10 +297,11 @@ export const AllocationScreen = ({
                 </div>
               </div>
 
-              {/* Progress Bar Proportion */}
-              <div className="bg-white p-5 rounded-xl border border-[#ddc1b2]/30 space-y-3">
+              {/* Progress Bar Proportion (Capsule Style with Gradients) */}
+              <div className="bg-white p-5 rounded-2xl border border-[#ddc1b2]/30 space-y-3.5 shadow-xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
                   <div className="font-bold text-[#181c20] flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[#e87722]">pie_chart</span>
                     <span>
                       {isAll
                         ? 'สัดส่วนการกระจายโครงสร้างงบประมาณรวมทั้งคณะ'
@@ -307,46 +313,84 @@ export const AllocationScreen = ({
                       </span>
                     )}
                   </div>
-                  <span className="text-[#366847] font-semibold text-right">
+                  <span className="text-[#1d5031] bg-[#b8f0c5]/60 px-2.5 py-0.5 rounded-full border border-[#366847]/20 font-bold text-[11px] w-fit sm:w-auto">
                     {isAll
                       ? 'ผ่านเกณฑ์ธรรมาภิบาล (จัดสรร 71.25% : สำรอง 28.75%)'
                       : `คิดเป็นสัดส่วน ${shareOfFaculty}% ของงบโครงการคณะ (฿8.55M)`}
                   </span>
                 </div>
 
-                {/* Main Dynamic Proportion Bar */}
-                <div className="w-full h-7 rounded-full bg-[#ebeef3] overflow-hidden flex border border-[#ddc1b2]/30 p-0.5 shadow-inner">
-                  {isAll ? (
-                    <>
-                      <div
-                        className="h-full bg-[#366847] rounded-l-full flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide transition-all duration-500"
-                        style={{ width: '71.25%' }}
-                      >
-                        จัดสรรให้ {effectiveDepartments.length} หน่วยงาน 71.25% (฿8.55M)
-                      </div>
-                      <div
-                        className="h-full bg-[#e87722] rounded-r-full flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide transition-all duration-500"
-                        style={{ width: '28.75%' }}
-                      >
-                        สำรองคลังกลาง 28.75% (฿3.45M)
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div
-                        className="h-full bg-[#366847] rounded-l-full flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide transition-all duration-500"
-                        style={{ width: `${categorySpentPct}%` }}
-                      >
-                        เบิกจ่ายจริงแล้ว {categorySpentPct}% (฿{(categorySpent / 1000000).toFixed(2)}M)
-                      </div>
-                      <div
-                        className="h-full bg-[#e87722] rounded-r-full flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide transition-all duration-500"
-                        style={{ width: `${categoryRemainingPct}%` }}
-                      >
-                        คงเหลือตามแผน {categoryRemainingPct}% (฿{(categoryRemaining / 1000000).toFixed(2)}M)
-                      </div>
-                    </>
-                  )}
+                {/* Main Dynamic Proportion Bar (Capsule Overlapping Pills with Gradients) */}
+                <div className="relative w-full h-7 sm:h-8 rounded-full bg-[#ebeef3] border border-[#ddc1b2]/30 shadow-inner flex items-center overflow-hidden">
+                  {/* Layer 1: Orange Base Bar (100% full width) ทรงแคปซูลมนๆ ไล่สีส้ม */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-full rounded-full transition-all duration-500 shadow-2xs"
+                    style={{
+                      background: 'linear-gradient(90deg, #9a4306 0%, #c25e10 35%, #e87722 75%, #f9852c 100%)',
+                    }}
+                    title={isAll ? 'สำรองคลังกลาง: 28.75% (฿3.45M)' : `คงเหลือตามแผน: ${categoryRemainingPct}%`}
+                  />
+
+                  {/* Layer 2: Green Foreground Bar ซ้อนทับด้านหน้า ทรงแคปซูลมนๆ ปลายโค้งมนตัดเข้ากับสีส้ม */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-500 z-10 shadow-xs"
+                    style={{
+                      width: isAll ? '71.25%' : `${categorySpentPct}%`,
+                      background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
+                    }}
+                    title={isAll ? 'จัดสรรให้ 37 หน่วยงาน: 71.25% (฿8.55M)' : `เบิกจ่ายจริงแล้ว: ${categorySpentPct}%`}
+                  />
+
+                  {/* Text Label: ฝั่งสีเขียว */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 z-20 flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide drop-shadow-xs px-2 truncate pointer-events-none"
+                    style={{ width: isAll ? '71.25%' : `${categorySpentPct}%` }}
+                  >
+                    {isAll
+                      ? `จัดสรรให้ ${effectiveDepartments.length} หน่วยงาน 71.25% (฿8.55M)`
+                      : `เบิกจ่ายจริงแล้ว ${categorySpentPct}% (฿${(categorySpent / 1000000).toFixed(2)}M)`}
+                  </div>
+
+                  {/* Text Label: ฝั่งสีส้ม */}
+                  <div
+                    className="absolute top-0 bottom-0 z-10 flex items-center justify-center text-[10px] sm:text-[11px] text-white font-bold tracking-wide drop-shadow-xs px-2 truncate pointer-events-none"
+                    style={{
+                      left: isAll ? '71.25%' : `${categorySpentPct}%`,
+                      width: isAll ? '28.75%' : `${categoryRemainingPct}%`,
+                    }}
+                  >
+                    {isAll
+                      ? 'สำรองคลังกลาง 28.75% (฿3.45M)'
+                      : `คงเหลือตามแผน ${categoryRemainingPct}% (฿${(categoryRemaining / 1000000).toFixed(2)}M)`}
+                  </div>
+                </div>
+
+                {/* Legend Details Row */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-xs text-[#564337]">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="w-3.5 h-2 rounded-full inline-block shadow-2xs"
+                        style={{ background: 'linear-gradient(90deg, #164e22 0%, #3fa64d 100%)' }}
+                      />
+                      <span className="text-[11px] font-semibold">
+                        {isAll
+                          ? 'จัดสรรให้หน่วยงาน: ฿8,550,000 (71.25%)'
+                          : `เบิกจ่ายจริง: ฿${(categorySpent / 1000000).toFixed(2)}M (${categorySpentPct}%)`}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="w-3.5 h-2 rounded-full inline-block shadow-2xs"
+                        style={{ background: 'linear-gradient(90deg, #9a4306 0%, #f9852c 100%)' }}
+                      />
+                      <span className="text-[11px] font-semibold">
+                        {isAll
+                          ? 'สำรองคลังกลาง: ฿3,450,000 (28.75%)'
+                          : `คงเหลือตามแผน: ฿${(categoryRemaining / 1000000).toFixed(2)}M (${categoryRemainingPct}%)`}
+                      </span>
+                    </span>
+                  </div>
                 </div>
 
                 {/* Additional Context Strip for Category Filter */}
