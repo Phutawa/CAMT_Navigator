@@ -1,0 +1,8 @@
+{
+  "name": "CAMT Navigator Budget Dashboard",
+  "description": "ระบบบริหารงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ (CAMT CMU Fiscal Executive Dashboard)",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

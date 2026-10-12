@@ -1,0 +1,526 @@
+import { ProjectItem, DepartmentSummary } from '../data/mockData';
+
+export type ExportDocumentType =
+  | 'overview'
+  | 'allocation'
+  | 'disbursement'
+  | 'reports'
+  | 'settings'
+  | 'project_detail';
+
+interface DocumentExportPreviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  docType: ExportDocumentType;
+  quarterLabel?: string;
+  projects?: ProjectItem[];
+  departments?: DepartmentSummary[];
+  totalAllocated?: number;
+  totalSpent?: number;
+  centralReserve?: number;
+  projectDetail?: ProjectItem | null;
+}
+
+export const DocumentExportPreviewModal = ({
+  isOpen,
+  onClose,
+  docType,
+  quarterLabel = 'ประจำปีงบประมาณ 2569',
+  projects = [],
+  departments = [],
+  totalAllocated = 12000000,
+  totalSpent = 5820000,
+  centralReserve = 3450000,
+  projectDetail = null,
+}: DocumentExportPreviewModalProps) => {
+  if (!isOpen) return null;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const docTitles: Record<ExportDocumentType, { title: string; refCode: string; sub: string }> = {
+    overview: {
+      title: 'รายงานสรุปสถานะงบประมาณและผลการดำเนินงานโครงการ (Executive Overview)',
+      refCode: 'EXP-OVERVIEW-2569',
+      sub: 'วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่',
+    },
+    allocation: {
+      title: 'ประกาศแผนการจัดสรรงบประมาณ ประจำปีงบประมาณ 2569 (Allocation Matrix)',
+      refCode: 'EXP-ALLOC-2569',
+      sub: 'มติที่ประชุมคณะกรรมการประจำวิทยาลัยศิลปะ สื่อ และเทคโนโลยี',
+    },
+    disbursement: {
+      title: 'รายงานการติดตามการเบิกจ่ายและภาระผูกพันงบประมาณ (Disbursement Audit)',
+      refCode: 'EXP-DISB-2569',
+      sub: 'รอบการประเมินประจำไตรมาส 3 • ระบบเชื่อมโยง CMU-ERP / GFMIS',
+    },
+    reports: {
+      title: 'รายงานการประเมินผลสัมฤทธิ์และดัชนีชี้วัดคุณภาพ (EdPEx & Benchmarks Report)',
+      refCode: 'EXP-REP-2569',
+      sub: 'เกณฑ์คุณภาพการศึกษาเพื่อการดำเนินการที่เป็นเลิศ (EdPEx CMU)',
+    },
+    settings: {
+      title: 'ประกาศหลักเกณฑ์การกำกับดูแลธรรมาภิบาลและการเงิน (Fiscal Policy & Matrix)',
+      refCode: 'EXP-GOV-2569',
+      sub: 'ระเบียบการเงินและอำนาจการอนุมัติงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี',
+    },
+    project_detail: {
+      title: `รายงานสรุปผลความก้าวหน้ารายโครงการ: ${projectDetail?.title || 'โครงการพัฒนานวัตกรรม'}`,
+      refCode: projectDetail?.code || 'EXP-PRJ-2569',
+      sub: `สาขาวิชา/หน่วยงาน: ${projectDetail?.dept || 'CAMT'}`,
+    },
+  };
+
+  const currentMeta = docTitles[docType];
+  const remaining = totalAllocated - totalSpent;
+  const burnRate = totalAllocated > 0 ? ((totalSpent / totalAllocated) * 100).toFixed(1) : '0';
+
+  return (
+    <div className="fixed inset-0 z-50 bg-[#181c20]/65 backdrop-blur-[6px] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="relative w-full max-w-[1040px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[94vh] border border-[#ddc1b2]/40 animate-in fade-in zoom-in duration-150">
+        {/* Ribbon */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#e87722] via-[#994700] to-[#366847]"></div>
+
+        {/* Modal Top Bar */}
+        <div className="px-6 py-4 bg-[#f8fafc] border-b border-[#e5e8ee] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#e87722]/10 text-[#e87722] flex items-center justify-center flex-shrink-0">
+              <span className="material-symbols-outlined text-[24px]">description</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-[#743400] bg-[#ffdbc8] px-2 py-0.5 rounded-full uppercase">
+                  พรีวิวเอกสารก่อนส่งออก / พิมพ์จริง
+                </span>
+                <span className="text-xs text-[#366847] font-bold">ประเภท: {docType.toUpperCase()}</span>
+              </div>
+              <h2 className="text-base sm:text-lg font-bold text-[#181c20] mt-0.5">
+                {currentMeta.title}
+              </h2>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="px-4 py-2 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">print</span>
+              พิมพ์ / บันทึกเป็น PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl hover:bg-[#ebeef3] text-[#79564b] transition-colors cursor-pointer"
+              title="ปิด"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Document Body (Rendered as executive report) */}
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-[#f1f4f9] space-y-6">
+          <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-[#ddc1b2]/30 max-w-[940px] mx-auto space-y-6 text-xs text-[#181c20]">
+            {/* Header with CMU CAMT Official heading */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-[#ddc1b2]/40 gap-4">
+              <div>
+                <span className="text-xs font-bold text-[#79564b] tracking-wider uppercase block">
+                  College of Arts, Media and Technology (CAMT) • Chiang Mai University
+                </span>
+                <h1 className="text-xl sm:text-2xl font-extrabold text-[#181c20] mt-1">
+                  {currentMeta.title}
+                </h1>
+                <p className="text-xs text-[#564337] mt-1">
+                  {currentMeta.sub} • ข้อมูล ณ วันที่ <strong>09 ตุลาคม 2569</strong>
+                </p>
+              </div>
+
+              <div className="p-3 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 text-right">
+                <div className="text-[11px] text-[#79564b]">รหัสอ้างอิงเอกสาร:</div>
+                <div className="font-mono font-bold text-xs text-[#181c20]">
+                  #{currentMeta.refCode}-{Date.now().toString().slice(-4)}
+                </div>
+                <div className="text-[10px] text-[#366847] font-semibold mt-0.5">
+                  CMU ERP &amp; EdPEx Certified
+                </div>
+              </div>
+            </div>
+
+            {/* DYNAMIC CONTENT PER DOCUMENT TYPE */}
+
+            {/* 1. Overview Screen Document */}
+            {docType === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#f8fafc] p-4 rounded-xl border border-[#ddc1b2]/30">
+                  <div>
+                    <span className="text-[11px] text-[#79564b] font-bold">งบจัดสรรรวมทั้งหมด</span>
+                    <div className="text-lg font-black text-[#181c20] tabular-nums">
+                      ฿{totalAllocated.toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#366847] font-bold">เบิกจ่ายจริงสะสม</span>
+                    <div className="text-lg font-black text-[#366847] tabular-nums">
+                      ฿{totalSpent.toLocaleString()} ({burnRate}%)
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#994700] font-bold">งบกลางสำรองคณะ</span>
+                    <div className="text-lg font-black text-[#994700] tabular-nums">
+                      ฿{centralReserve.toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#79564b] font-bold">คงเหลือเบิกจ่ายได้อีก</span>
+                    <div className="text-lg font-black text-[#181c20] tabular-nums">
+                      ฿{remaining.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border border-[#ddc1b2]/40 rounded-xl overflow-hidden">
+                  <div className="bg-[#ebeef3] px-4 py-2 font-bold text-[#564337] flex justify-between">
+                    <span>รายการโครงการในขอบเขต ({projects.length} รายการ)</span>
+                    <span>ช่วงเวลา: {quarterLabel}</span>
+                  </div>
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#f8fafc] text-[#79564b] border-b">
+                      <tr>
+                        <th className="py-2.5 px-3">ชื่อโครงการ</th>
+                        <th className="py-2.5 px-2">หน่วยงาน</th>
+                        <th className="py-2.5 px-2 text-center">ไตรมาส</th>
+                        <th className="py-2.5 px-3 text-right">งบจัดสรร</th>
+                        <th className="py-2.5 px-3 text-right">เบิกจ่ายแล้ว</th>
+                        <th className="py-2.5 px-2 text-center">คืบหน้า</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#ebeef3]">
+                      {projects.map((p, idx) => (
+                        <tr key={p.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#faf8f2]'}>
+                          <td className="py-2.5 px-3">
+                            <span className="font-bold block text-[#181c20]">{p.title}</span>
+                            <span className="text-[10px] text-[#79564b] font-mono">{p.code}</span>
+                          </td>
+                          <td className="py-2.5 px-2">{p.dept}</td>
+                          <td className="py-2.5 px-2 text-center uppercase font-bold text-slate-700">{p.quarter}</td>
+                          <td className="py-2.5 px-3 text-right font-bold tabular-nums">฿{p.allocated.toLocaleString()}</td>
+                          <td className="py-2.5 px-3 text-right font-bold text-[#366847] tabular-nums">฿{p.spent.toLocaleString()}</td>
+                          <td className="py-2.5 px-2 text-center font-bold">{p.completionPct}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* 2. Allocation Matrix Document */}
+            {docType === 'allocation' && (
+              <div className="space-y-6">
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-2">
+                  <div className="flex justify-between font-bold text-sm">
+                    <span>กรอบวงเงินงบประมาณทั้งคณะ: ฿12,000,000</span>
+                    <span className="text-[#366847]">อนุมัติ 100% สภาวิทยาลัยฯ</span>
+                  </div>
+                  <p className="text-[#564337] leading-relaxed text-xs">
+                    แผนการจัดสรรงบประมาณประจำปี 2569 ครอบคลุม 6 ส่วนงานวิชาการ ได้แก่ SE, DII, MMIT, ANI, DG และ AS
+                    โดยกันวงเงินสำรองคลังกลาง ฿{centralReserve.toLocaleString()} เพื่อรองรับกรณีฉุกเฉินและพันธกิจเร่งด่วน
+                  </p>
+                </div>
+
+                <div className="border border-[#ddc1b2]/40 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#ebeef3] text-[#79564b] uppercase font-bold border-b">
+                      <tr>
+                        <th className="py-3 px-4">สาขาวิชา / หน่วยงาน</th>
+                        <th className="py-3 px-3">หัวหน้าส่วนงาน</th>
+                        <th className="py-3 px-3 text-center">จำนวนโครงการ</th>
+                        <th className="py-3 px-4 text-right">วงเงินจัดสรร (บาท)</th>
+                        <th className="py-3 px-3 text-right">สัดส่วน</th>
+                        <th className="py-3 px-3 text-center">สถานะ</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#ebeef3]">
+                      {departments.map((d) => (
+                        <tr key={d.code} className="hover:bg-slate-50">
+                          <td className="py-3 px-4 font-bold text-[#181c20]">{d.name} ({d.code})</td>
+                          <td className="py-3 px-3">{d.head}</td>
+                          <td className="py-3 px-3 text-center">{d.prjCount} โครงการ</td>
+                          <td className="py-3 px-4 text-right font-black tabular-nums">฿{d.amount.toLocaleString()}</td>
+                          <td className="py-3 px-3 text-right font-bold text-[#564337]">{d.share}</td>
+                          <td className="py-3 px-3 text-center">
+                            <span className="px-2 py-0.5 rounded-full bg-[#b8f0c5] text-[#1d5031] font-bold text-[10px]">
+                              อนุมัติสมบูรณ์
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="bg-[#f8fafc] p-4 rounded-xl border border-[#ddc1b2]/30 space-y-2">
+                  <div className="font-bold text-xs text-[#181c20]">เงื่อนไขการเบิกจ่ายและกำกับติดตาม:</div>
+                  <ul className="list-disc list-inside space-y-1 text-[#564337] text-[11px]">
+                    <li>ปล่อยงบประมาณงวดแรกในอัตรา 40% หลังคณบดีลงนามอนุมัติ</li>
+                    <li>อนุญาตให้หัวหน้าส่วนงานปรับเกลี่ยข้ามหมวดได้ไม่เกิน ฿200,000 ต่อปีงบประมาณ</li>
+                    <li>ต้องส่งรายงานผลความก้าวหน้าภายใน 15 วันทำการหลังสิ้นไตรมาส</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Disbursement Audit Document */}
+            {docType === 'disbursement' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-3 gap-3 bg-[#f8fafc] p-4 rounded-xl border border-[#ddc1b2]/30">
+                  <div>
+                    <span className="text-[11px] text-[#79564b] font-bold">งบจัดสรรรวม</span>
+                    <div className="text-base font-black text-[#181c20]">฿12,000,000</div>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#366847] font-bold">เบิกจ่ายจริงแล้ว</span>
+                    <div className="text-base font-black text-[#366847]">฿5,820,000 (48.5%)</div>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#994700] font-bold">ผูกพันใบสั่งซื้อ (PO)</span>
+                    <div className="text-base font-black text-[#994700]">฿2,730,000 (22.75%)</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-bold text-xs text-[#181c20]">รายการใบสั่งซื้อสั่งจ้างสำคัญ (PO Commitments):</h4>
+                  <div className="border border-[#ddc1b2]/40 rounded-xl overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#ebeef3] text-[#79564b] font-bold border-b">
+                        <tr>
+                          <th className="py-2.5 px-3">เลขที่ PO</th>
+                          <th className="py-2.5 px-3">รายการ</th>
+                          <th className="py-2.5 px-3">คู่สัญญา</th>
+                          <th className="py-2.5 px-3 text-right">วงเงิน</th>
+                          <th className="py-2.5 px-3 text-center">สถานะตรวจรับ</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#ebeef3]">
+                        <tr>
+                          <td className="py-2.5 px-3 font-mono font-bold text-[#e87722]">PO-2569-041</td>
+                          <td className="py-2.5 px-3">ชุดเซิร์ฟเวอร์ Cloud Lab SE</td>
+                          <td className="py-2.5 px-3">บจก. สยามเน็ตเวิร์ก โซลูชั่นส์</td>
+                          <td className="py-2.5 px-3 text-right font-bold">฿680,000</td>
+                          <td className="py-2.5 px-3 text-center text-[#366847] font-bold">ส่งมอบแล้ว 80%</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2.5 px-3 font-mono font-bold text-[#e87722]">PO-2569-038</td>
+                          <td className="py-2.5 px-3">ลิขสิทธิ์ซอฟต์แวร์แอนิเมชัน ANIM</td>
+                          <td className="py-2.5 px-3">บจก. ดิจิทัล ซิสเต็มส์</td>
+                          <td className="py-2.5 px-3 text-right font-bold">฿520,000</td>
+                          <td className="py-2.5 px-3 text-center text-[#366847] font-bold">ตรวจรับครบถ้วน</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2.5 px-3 font-mono font-bold text-[#e87722]">PO-2569-035</td>
+                          <td className="py-2.5 px-3">จ้างพัฒนาระบบ Hybrid Learning DTM</td>
+                          <td className="py-2.5 px-3">บจก. อินโนเวทีฟ เอ็ดดูเทค</td>
+                          <td className="py-2.5 px-3 text-right font-bold">฿380,000</td>
+                          <td className="py-2.5 px-3 text-center text-[#994700] font-bold">งวดงานที่ 2</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 4. Reports & Performance Document */}
+            {docType === 'reports' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#f8fafc] p-4 rounded-xl border border-[#ddc1b2]/30 text-center">
+                  <div>
+                    <span className="text-[11px] text-[#79564b]">ประสิทธิภาพการใช้งบ</span>
+                    <div className="text-xl font-bold text-[#366847]">92.4%</div>
+                    <span className="text-[10px] text-[#366847]">+4.1% เหนือเกณฑ์</span>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#79564b]">ดัชนีความคุ้มค่า ROI</span>
+                    <div className="text-xl font-bold text-[#e87722]">4.65 / 5.0</div>
+                    <span className="text-[10px] text-[#564337]">24 โครงการ</span>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#79564b]">ประหยัดงบรวมศูนย์</span>
+                    <div className="text-xl font-bold text-[#181c20]">฿840,000</div>
+                    <span className="text-[10px] text-[#366847]">ส่งคืนคลังกลาง</span>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#79564b]">โครงการสำเร็จตามแผน</span>
+                    <div className="text-xl font-bold text-[#366847]">21 / 24</div>
+                    <span className="text-[10px] text-[#366847]">ร้อยละ 87.5%</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="font-bold text-xs text-[#181c20]">ผลการดำเนินงานเทียบ 5 ยุทธศาสตร์ (Strategic KPIs):</h4>
+                  <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-2">
+                    <div className="flex justify-between">
+                      <span>1. พัฒนาศักยภาพนักศึกษา (Student Quality):</span>
+                      <strong className="text-[#366847]">บรรลุ 94% (ยอดใช้ ฿1,430,000)</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>2. ยกระดับวิชาการและหลักสูตร (Academic Excellence):</span>
+                      <strong className="text-[#366847]">บรรลุ 91% (ยอดใช้ ฿2,450,000)</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>3. งานวิจัยและนวัตกรรมแนวหน้า (Research &amp; Innovation):</span>
+                      <strong className="text-[#366847]">บรรลุ 86% (ยอดใช้ ฿1,120,000)</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>4. บริการวิชาการสู่สังคม (Social Impact):</span>
+                      <strong className="text-[#366847]">บรรลุ 88% (ยอดใช้ ฿600,000)</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>5. บริหารจัดการองค์กรอัจฉริยะ (Smart Org):</span>
+                      <strong className="text-[#366847]">บรรลุ 95% (ยอดใช้ ฿1,220,000)</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 5. Settings & Governance Document */}
+            {docType === 'settings' && (
+              <div className="space-y-6">
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-2">
+                  <h4 className="font-bold text-sm text-[#181c20]">
+                    ระเบียบอำนาจการอนุมัติและวงเงินทางการเงิน (RBAC Authorization Matrix):
+                  </h4>
+                  <table className="w-full text-left text-xs border border-[#ddc1b2]/40 rounded-lg overflow-hidden bg-white mt-2">
+                    <thead className="bg-[#ebeef3] font-bold">
+                      <tr>
+                        <th className="py-2.5 px-3">ตำแหน่ง / บทบาท</th>
+                        <th className="py-2.5 px-3">ผู้ดำรงตำแหน่ง</th>
+                        <th className="py-2.5 px-3">เพดานวงเงินอนุมัติ</th>
+                        <th className="py-2.5 px-3">การพิสูจน์ตัวตน</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <tr>
+                        <td className="py-2.5 px-3 font-bold">คณบดี (Dean)</td>
+                        <td className="py-2.5 px-3">รศ.ดร. นพดล ผู้บริหาร</td>
+                        <td className="py-2.5 px-3 font-black text-[#e87722]">&gt; ฿500,000</td>
+                        <td className="py-2.5 px-3 text-[#366847] font-semibold">CMU OTP + 2FA</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2.5 px-3 font-bold">รองคณบดีฝ่ายบริหารและการคลัง</td>
+                        <td className="py-2.5 px-3">ผศ. สุรชัย วัฒนา</td>
+                        <td className="py-2.5 px-3 font-bold">฿100,001 - ฿500,000</td>
+                        <td className="py-2.5 px-3">CMU SSO</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2.5 px-3 font-bold">หัวหน้าสำนักวิชา / ศูนย์</td>
+                        <td className="py-2.5 px-3">ผศ.ดร. วิเชียร นันตา</td>
+                        <td className="py-2.5 px-3 font-bold">฿50,001 - ฿100,000</td>
+                        <td className="py-2.5 px-3">CMU SSO</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2.5 px-3 font-bold">หัวหน้าสาขาวิชา (SE, DII, etc.)</td>
+                        <td className="py-2.5 px-3">หัวหน้าภาควิชาทั้ง 6</td>
+                        <td className="py-2.5 px-3 font-bold">ไม่เกิน ฿50,000</td>
+                        <td className="py-2.5 px-3">CMU SSO</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-1.5 text-[11px] text-[#564337]">
+                  <strong className="text-xs text-[#181c20] block">สถานะความพร้อมระบบเทคโนโลยีสารสนเทศ:</strong>
+                  <div>• API Gateway: เชื่อมต่อ CMU ERP, GFMIS, และ SSO สมบูรณ์ (Latency 0.84s)</div>
+                  <div>• ความถี่การซิงก์ข้อมูล: ซิงก์อัตโนมัติทุก 15 นาทีผ่าน CMU Financial Pipeline</div>
+                  <div>• การสำรองข้อมูล: Real-time Multi-zone Cloud Disaster Recovery 256-bit AES</div>
+                </div>
+              </div>
+            )}
+
+            {/* 6. Single Project Detail Document */}
+            {docType === 'project_detail' && (
+              <div className="space-y-6">
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-[#e87722]">#{projectDetail?.code}</span>
+                      <h3 className="text-base font-bold text-[#181c20]">{projectDetail?.title}</h3>
+                      <p className="text-[#79564b] text-xs">{projectDetail?.dept} • หัวหน้าโครงการ: {projectDetail?.head}</p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded bg-[#b8f0c5] text-[#1d5031] font-bold text-xs">
+                      เบิกจ่าย {projectDetail?.completionPct}%
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-[#564337] leading-relaxed border-t border-[#ddc1b2]/30 pt-2">
+                    {projectDetail?.description || 'รายละเอียดโครงการสนับสนุนการเรียนการสอนและวิจัยของวิทยาลัย'}
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
+                    <div className="p-2.5 bg-white rounded-lg border">
+                      <span className="text-[#79564b]">งบจัดสรร:</span>
+                      <div className="font-black text-[#181c20] mt-0.5">฿{projectDetail?.allocated.toLocaleString()}</div>
+                    </div>
+                    <div className="p-2.5 bg-white rounded-lg border">
+                      <span className="text-[#366847]">เบิกจ่ายแล้ว:</span>
+                      <div className="font-black text-[#366847] mt-0.5">฿{projectDetail?.spent.toLocaleString()}</div>
+                    </div>
+                    <div className="p-2.5 bg-white rounded-lg border">
+                      <span className="text-[#e87722]">คงเหลือ:</span>
+                      <div className="font-black text-[#e87722] mt-0.5">
+                        ฿{((projectDetail?.allocated || 0) - (projectDetail?.spent || 0)).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Official Certification and Dual Signatures Footer */}
+            <div className="pt-8 border-t border-[#ddc1b2]/40 grid grid-cols-2 gap-8 text-center text-xs">
+              <div className="space-y-1">
+                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
+                <div className="font-bold text-[#181c20] mt-2">รศ.ดร. นพดล ผู้บริหาร</div>
+                <div className="text-[11px] text-[#79564b]">คณบดี วิทยาลัยศิลปะ สื่อ และเทคโนโลยี</div>
+                <div className="text-[10px] text-[#366847]">ผู้อนุมัติรับรองรายงาน (Authorized Signatory)</div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
+                <div className="font-bold text-[#181c20] mt-2">นางสาวศิริพร บุญเสริม</div>
+                <div className="text-[11px] text-[#79564b]">หัวหน้างานการเงิน พัสดุ และแผนงาน</div>
+                <div className="text-[10px] text-[#366847]">ผู้ตรวจสอบบัญชีและพัสดุ (Financial Auditor)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Bottom Action Bar */}
+        <div className="px-6 py-4 bg-white border-t border-[#e5e8ee] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-[#79564b] flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px] text-[#366847]">verified</span>
+            <span>พรีวิวข้อมูลตรงตามฐานข้อมูล CMU ERP ประจำปีงบประมาณ 2569</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-[#ebeef3] hover:bg-[#e0e3e8] font-bold text-xs text-[#564337] cursor-pointer transition-colors"
+            >
+              ปิดหน้าต่าง
+            </button>
+            <button
+              onClick={handlePrint}
+              className="px-5 py-2.5 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">print</span>
+              พิมพ์รายงานนี้ทันที
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
