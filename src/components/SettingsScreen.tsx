@@ -35,44 +35,47 @@ export const SettingsScreen = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-xl border border-[#ddc1b2]/40 overflow-hidden flex flex-col">
-        {/* Ribbon */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#994700] via-[#e87722] to-[#366847]"></div>
+      <div className="bg-white rounded-2xl shadow-xl border border-[#ddc1b2]/40 flex flex-col relative">
+        {/* Card Header Section - Sticky Locked */}
+        <div className="sticky top-20 z-30 bg-white rounded-t-2xl shadow-sm border-b border-[#e5e8ee]">
+          {/* Ribbon */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-[#994700] via-[#e87722] to-[#366847] rounded-t-2xl"></div>
 
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="px-6 py-3.5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <span className="px-2.5 py-1 rounded bg-[#ebeef3] font-mono text-xs font-bold text-[#181c20]">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded bg-[#ebeef3] font-mono text-[11px] font-bold text-[#181c20]">
                 #CONFIG-2569-GOV
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#ffdbc8] text-[#743400] text-xs font-bold">
+              <span className="px-2.5 py-0.5 rounded bg-[#ffdbc8] text-[#743400] text-[11px] font-bold">
                 Policy Review 2569
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#b8f0c5] text-[#1d5031] text-xs font-bold">
+              <span className="px-2.5 py-0.5 rounded bg-[#b8f0c5] text-[#1d5031] text-[11px] font-bold">
                 Compliance Verified
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-[#181c20]">
-              พรีวิวการตั้งค่าระบบและการกำกับดูแล ประจำปีงบประมาณ 2569
+            <h1 className="text-lg sm:text-xl font-extrabold text-[#181c20]">
+              การตั้งค่าระบบและการกำกับดูแล ประจำปีงบประมาณ 2569
             </h1>
-            <p className="text-xs text-[#564337]">
+            <p className="text-[11px] text-[#564337]">
               วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Policy &amp; System Matrix
             </p>
           </div>
           <div className="flex items-center gap-2">
+
             <button
               onClick={onExportReport}
-              className="p-2.5 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40"
+              className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
               title="พิมพ์"
             >
-              <span className="material-symbols-outlined text-[20px]">print</span>
+              <span className="material-symbols-outlined text-[18px]">print</span>
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2.5">
+        <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2">
           {[
             { id: 'tab-rules', label: 'เกณฑ์ควบคุมงบประมาณและเพดานจัดสรร', icon: 'tune' },
             { id: 'tab-roles', label: 'สิทธิ์และการอนุมัติลงนาม (RBAC)', icon: 'admin_panel_settings', badge: '8 บทบาท' },
@@ -82,19 +85,17 @@ export const SettingsScreen = ({
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === t.id
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${activeTab === t.id
                   ? 'bg-[#e87722] text-white shadow-xs'
                   : 'text-[#564337] hover:bg-[#ebeef3]'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[18px]">{t.icon}</span>
               <span>{t.label}</span>
               {t.badge && (
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    activeTab === t.id ? 'bg-white text-[#994700]' : 'bg-[#e0e3e8] text-[#181c20]'
-                  }`}
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activeTab === t.id ? 'bg-white text-[#994700]' : 'bg-[#e0e3e8] text-[#181c20]'
+                    }`}
                 >
                   {t.badge}
                 </span>
@@ -102,9 +103,10 @@ export const SettingsScreen = ({
             </button>
           ))}
         </div>
+        </div>
 
         {/* Content Body */}
-        <div className="p-6 bg-[#f7f9ff] space-y-6">
+        <div className="p-6 bg-[#f7f9ff] space-y-6 rounded-b-2xl">
           {activeTab === 'tab-rules' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -190,9 +192,8 @@ export const SettingsScreen = ({
                   </div>
                   <button
                     onClick={() => setAutoSLA(!autoSLA)}
-                    className={`px-4 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition-colors ${
-                      autoSLA ? 'bg-[#366847] text-white' : 'bg-[#e0e3e8] text-[#564337]'
-                    }`}
+                    className={`px-4 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition-colors ${autoSLA ? 'bg-[#366847] text-white' : 'bg-[#e0e3e8] text-[#564337]'
+                      }`}
                   >
                     {autoSLA ? 'เปิดใช้งานอยู่ ✓' : 'ปิดการแจ้งเตือน'}
                   </button>
@@ -323,9 +324,8 @@ export const SettingsScreen = ({
           </span>
           <button
             onClick={handleCommit}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all flex items-center gap-2 cursor-pointer ${
-              committed ? 'bg-[#366847]' : 'bg-[#e87722] hover:bg-[#994700]'
-            }`}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all flex items-center gap-2 cursor-pointer ${committed ? 'bg-[#366847]' : 'bg-[#e87722] hover:bg-[#994700]'
+              }`}
           >
             <span className="material-symbols-outlined text-[18px]">approval_delegation</span>
             {committed ? 'บันทึกและรับรองการตั้งค่าแล้ว ✓' : 'รับรองและบันทึกการตั้งค่า (Commit & Sign)'}

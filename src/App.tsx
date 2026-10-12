@@ -61,6 +61,7 @@ export default function App() {
   const [isDocExportPreviewOpen, setIsDocExportPreviewOpen] = useState(false);
   const [exportDocType, setExportDocType] = useState<ExportDocumentType>('overview');
   const [singleProjectForExport, setSingleProjectForExport] = useState<ProjectItem | null>(null);
+  const [customProjectsForExport, setCustomProjectsForExport] = useState<ProjectItem[] | null>(null);
 
   // Toast Notifications state
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -84,11 +85,10 @@ export default function App() {
   };
 
   // Trigger preview for specific document types
-  const handleTriggerExportPreview = (docType: ExportDocumentType, project?: ProjectItem) => {
+  const handleTriggerExportPreview = (docType: ExportDocumentType, project?: ProjectItem, customProjects?: ProjectItem[]) => {
     setExportDocType(docType);
-    if (project) {
-      setSingleProjectForExport(project);
-    }
+    setSingleProjectForExport(project || null);
+    setCustomProjectsForExport(customProjects || null);
     setIsDocExportPreviewOpen(true);
   };
 
@@ -204,7 +204,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#f7f9ff] text-[#181c20]">
+    <div className="min-h-screen flex bg-[#f7f9ff] text-[#181c20] w-full">
       {/* Collapsible Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -216,7 +216,7 @@ export default function App() {
 
       {/* Main Content Area - shifts dynamically with sidebar width */}
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${
+        className={`flex-1 min-w-0 w-full transition-all duration-300 ease-in-out ${
           isSidebarCollapsed ? 'pl-20' : 'pl-72'
         }`}
       >
@@ -227,9 +227,12 @@ export default function App() {
           onRefreshSync={handleRefreshSync}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          onNavigate={(tab) => setCurrentTab(tab as NavTab)}
+          projects={projects}
+          onSelectProject={handleOpenDetailModal}
         />
 
-        <main className="w-full max-w-[1600px] mx-auto px-6 sm:px-8 pt-28 pb-12">
+        <main className="w-full max-w-[1600px] mx-auto px-6 sm:px-8 pt-28 pb-12 min-w-0">
           {currentTab === 'overview' && (
             <OverviewScreen
               categories={INITIAL_CATEGORIES}
@@ -248,36 +251,45 @@ export default function App() {
               onOpenCloseModal={handleOpenCloseModal}
               pendingApproved={pendingApproved}
               onToggleApprovePending={handleToggleApprovePending}
-              onExportReport={() => handleTriggerExportPreview('overview')}
+              onExportReport={(customProjects) => handleTriggerExportPreview('overview', undefined, customProjects)}
             />
           )}
 
           {currentTab === 'allocation' && (
             <AllocationScreen
               departments={departments}
+              searchQuery={searchQuery}
               onCommitSuccess={() => {
                 addToast('success', 'ลงนามอนุมัติการจัดสรรงบประมาณสำเร็จ', 'บันทึกผ่านระบบ CMU SSO เรียบร้อย');
               }}
               onOpenEditModal={() => setIsPlanEditOpen(true)}
               onExportReport={() => handleTriggerExportPreview('allocation')}
+              onOpenProjectModal={handleOpenDetailModal}
             />
           )}
 
           {currentTab === 'disbursement' && (
             <DisbursementScreen
+              searchQuery={searchQuery}
               onNotifyAlert={() => {
                 addToast('warning', 'ส่งการแจ้งเตือนเร่งรัดแล้ว', 'ส่งบันทึกติดตามผ่านระบบไปยังโครงการที่เบิกจ่ายล่าช้า');
               }}
               onApprovePO={(poNo) => {
                 addToast('success', 'อนุมัติเบิกจ่ายสำเร็จ', `ตรวจรับและอนุมัติใบสั่งซื้อ ${poNo} เรียบร้อย`);
               }}
+              onBulkApprovePO={() => {
+                addToast('success', 'อนุมัติเบิกจ่ายทั้งหมดสำเร็จ', 'อนุมัติรายการค้างทั้งหมดผ่านระบบ ERP เรียบร้อยแล้ว');
+              }}
               onExportReport={() => handleTriggerExportPreview('disbursement')}
+              onOpenProjectModal={handleOpenDetailModal}
             />
           )}
 
           {currentTab === 'reports' && (
             <ReportsScreen
+              projects={projects}
               onExportReport={() => handleTriggerExportPreview('reports')}
+              onExportProjectReport={(prj) => handleTriggerExportPreview('project_detail', prj)}
               onSignedSuccess={() => {
                 addToast('success', 'รับรองรายงานสถิติแล้ว', 'ลงนามผ่านระบบ EdPEx เรียบร้อย');
               }}
@@ -307,6 +319,10 @@ export default function App() {
           addToast('success', 'อนุมัติรับรองรายงานโครงการ', 'ลงนามรับรองความก้าวหน้างวดที่ 2 เรียบร้อย');
         }}
         onExportPreview={(prj) => handleTriggerExportPreview('project_detail', prj)}
+        onOpenReduceModal={(prj) => {
+          setIsDetailModalOpen(false);
+          handleOpenReduceModal(prj);
+        }}
       />
 
       {/* Modal for Budget Reduction */}
@@ -340,10 +356,10 @@ export default function App() {
         onClose={() => setIsDocExportPreviewOpen(false)}
         docType={exportDocType}
         quarterLabel={quarterLabels[selectedQuarter]}
-        projects={exportProjects}
+        projects={customProjectsForExport || exportProjects}
         departments={departments}
-        totalAllocated={selectedQuarter === 'all' ? totalAllocated : exportProjects.reduce((s, p) => s + p.allocated, 0)}
-        totalSpent={selectedQuarter === 'all' ? totalSpent : exportProjects.reduce((s, p) => s + p.spent, 0)}
+        totalAllocated={customProjectsForExport ? customProjectsForExport.reduce((s, p) => s + p.allocated, 0) : (selectedQuarter === 'all' ? totalAllocated : exportProjects.reduce((s, p) => s + p.allocated, 0))}
+        totalSpent={customProjectsForExport ? customProjectsForExport.reduce((s, p) => s + p.spent, 0) : (selectedQuarter === 'all' ? totalSpent : exportProjects.reduce((s, p) => s + p.spent, 0))}
         centralReserve={centralReserve}
         projectDetail={singleProjectForExport || selectedProject}
       />

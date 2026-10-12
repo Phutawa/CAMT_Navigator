@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LAB_IMG, ProjectItem } from '../data/mockData';
+import { OfficialProjectReportDocument } from './OfficialProjectReportDocument';
 
 interface ProjectDetailModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface ProjectDetailModalProps {
   onClose: () => void;
   onApproveSuccess?: () => void;
   onExportPreview: (prj: ProjectItem) => void;
+  onOpenReduceModal?: (prj: ProjectItem) => void;
 }
 
 export const ProjectDetailModal = ({
@@ -15,6 +17,7 @@ export const ProjectDetailModal = ({
   onClose,
   onApproveSuccess,
   onExportPreview,
+  onOpenReduceModal,
 }: ProjectDetailModalProps) => {
   const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [approved, setApproved] = useState(false);
@@ -24,6 +27,8 @@ export const ProjectDetailModal = ({
   const handleApprove = () => {
     setApproved(true);
     if (onApproveSuccess) onApproveSuccess();
+    onClose();
+    setApproved(false);
   };
 
   const defaultProject: ProjectItem = {
@@ -69,10 +74,10 @@ export const ProjectDetailModal = ({
               <button
                 onClick={() => onExportPreview(currentProject)}
                 className="px-3 py-1.5 rounded-lg bg-[#ebeef3] hover:bg-[#e0e3e8] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="พรีวิวรายงานโครงการนี้ก่อนพิมพ์"
+                title="รายงานโครงการนี้ก่อนพิมพ์"
               >
                 <span className="material-symbols-outlined text-[18px] text-[#e87722]">print</span>
-                <span>พรีวิวพิมพ์</span>
+                <span>พิมพ์</span>
               </button>
               <button
                 onClick={onClose}
@@ -109,33 +114,30 @@ export const ProjectDetailModal = ({
           <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
             <button
               onClick={() => setActiveTab(1)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === 1
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${activeTab === 1
                   ? 'bg-[#e87722] text-white shadow-xs'
                   : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[18px]">analytics</span>
               ภาพรวมและงบประมาณ (Overview &amp; Financials)
             </button>
             <button
               onClick={() => setActiveTab(2)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === 2
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${activeTab === 2
                   ? 'bg-[#e87722] text-white shadow-xs'
                   : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
-              }`}
+                }`}
             >
-              <span className="material-symbols-outlined text-[18px]">description</span>
-              ตัวอย่างเอกสารรายงานสรุปผล (Report Preview)
+              <span className="material-symbols-outlined text-[18px]">menu_book</span>
+              แบบฟอร์มรายงานเสนอโครงการทางการ (CMU Form 2569)
             </button>
             <button
               onClick={() => setActiveTab(3)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === 3
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${activeTab === 3
                   ? 'bg-[#e87722] text-white shadow-xs'
                   : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[18px]">receipt_long</span>
               ไทม์ไลน์และหลักฐานการเบิกจ่าย (Disbursement Log)
@@ -282,50 +284,24 @@ export const ProjectDetailModal = ({
           )}
 
           {activeTab === 2 && (
-            <div className="bg-white max-w-[760px] mx-auto p-8 rounded-2xl shadow-md space-y-4 text-xs border border-[#ddc1b2]/30">
-              <div className="flex items-center gap-3 pb-4 border-b border-[#ebeef3]">
-                <span className="material-symbols-outlined text-[#e87722] text-[36px]">
-                  account_balance
-                </span>
-                <div>
-                  <div className="text-base font-bold text-[#181c20]">
-                    บันทึกข้อความสรุปผลความก้าวหน้าโครงการ
-                  </div>
-                  <div className="text-[#79564b]">
-                    วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่
-                  </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-[#ddc1b2]/40 shadow-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#366847]"></span>
+                  <span className="font-bold text-xs text-[#181c20]">
+                    แบบฟอร์มเอกสารเสนอโครงการและงบประมาณ (ฉบับรับรอง มช. CMU ERP)
+                  </span>
                 </div>
+                <button
+                  onClick={() => onExportPreview(currentProject)}
+                  className="px-3.5 py-1.5 rounded-lg bg-[#e87722] hover:bg-[#994700] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                >
+                  <span className="material-symbols-outlined text-[16px]">print</span>
+                  พิมพ์ / ส่งออกเอกสารนี้
+                </button>
               </div>
-              <div className="grid grid-cols-2 gap-3 bg-[#f1f4f9] p-3.5 rounded-xl text-xs">
-                <div>
-                  <strong>หน่วยงาน:</strong> {currentProject.dept}
-                </div>
-                <div>
-                  <strong>วันที่:</strong> 14 กรกฎาคม 2569
-                </div>
-                <div>
-                  <strong>เรื่อง:</strong> รายงานความก้าวหน้างวดที่ 2 โครงการ {currentProject.title}
-                </div>
-                <div>
-                  <strong>เรียน:</strong> คณบดี CAMT (รศ.ดร. นพดล ผู้บริหาร)
-                </div>
-              </div>
-              <p className="leading-relaxed text-[#181c20] text-justify">
-                ตามที่ {currentProject.dept} ได้รับอนุมัติงบประมาณโครงการ #{currentProject.code} วงเงินทั้งสิ้น{' '}
-                {currentProject.allocated.toLocaleString()} บาท บัดนี้ได้ส่งมอบงานและดำเนินกิจกรรมไปแล้ว
-                รวมเบิกจ่ายสะสม {currentProject.spent.toLocaleString()} บาท (ร้อยละ {currentProject.completionPct})
-                คงเหลือรอเบิกจ่าย {remaining.toLocaleString()} บาท จึงเรียนมาเพื่อโปรดพิจารณาและลงนามรับรองผล
-              </p>
-              <div className="grid grid-cols-2 gap-4 pt-6 text-center border-t border-[#ebeef3]">
-                <div>
-                  <div className="font-bold text-[#181c20]">{currentProject.head}</div>
-                  <div className="text-[#79564b]">หัวหน้าโครงการ</div>
-                </div>
-                <div>
-                  <div className="font-bold text-[#181c20]">นางสาวศิริพร บุญเสริม</div>
-                  <div className="text-[#79564b]">หัวหน้างานการเงินและพัสดุ</div>
-                </div>
-              </div>
+
+              <OfficialProjectReportDocument project={currentProject} interactive={true} />
             </div>
           )}
 
@@ -386,17 +362,18 @@ export const ProjectDetailModal = ({
           </span>
           <div className="flex gap-2">
             <button
-              onClick={() => onExportPreview(currentProject)}
-              className="px-4 py-2 rounded-xl bg-[#ebeef3] hover:bg-[#e0e3e8] text-xs font-bold text-[#181c20] transition-colors cursor-pointer flex items-center gap-1.5"
+              onClick={() => {
+                if (onOpenReduceModal) onOpenReduceModal(currentProject);
+              }}
+              className="px-4 py-2 rounded-xl bg-white border border-[#e87722] hover:bg-[#fff5ef] text-xs font-bold text-[#e87722] transition-colors cursor-pointer flex items-center gap-1.5"
             >
-              <span className="material-symbols-outlined text-[16px] text-[#e87722]">visibility</span>
-              พรีวิวเอกสารส่งออก
+              <span className="material-symbols-outlined text-[16px]">trending_down</span>
+              ปรับลดงบ
             </button>
             <button
               onClick={handleApprove}
-              className={`px-5 py-2 rounded-xl text-xs font-bold text-white transition-all flex items-center gap-1.5 shadow-sm cursor-pointer ${
-                approved ? 'bg-[#366847]' : 'bg-[#e87722] hover:bg-[#994700]'
-              }`}
+              className={`px-5 py-2 rounded-xl text-xs font-bold text-white transition-all flex items-center gap-1.5 shadow-sm cursor-pointer ${approved ? 'bg-[#366847]' : 'bg-[#e87722] hover:bg-[#994700]'
+                }`}
             >
               <span className="material-symbols-outlined text-[16px]">check_circle</span>
               {approved ? 'อนุมัติรับรองแล้ว ✓' : 'อนุมัติรับรองรายงาน'}

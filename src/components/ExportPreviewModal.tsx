@@ -43,7 +43,7 @@ export const ExportPreviewModal = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold text-[#743400] bg-[#ffdbc8] px-2 py-0.5 rounded-full uppercase">
-                  พรีวิวข้อมูลที่จะส่งออก (Export Preview)
+                  ข้อมูลที่จะส่งออก
                 </span>
                 <span className="text-xs text-[#366847] font-bold">ช่วงเวลา: {quarterLabel}</span>
               </div>
@@ -56,10 +56,10 @@ export const ExportPreviewModal = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
+              className="w-10 h-10 rounded-xl bg-[#FFF7F0] border border-[#ddc1b2]/80 text-[#564337] hover:bg-[#ffdbc8] hover:text-[#994700] hover:border-[#e87722]/50 flex items-center justify-center shadow-xs cursor-pointer transition-colors tooltip-trigger"
+              title="พิมพ์ / บันทึกเป็น PDF"
             >
-              <span className="material-symbols-outlined text-[18px]">print</span>
-              พิมพ์ / บันทึกเป็น PDF
+              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
             </button>
             <button
               onClick={onClose}
@@ -188,22 +188,7 @@ export const ExportPreviewModal = ({
               </div>
             </div>
 
-            {/* Signatures & Certification */}
-            <div className="pt-6 border-t border-[#ddc1b2]/40 grid grid-cols-2 gap-8 text-center text-xs">
-              <div className="space-y-1">
-                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
-                <div className="font-bold text-[#181c20] mt-2">รศ.ดร. นพดล ผู้บริหาร</div>
-                <div className="text-[11px] text-[#79564b]">คณบดี วิทยาลัยศิลปะ สื่อ และเทคโนโลยี</div>
-                <div className="text-[10px] text-[#366847]">ผู้อนุมัติรายงาน (Dean Authorization)</div>
-              </div>
 
-              <div className="space-y-1">
-                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
-                <div className="font-bold text-[#181c20] mt-2">นางสาวศิริพร บุญเสริม</div>
-                <div className="text-[11px] text-[#79564b]">หัวหน้างานการเงิน พัสดุ และแผนงาน</div>
-                <div className="text-[10px] text-[#366847]">ผู้ตรวจสอบบัญชีและยอดเบิกจ่าย</div>
-              </div>
-            </div>
           </div>
         </div>
 

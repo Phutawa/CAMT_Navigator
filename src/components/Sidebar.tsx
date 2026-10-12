@@ -38,14 +38,14 @@ export const Sidebar = ({
             isCollapsed ? 'justify-center px-2' : 'justify-between px-5'
           }`}
         >
-          <div className="flex items-center gap-3 overflow-hidden">
-            <img alt="CAMT Logo" className="h-9 w-auto object-contain flex-shrink-0" src={LOGO_IMG} />
+          <div className="flex items-center gap-3">
+            <img alt="CAMT" className="h-9 w-10 object-contain flex-shrink-0" src={LOGO_IMG} />
             {!isCollapsed && (
-              <div className="flex flex-col min-w-0">
-                <span className="text-[1.15rem] font-extrabold text-[#181c20] leading-tight tracking-tight truncate">
+              <div className="flex flex-col">
+                <span className="text-[1.1rem] font-extrabold text-[#181c20] leading-tight tracking-tight whitespace-nowrap">
                   CAMT Navigator
                 </span>
-                <span className="text-[0.6875rem] font-bold text-[#79564b] tracking-wider uppercase truncate">
+                <span className="text-[0.65rem] font-bold text-[#79564b] tracking-wider uppercase whitespace-nowrap">
                   ระบบบริหารงบประมาณ
                 </span>
               </div>

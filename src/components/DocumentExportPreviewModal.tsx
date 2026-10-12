@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { ProjectItem, DepartmentSummary } from '../data/mockData';
+import { OfficialProjectReportDocument } from './OfficialProjectReportDocument';
 
 export type ExportDocumentType =
   | 'overview'
@@ -33,6 +35,8 @@ export const DocumentExportPreviewModal = ({
   centralReserve = 3450000,
   projectDetail = null,
 }: DocumentExportPreviewModalProps) => {
+  const [reportViewStyle, setReportViewStyle] = useState<'official' | 'summary'>('official');
+
   if (!isOpen) return null;
 
   const handlePrint = () => {
@@ -66,9 +70,9 @@ export const DocumentExportPreviewModal = ({
       sub: 'ระเบียบการเงินและอำนาจการอนุมัติงบประมาณ วิทยาลัยศิลปะ สื่อ และเทคโนโลยี',
     },
     project_detail: {
-      title: `รายงานสรุปผลความก้าวหน้ารายโครงการ: ${projectDetail?.title || 'โครงการพัฒนานวัตกรรม'}`,
-      refCode: projectDetail?.code || 'EXP-PRJ-2569',
-      sub: `สาขาวิชา/หน่วยงาน: ${projectDetail?.dept || 'CAMT'}`,
+      title: `แบบเสนอโครงการและงบประมาณ / รายงานโครงการ: ${projectDetail?.title || 'โครงการศึกษาดูงานนักศึกษาชั้นปีที่ 3 สาขาวิชาดิจิทัลเกม'}`,
+      refCode: projectDetail?.code || '2569-DG-P1-001',
+      sub: `สาขาวิชา/หน่วยงาน: ${projectDetail?.dept || 'หลักสูตรดิจิทัลเกม'} • รหัส 3D Fund: ${projectDetail?.fund3D || '0201001'}`,
     },
   };
 
@@ -91,7 +95,7 @@ export const DocumentExportPreviewModal = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold text-[#743400] bg-[#ffdbc8] px-2 py-0.5 rounded-full uppercase">
-                  พรีวิวเอกสารก่อนส่งออก / พิมพ์จริง
+                  เอกสารก่อนส่งออก / พิมพ์จริง
                 </span>
                 <span className="text-xs text-[#366847] font-bold">ประเภท: {docType.toUpperCase()}</span>
               </div>
@@ -104,10 +108,10 @@ export const DocumentExportPreviewModal = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
+              className="w-10 h-10 rounded-xl bg-[#FFF7F0] border border-[#ddc1b2]/80 text-[#564337] hover:bg-[#ffdbc8] hover:text-[#994700] hover:border-[#e87722]/50 flex items-center justify-center shadow-xs cursor-pointer transition-colors tooltip-trigger"
+              title="พิมพ์ / บันทึกเป็น PDF"
             >
-              <span className="material-symbols-outlined text-[18px]">print</span>
-              พิมพ์ / บันทึกเป็น PDF
+              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
             </button>
             <button
               onClick={onClose}
@@ -440,60 +444,91 @@ export const DocumentExportPreviewModal = ({
             )}
 
             {/* 6. Single Project Detail Document */}
+            {/* 6. Single Project Detail Document */}
             {docType === 'project_detail' && (
               <div className="space-y-6">
-                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="font-mono text-xs font-bold text-[#e87722]">#{projectDetail?.code}</span>
-                      <h3 className="text-base font-bold text-[#181c20]">{projectDetail?.title}</h3>
-                      <p className="text-[#79564b] text-xs">{projectDetail?.dept} • หัวหน้าโครงการ: {projectDetail?.head}</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded bg-[#b8f0c5] text-[#1d5031] font-bold text-xs">
-                      เบิกจ่าย {projectDetail?.completionPct}%
-                    </span>
+                <div className="flex items-center justify-between pb-2 border-b border-[#ddc1b2]/40 print:hidden">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setReportViewStyle('official')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        reportViewStyle === 'official'
+                          ? 'bg-[#e87722] text-white shadow-xs'
+                          : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">menu_book</span>
+                      แบบฟอร์มเอกสารทางการ 5 หน้า (CMU Form 2569)
+                    </button>
+                    <button
+                      onClick={() => setReportViewStyle('summary')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        reportViewStyle === 'summary'
+                          ? 'bg-[#e87722] text-white shadow-xs'
+                          : 'bg-[#f1f4f9] text-[#564337] hover:bg-[#ebeef3]'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">dashboard</span>
+                      การ์ดสรุปย่อผู้บริหาร
+                    </button>
                   </div>
+                  <span className="text-[11px] text-[#79564b]">
+                    รองรับพิมพ์แยกหน้าตามมาตรฐาน CMU ERP
+                  </span>
+                </div>
 
-                  <p className="text-xs text-[#564337] leading-relaxed border-t border-[#ddc1b2]/30 pt-2">
-                    {projectDetail?.description || 'รายละเอียดโครงการสนับสนุนการเรียนการสอนและวิจัยของวิทยาลัย'}
-                  </p>
+                {reportViewStyle === 'official' ? (
+                  <OfficialProjectReportDocument project={projectDetail} interactive={true} />
+                ) : (
+                  <div className="p-5 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="font-mono text-xs font-bold text-[#e87722]">
+                          #{projectDetail?.code || '2569-DG-P1-001'}
+                        </span>
+                        <h3 className="text-base font-bold text-[#181c20]">
+                          {projectDetail?.title || 'โครงการศึกษาดูงานนักศึกษาชั้นปีที่ 3 สาขาวิชาดิจิทัลเกม ประจำปีการศึกษา 2568'}
+                        </h3>
+                        <p className="text-[#79564b] text-xs">
+                          {projectDetail?.dept || 'หลักสูตรดิจิทัลเกม'} • หัวหน้าโครงการ: {projectDetail?.head || 'ผู้ช่วยศาสตราจารย์ ดร.ธีรวัฒน์ กำเนิดศิริ'}
+                        </p>
+                      </div>
+                      <span className="px-2.5 py-1 rounded bg-[#b8f0c5] text-[#1d5031] font-bold text-xs">
+                        เบิกจ่าย {projectDetail?.completionPct || 100}%
+                      </span>
+                    </div>
 
-                  <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
-                    <div className="p-2.5 bg-white rounded-lg border">
-                      <span className="text-[#79564b]">งบจัดสรร:</span>
-                      <div className="font-black text-[#181c20] mt-0.5">฿{projectDetail?.allocated.toLocaleString()}</div>
-                    </div>
-                    <div className="p-2.5 bg-white rounded-lg border">
-                      <span className="text-[#366847]">เบิกจ่ายแล้ว:</span>
-                      <div className="font-black text-[#366847] mt-0.5">฿{projectDetail?.spent.toLocaleString()}</div>
-                    </div>
-                    <div className="p-2.5 bg-white rounded-lg border">
-                      <span className="text-[#e87722]">คงเหลือ:</span>
-                      <div className="font-black text-[#e87722] mt-0.5">
-                        ฿{((projectDetail?.allocated || 0) - (projectDetail?.spent || 0)).toLocaleString()}
+                    <p className="text-xs text-[#564337] leading-relaxed border-t border-[#ddc1b2]/30 pt-2">
+                      {projectDetail?.description ||
+                        'ศึกษาดูงานสถานประกอบการธุรกิจและแหล่งเรียนรู้ด้านดิจิทัลเกม เสริมทักษะการสร้างสรรค์และแรงบันดาลใจในการทำงานจริง'}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
+                      <div className="p-2.5 bg-white rounded-lg border">
+                        <span className="text-[#79564b]">งบจัดสรร:</span>
+                        <div className="font-black text-[#181c20] mt-0.5">
+                          ฿{(projectDetail?.allocated || 386000).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="p-2.5 bg-white rounded-lg border">
+                        <span className="text-[#366847]">เบิกจ่ายแล้ว:</span>
+                        <div className="font-black text-[#366847] mt-0.5">
+                          ฿{(projectDetail?.spent || 386000).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="p-2.5 bg-white rounded-lg border">
+                        <span className="text-[#e87722]">คงเหลือ:</span>
+                        <div className="font-black text-[#e87722] mt-0.5">
+                          ฿{((projectDetail?.allocated || 386000) - (projectDetail?.spent || 386000)).toLocaleString()}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
-            {/* Official Certification and Dual Signatures Footer */}
-            <div className="pt-8 border-t border-[#ddc1b2]/40 grid grid-cols-2 gap-8 text-center text-xs">
-              <div className="space-y-1">
-                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
-                <div className="font-bold text-[#181c20] mt-2">รศ.ดร. นพดล ผู้บริหาร</div>
-                <div className="text-[11px] text-[#79564b]">คณบดี วิทยาลัยศิลปะ สื่อ และเทคโนโลยี</div>
-                <div className="text-[10px] text-[#366847]">ผู้อนุมัติรับรองรายงาน (Authorized Signatory)</div>
-              </div>
 
-              <div className="space-y-1">
-                <div className="h-10 border-b border-dashed border-slate-400 max-w-[200px] mx-auto"></div>
-                <div className="font-bold text-[#181c20] mt-2">นางสาวศิริพร บุญเสริม</div>
-                <div className="text-[11px] text-[#79564b]">หัวหน้างานการเงิน พัสดุ และแผนงาน</div>
-                <div className="text-[10px] text-[#366847]">ผู้ตรวจสอบบัญชีและพัสดุ (Financial Auditor)</div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -501,7 +536,7 @@ export const DocumentExportPreviewModal = ({
         <div className="px-6 py-4 bg-white border-t border-[#e5e8ee] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-[#79564b] flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[16px] text-[#366847]">verified</span>
-            <span>พรีวิวข้อมูลตรงตามฐานข้อมูล CMU ERP ประจำปีงบประมาณ 2569</span>
+            <span>ข้อมูลตรงตามฐานข้อมูล CMU ERP ประจำปีงบประมาณ 2569</span>
           </div>
 
           <div className="flex items-center gap-2">

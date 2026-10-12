@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ProjectItem, StrategicCategory, QuarterType } from '../data/mockData';
+import { ProjectItem, StrategicCategory, QuarterType, INITIAL_DEPARTMENTS } from '../data/mockData';
+import { DeptBudgetBarChart, BudgetDonutChart, DisbursementTrendChart } from './BudgetCharts';
 
 interface OverviewScreenProps {
   categories: StrategicCategory[];
@@ -15,7 +16,7 @@ interface OverviewScreenProps {
   onOpenCloseModal: (prj: ProjectItem) => void;
   pendingApproved: boolean;
   onToggleApprovePending: () => void;
-  onExportReport: () => void;
+  onExportReport?: (projects?: ProjectItem[]) => void;
 }
 
 export const OverviewScreen = ({
@@ -37,7 +38,11 @@ export const OverviewScreen = ({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
 
   // Filter projects by search, category, and selected quarter
-  const filteredProjects = projects.filter((p) => {
+  const quarterProjects = selectedQuarter === 'all'
+    ? projects
+    : projects.filter(p => p.quarter === selectedQuarter);
+
+  const filteredProjects = quarterProjects.filter((p) => {
     const matchesSearch =
       searchQuery.trim() === '' ||
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,17 +52,18 @@ export const OverviewScreen = ({
     const matchesCategory =
       selectedCategoryId === 'all' || p.category === selectedCategoryId;
 
-    const matchesQuarter =
-      selectedQuarter === 'all' || p.quarter === selectedQuarter;
-
-    return matchesSearch && matchesCategory && matchesQuarter;
+    return matchesSearch && matchesCategory;
   });
 
-  // Calculate quarter-specific KPIs
-  const quarterAllocated = filteredProjects.reduce((sum, p) => sum + p.allocated, 0);
-  const quarterSpent = filteredProjects.reduce((sum, p) => sum + p.spent, 0);
-  const quarterSpentPct = quarterAllocated > 0 ? ((quarterSpent / quarterAllocated) * 100).toFixed(1) : '0';
-  const quarterRemaining = quarterAllocated - quarterSpent;
+  // Calculate active totals directly from projects
+  const isAllFilter = selectedQuarter === 'all' && selectedCategoryId === 'all';
+  const projectsAllocated = filteredProjects.reduce((s, p) => s + p.allocated, 0);
+  const activeAllocated = isAllFilter ? totalAllocated : projectsAllocated;
+  const activeSpent = filteredProjects.reduce((s, p) => s + p.spent, 0);
+  const activeRemaining = Math.max(0, activeAllocated - activeSpent);
+  const activeSpentPct = activeAllocated > 0 ? ((activeSpent / activeAllocated) * 100).toFixed(1) : '0';
+
+
 
   const quarterLabels: Record<QuarterType, string> = {
     all: 'ทุกไตรมาส (ทั้งปีงบประมาณ 2569)',
@@ -70,16 +76,10 @@ export const OverviewScreen = ({
   return (
     <div className="space-y-8">
       {/* Title & Quick Actions Row */}
-      <section className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
+      <section className="sticky top-20 z-30 bg-[#f7f9ff]/95 backdrop-blur-md py-3 -mx-6 px-6 sm:-mx-8 sm:px-8 border-b border-[#ddc1b2]/40 shadow-xs flex flex-col xl:flex-row xl:items-end justify-between gap-4 transition-all">
         <div className="space-y-1.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => onOpenProjectModal(filteredProjects[0] || projects[0])}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-[#e87722] border border-[#e87722]/50 font-bold text-xs shadow-xs hover:bg-[#ffdbc8]/30 transition-all cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[18px]">visibility</span>
-              ดูพรีวิวภาพรวมโครงการ (Preview)
-            </button>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#366847]/10 text-[#366847] text-xs font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-[#366847]"></span>
               กำลังแสดง: {quarterLabels[selectedQuarter]}
@@ -90,7 +90,7 @@ export const OverviewScreen = ({
             </span>
           </div>
 
-          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight whitespace-nowrap">
             ภาพรวมงบประมาณผู้บริหาร
           </h1>
           <p className="text-sm text-[#564337]">
@@ -107,22 +107,21 @@ export const OverviewScreen = ({
                 q === 'all'
                   ? 'ทุกไตรมาส'
                   : q === 'q1'
-                  ? 'ไตรมาส 1'
-                  : q === 'q2'
-                  ? 'ไตรมาส 2'
-                  : q === 'q3'
-                  ? 'ไตรมาส 3 (ใช้งานอยู่)'
-                  : 'ไตรมาส 4';
+                    ? 'ไตรมาส 1'
+                    : q === 'q2'
+                      ? 'ไตรมาส 2'
+                      : q === 'q3'
+                        ? 'ไตรมาส 3 (ใช้งานอยู่)'
+                        : 'ไตรมาส 4';
               const isActive = selectedQuarter === q;
               return (
                 <button
                   key={q}
                   onClick={() => onChangeQuarter(q)}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
-                    isActive
-                      ? 'bg-white text-[#994700] font-extrabold shadow-xs'
-                      : 'text-[#564337] hover:text-[#181c20]'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center whitespace-nowrap gap-1 ${isActive
+                    ? 'bg-white text-[#994700] font-extrabold shadow-xs'
+                    : 'text-[#564337] hover:text-[#181c20]'
+                    }`}
                 >
                   <span>{label}</span>
                   {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>}
@@ -133,8 +132,8 @@ export const OverviewScreen = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={onExportReport}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer"
+              onClick={() => onExportReport && onExportReport()}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer whitespace-nowrap"
               title="ดูข้อมูลก่อนส่งออกและพิมพ์รายงาน PDF"
             >
               <span className="material-symbols-outlined text-[18px] text-[#79564b]">download</span>
@@ -142,15 +141,45 @@ export const OverviewScreen = ({
             </button>
             <button
               onClick={onToggleApprovePending}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer ${
-                pendingApproved
-                  ? 'bg-[#366847] text-white hover:bg-[#1d5031]'
-                  : 'bg-[#e87722] hover:bg-[#994700] text-white'
-              }`}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap ${pendingApproved
+                ? 'bg-[#366847] text-white hover:bg-[#1d5031]'
+                : 'bg-[#e87722] hover:bg-[#994700] text-white'
+                }`}
             >
               <span className="material-symbols-outlined text-[18px]">verified</span>
               {pendingApproved ? 'อนุมัติเรียบร้อยแล้ว ✓' : 'อนุมัติรายการค้าง (5 รายการ)'}
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Executive Summary Box */}
+      <section className="bg-gradient-to-r from-[#FFF7F0] to-white border border-[#e87722]/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+        <div className="absolute -top-4 -right-4 p-4 opacity-5">
+          <span className="material-symbols-outlined text-[80px] text-[#e87722]">smart_toy</span>
+        </div>
+        <div className="relative z-10 flex gap-3">
+          <div className="mt-1">
+            <div className="w-8 h-8 rounded-full bg-[#e87722]/10 flex items-center justify-center text-[#e87722]">
+              <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-[#994700] mb-1">AI ผู้ช่วยสรุปภาพรวมผู้บริหาร</h3>
+            <p className="text-xs text-[#564337] leading-relaxed max-w-4xl">
+              สถานะงบกลางคงเหลือแบบเรียลไทม์อยู่ที่ <span className="font-bold text-[#181c20]">{(centralReserve / 1000000).toFixed(2)} ล้านบาท</span> ({((centralReserve / totalAllocated) * 100).toFixed(1)}%)
+              {selectedCategoryId === 'all' ? (
+                <> ภาพรวมการเบิกจ่ายจริงของวิทยาลัยสะสมอยู่ที่ <span className="font-bold text-[#e87722]">{activeSpentPct}%</span> (฿{(activeSpent / 1000000).toFixed(2)}M จากกรอบ ฿{(activeAllocated / 1000000).toFixed(1)}M) กลุ่มที่เบิกจ่ายสูงสุดคือ "พัฒนาวิชาการและหลักสูตร" (62.4%) และกลุ่มที่ต้องเร่งรัดคือ "บริการวิชาการ" (54.1%)</>
+              ) : (
+                <> ขณะนี้กำลังกรองดูเฉพาะกลุ่ม <span className="font-bold text-[#181c20]">"{categories.find(c => c.id === selectedCategoryId)?.title}"</span> มียอดอนุมัติ ฿{(activeAllocated / 1000000).toFixed(2)}M เบิกจ่ายจริงแล้ว ฿{(activeSpent / 1000000).toFixed(2)}M (<span className="font-bold text-[#366847]">{activeSpentPct}%</span>)</>
+              )}
+            </p>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <button className="text-[11px] font-bold px-3 py-1.5 bg-white border border-[#ddc1b2] rounded-lg text-[#564337] hover:bg-[#ebeef3] transition-colors flex items-center gap-1 cursor-pointer shadow-xs">
+                <span className="material-symbols-outlined text-[14px]">query_stats</span>
+                วิเคราะห์จำลองแนวทางบริหารงบ (AI Scenario)
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -161,21 +190,21 @@ export const OverviewScreen = ({
         <div className="bg-white rounded-2xl p-6 shadow-xs border border-[#ddc1b2]/30 flex flex-col justify-between hover:border-[#e87722] transition-colors">
           <div>
             <div className="flex justify-between items-center text-xs text-[#79564b] uppercase font-bold tracking-wider">
-              <span>{selectedQuarter === 'all' ? 'งบอนุมัติรวมทั้งคณะ' : `งบจัดสรรเฉพาะ ${selectedQuarter.toUpperCase()}`}</span>
+              <span>{isAllFilter ? 'งบอนุมัติรวมทั้งคณะ' : selectedQuarter === 'all' ? 'งบจัดสรรตามกลุ่มยุทธศาสตร์' : `งบจัดสรรเฉพาะ ${selectedQuarter.toUpperCase()}`}</span>
               <span className="text-[#366847] font-bold">อนุมัติสมบูรณ์</span>
             </div>
             <div className="text-3xl font-black text-[#181c20] mt-3 tabular-nums">
-              {(selectedQuarter === 'all' ? totalAllocated : quarterAllocated).toLocaleString()}{' '}
+              {activeAllocated.toLocaleString()}{' '}
               <span className="text-sm font-semibold text-[#564337]">บาท</span>
             </div>
             <div className="text-xs text-[#564337] mt-1.5">
-              {selectedQuarter === 'all' ? '100% กรอบงบประมาณประจำปี 2569' : `ครอบคลุม ${filteredProjects.length} โครงการในไตรมาส`}
+              {isAllFilter ? '100% กรอบงบประมาณประจำปี 2569 (รวมสำรองกลาง ฿3.45M)' : `ครอบคลุม ${filteredProjects.length} โครงการในมุมมองนี้`}
             </div>
           </div>
           <div className="mt-5 pt-3 border-t border-[#ebeef3] text-xs flex justify-between text-[#79564b]">
-            <span>สัดส่วนคงสภาพ</span>
+            <span>{isAllFilter ? 'จัดสรรให้โครงการส่วนงาน' : 'ยอดงบประมาณจัดสรร'}</span>
             <span className="text-[#366847] font-bold">
-              {selectedQuarter === 'all' ? '12.00 ล้านบาท' : `฿${quarterAllocated.toLocaleString()}`}
+              {isAllFilter ? `฿${projectsAllocated.toLocaleString()}` : `฿${activeAllocated.toLocaleString()}`}
             </span>
           </div>
         </div>
@@ -211,11 +240,11 @@ export const OverviewScreen = ({
         <div className="bg-white rounded-2xl p-6 shadow-xs border border-[#ddc1b2]/30 flex flex-col justify-between hover:border-[#e87722] transition-colors">
           <div>
             <div className="flex justify-between items-center text-xs text-[#79564b] uppercase font-bold tracking-wider">
-              <span>{selectedQuarter === 'all' ? 'ยอดเบิกจ่ายจริงสะสม' : `เบิกจ่ายแล้วใน ${selectedQuarter.toUpperCase()}`}</span>
+              <span>{isAllFilter ? 'ยอดเบิกจ่ายจริงสะสม' : selectedQuarter === 'all' ? 'เบิกจ่ายจริงกลุ่มนี้' : `เบิกจ่ายแล้วใน ${selectedQuarter.toUpperCase()}`}</span>
               <span className="text-[#564337] font-bold">{filteredProjects.length} โครงการ</span>
             </div>
             <div className="text-3xl font-black text-[#181c20] mt-3 tabular-nums">
-              {(selectedQuarter === 'all' ? totalSpent : quarterSpent).toLocaleString()}{' '}
+              {activeSpent.toLocaleString()}{' '}
               <span className="text-sm font-semibold text-[#564337]">บาท</span>
             </div>
             <div className="text-xs text-[#564337] mt-1.5">บันทึกใบเสร็จและ PO เรียบร้อย</div>
@@ -223,7 +252,7 @@ export const OverviewScreen = ({
           <div className="mt-5 pt-3 border-t border-[#ebeef3] text-xs flex justify-between text-[#79564b]">
             <span>คงเหลือเบิกจ่าย</span>
             <span className="text-[#181c20] font-bold">
-              ฿{(selectedQuarter === 'all' ? totalAllocated - totalSpent : quarterRemaining).toLocaleString()}
+              ฿{activeRemaining.toLocaleString()}
             </span>
           </div>
         </div>
@@ -238,13 +267,13 @@ export const OverviewScreen = ({
               </span>
             </div>
             <div className="text-3xl font-black text-[#366847] mt-3 tabular-nums">
-              {selectedQuarter === 'all' ? ((totalSpent / totalAllocated) * 100).toFixed(1) : quarterSpentPct}%
+              {activeSpentPct}%
             </div>
             <div className="w-full bg-[#ebeef3] rounded-full h-2.5 overflow-hidden mt-3">
               <div
                 className="bg-[#366847] h-full rounded-full transition-all duration-500"
                 style={{
-                  width: `${Math.min(100, Number(selectedQuarter === 'all' ? (totalSpent / totalAllocated) * 100 : quarterSpentPct))}%`,
+                  width: `${Math.min(100, Number(activeSpentPct))}%`,
                 }}
               ></div>
             </div>
@@ -263,7 +292,7 @@ export const OverviewScreen = ({
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold text-[#181c20] flex items-center gap-2">
             <span className="material-symbols-outlined text-[#e87722]">account_tree</span>
-            5 กลุ่มยุทธศาสตร์งบประมาณ (Strategic Budget Categories)
+            5 กลุ่มงบประมาณ (Strategic Budget Categories)
           </h2>
           <div className="flex items-center gap-2">
             {selectedCategoryId !== 'all' && (
@@ -281,21 +310,32 @@ export const OverviewScreen = ({
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {categories.map((cat) => {
             const isSelected = selectedCategoryId === cat.id;
+            
+            // Calculate dynamic values directly from projects active in the selected quarter
+            const catProjects = quarterProjects.filter(p => p.category === cat.id);
+            const dynamicAllocated = catProjects.reduce((s, p) => s + p.allocated, 0);
+            const dynamicSpent = catProjects.reduce((s, p) => s + p.spent, 0);
+            const dynamicPct = dynamicAllocated > 0 ? ((dynamicSpent / dynamicAllocated) * 100).toFixed(1) + '%' : '0.0%';
+
             return (
               <div
                 key={cat.id}
                 onClick={() => setSelectedCategoryId(isSelected ? 'all' : cat.id)}
-                className={`p-4 rounded-2xl cursor-pointer transition-all flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-white border-2 border-[#e87722] shadow-md ring-2 ring-[#e87722]/20'
-                    : 'bg-white border border-[#ddc1b2]/30 hover:border-[#e87722]/40 shadow-xs'
-                }`}
+                className={`p-4 rounded-2xl cursor-pointer transition-all flex flex-col justify-between ${isSelected
+                  ? 'bg-white border-2 border-[#e87722] shadow-md ring-2 ring-[#e87722]/20'
+                  : 'bg-white border border-[#ddc1b2]/30 hover:border-[#e87722]/40 shadow-xs'
+                  }`}
               >
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-[#366847] bg-[#b8f0c5]/50 px-2 py-0.5 rounded-full">
-                      {cat.pct}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-[#366847] bg-[#b8f0c5]/50 px-2 py-0.5 rounded-full">
+                        {dynamicPct}
+                      </span>
+                      <span className="text-[10px] font-bold text-[#79564b] bg-[#ebeef3] px-1.5 py-0.5 rounded-full">
+                        {catProjects.length} โครงการ
+                      </span>
+                    </div>
                     {isSelected && (
                       <span className="text-[10px] bg-[#e87722] text-white px-2 py-0.5 rounded font-bold">
                         เลือกอยู่
@@ -307,11 +347,11 @@ export const OverviewScreen = ({
                   <div className="text-xs space-y-1.5 pt-1 border-t border-[#ebeef3]">
                     <div className="flex justify-between text-[#564337]">
                       <span>อนุมัติ:</span>
-                      <strong className="tabular-nums">{cat.budget.toLocaleString()} บ.</strong>
+                      <strong className="tabular-nums">{dynamicAllocated.toLocaleString()} บ.</strong>
                     </div>
                     <div className="flex justify-between text-[#366847]">
                       <span>ใช้จริง:</span>
-                      <strong className="tabular-nums">{cat.actual.toLocaleString()} บ.</strong>
+                      <strong className="tabular-nums">{dynamicSpent.toLocaleString()} บ.</strong>
                     </div>
                   </div>
                 </div>
@@ -321,17 +361,46 @@ export const OverviewScreen = ({
                     e.stopPropagation();
                     setSelectedCategoryId(isSelected ? 'all' : cat.id);
                   }}
-                  className={`mt-3.5 w-full py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#e87722] text-white'
-                      : 'bg-[#ebeef3] text-[#181c20] hover:bg-[#e0e3e8]'
-                  }`}
+                  className={`mt-3.5 w-full py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${isSelected
+                    ? 'bg-[#e87722] text-white'
+                    : 'bg-[#ebeef3] text-[#181c20] hover:bg-[#e0e3e8]'
+                    }`}
                 >
                   {isSelected ? 'กำลังกรองรายการ' : 'กรองโครงการกลุ่มนี้'}
                 </button>
               </div>
             );
           })}
+        </div>
+      </section>
+
+      
+      {/* Row 2: Visual Charts Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-bold text-[#181c20] flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#e87722]">insights</span>
+            กราฟวิเคราะห์ภาพรวมงบประมาณ
+          </h2>
+          <span className="text-xs text-[#79564b]">Visual Analytics • อัปเดตแบบเรียลไทม์</span>
+        </div>
+
+        {/* Trend Line Chart — Full width */}
+        <DisbursementTrendChart selectedQuarter={selectedQuarter} selectedCategoryId={selectedCategoryId} />
+
+        {/* Bar + Donut side by side (Aligned to exact same height & bottom border) */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 items-stretch">
+          <div className="xl:col-span-3 flex flex-col h-full">
+            <DeptBudgetBarChart 
+              departments={INITIAL_DEPARTMENTS} 
+              projects={filteredProjects} 
+              selectedQuarter={selectedQuarter} 
+              selectedCategoryId={selectedCategoryId}
+            />
+          </div>
+          <div className="xl:col-span-2 flex flex-col h-full">
+            <BudgetDonutChart categories={categories} projects={quarterProjects} selectedQuarter={selectedQuarter} />
+          </div>
         </div>
       </section>
 
@@ -349,11 +418,11 @@ export const OverviewScreen = ({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => onOpenProjectModal(filteredProjects[0] || projects[0])}
+              onClick={() => onExportReport && onExportReport(filteredProjects)}
               className="px-3.5 py-1.5 rounded-xl bg-[#e87722] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs hover:bg-[#994700] transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">visibility</span>
-              พรีวิวแบบละเอียด
+              <span className="material-symbols-outlined text-[16px]">summarize</span>
+              สรุปภาพรวมกลุ่มนี้
             </button>
           </div>
         </div>
@@ -370,11 +439,10 @@ export const OverviewScreen = ({
               return (
                 <div
                   key={prj.id}
-                  className={`p-4 rounded-xl border flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all ${
-                    isClosed
-                      ? 'border-emerald-200 bg-emerald-50/30'
-                      : 'border-[#ddc1b2]/30 hover:border-[#e87722]/50 bg-white hover:bg-[#FFF7F0]/30'
-                  }`}
+                  className={`p-4 rounded-xl border flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all ${isClosed
+                    ? 'border-emerald-200 bg-emerald-50/30'
+                    : 'border-[#ddc1b2]/30 hover:border-[#e87722]/50 bg-white hover:bg-[#FFF7F0]/30'
+                    }`}
                 >
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -386,11 +454,10 @@ export const OverviewScreen = ({
                         {prj.quarter} ({prj.periodLabel})
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                          isClosed
-                            ? 'bg-[#b8f0c5] text-[#1d5031]'
-                            : 'bg-[#b8f0c5]/80 text-[#1d5031]'
-                        }`}
+                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${isClosed
+                          ? 'bg-[#b8f0c5] text-[#1d5031]'
+                          : 'bg-[#b8f0c5]/80 text-[#1d5031]'
+                          }`}
                       >
                         {isClosed ? 'ปิดโครงการแล้ว' : 'ERP Synced'}
                       </span>
@@ -409,7 +476,7 @@ export const OverviewScreen = ({
                       </span>
                     </div>
                     <div className="flex items-center gap-3 pt-1 max-w-sm">
-                      <span className="text-[11px] text-[#79564b]">ความคืบหน้า:</span>
+                      <span className="text-[11px] text-[#79564b] whitespace-nowrap">ความคืบหน้า:</span>
                       <div className="w-full bg-[#ebeef3] rounded-full h-2 overflow-hidden">
                         <div
                           className="bg-[#366847] h-full rounded-full transition-all duration-300"
@@ -428,17 +495,16 @@ export const OverviewScreen = ({
                       className="px-3 py-1.5 rounded-xl bg-[#ebeef3] text-xs font-bold text-[#181c20] hover:bg-[#e0e3e8] flex items-center gap-1 cursor-pointer transition-colors"
                     >
                       <span className="material-symbols-outlined text-[16px] text-[#e87722]">visibility</span>
-                      พรีวิว
+                      ดูข้อมูล
                     </button>
 
                     <button
                       onClick={() => onOpenReduceModal(prj)}
                       disabled={isClosed || prj.allocated <= prj.spent}
-                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold cursor-pointer transition-colors ${
-                        isClosed || prj.allocated <= prj.spent
-                          ? 'opacity-40 border-slate-300 text-slate-400 cursor-not-allowed'
-                          : 'border-[#e87722] text-[#e87722] hover:bg-[#ffdbc8]/30'
-                      }`}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold cursor-pointer transition-colors ${isClosed || prj.allocated <= prj.spent
+                        ? 'opacity-40 border-slate-300 text-slate-400 cursor-not-allowed'
+                        : 'border-[#e87722] text-[#e87722] hover:bg-[#ffdbc8]/30'
+                        }`}
                     >
                       ปรับลดงบ
                     </button>
@@ -446,11 +512,10 @@ export const OverviewScreen = ({
                     <button
                       onClick={() => onOpenCloseModal(prj)}
                       disabled={isClosed}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                        isClosed
-                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                          : 'bg-[#366847] text-white hover:bg-[#1d5031]'
-                      }`}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${isClosed
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-[#366847] text-white hover:bg-[#1d5031]'
+                        }`}
                     >
                       {isClosed ? 'ปิดแล้ว' : 'ปิดโครงการ'}
                     </button>
