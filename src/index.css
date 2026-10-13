@@ -18,8 +18,18 @@
 /* ===================== Custom Tooltip System ===================== */
 /* Uses data-tooltip attribute instead of native title for instant, styled tooltips */
 
-[data-tooltip] {
+:where([data-tooltip]:not(.absolute):not(.fixed):not([class*="absolute"]):not([class*="fixed"])) {
   position: relative;
+}
+
+[data-tooltip].absolute,
+[data-tooltip][class*="absolute"] {
+  position: absolute !important;
+}
+
+[data-tooltip].fixed,
+[data-tooltip][class*="fixed"] {
+  position: fixed !important;
 }
 
 [data-tooltip]::before,

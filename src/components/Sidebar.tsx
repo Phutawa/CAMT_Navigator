@@ -48,10 +48,10 @@ export const Sidebar = ({
       className={`fixed left-0 top-0 h-full bg-[#f1f4f9] z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-r border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-72'
         }`}
     >
-      {/* Floating Circular Toggle Button (half inside sidebar, half outside on the border) */}
+      {/* Floating Circular Toggle Button (half inside sidebar, half outside on the border like in reference) */}
       <button
         onClick={onToggleCollapse}
-        className="absolute -right-3.5 top-[26px] z-50 w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/50 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer group"
+        className="absolute right-0 top-10 -translate-y-1/2 translate-x-1/2 z-[60] w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group"
         data-tooltip={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
         aria-label={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
       >
