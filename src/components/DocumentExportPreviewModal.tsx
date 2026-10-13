@@ -385,53 +385,54 @@ export const DocumentExportPreviewModal = ({
             {/* 5. Settings & Governance Document */}
             {docType === 'settings' && (
               <div className="space-y-6">
-                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-2">
-                  <h4 className="font-bold text-sm text-[#181c20]">
-                    ระเบียบอำนาจการอนุมัติและวงเงินทางการเงิน (RBAC Authorization Matrix):
+                <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-3">
+                  <h4 className="font-bold text-sm text-[#181c20] flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[#e87722]">tune</span>
+                    เกณฑ์ควบคุมงบประมาณและเพดานจัดสรร (Fiscal Policy Controls Matrix):
                   </h4>
                   <table className="w-full text-left text-xs border border-[#ddc1b2]/40 rounded-lg overflow-hidden bg-white mt-2">
-                    <thead className="bg-[#ebeef3] font-bold">
+                    <thead className="bg-[#ebeef3] font-bold text-[#181c20]">
                       <tr>
-                        <th className="py-2.5 px-3">ตำแหน่ง / บทบาท</th>
-                        <th className="py-2.5 px-3">ผู้ดำรงตำแหน่ง</th>
-                        <th className="py-2.5 px-3">เพดานวงเงินอนุมัติ</th>
-                        <th className="py-2.5 px-3">การพิสูจน์ตัวตน</th>
+                        <th className="py-2.5 px-3">หมวดหมู่นโยบาย</th>
+                        <th className="py-2.5 px-3">เกณฑ์ควบคุมและเพดาน</th>
+                        <th className="py-2.5 px-3">ผู้มีอำนาจอนุมัติ / กำกับดูแล</th>
+                        <th className="py-2.5 px-3">สถานะการบังคับใช้</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y text-[#181c20]">
                       <tr>
-                        <td className="py-2.5 px-3 font-bold">คณบดี (Dean)</td>
-                        <td className="py-2.5 px-3">รศ.ดร. นพดล ผู้บริหาร</td>
-                        <td className="py-2.5 px-3 font-black text-[#e87722]">&gt; ฿500,000</td>
-                        <td className="py-2.5 px-3 text-[#366847] font-semibold">CMU OTP + 2FA</td>
+                        <td className="py-2.5 px-3 font-bold">เพดานงบประมาณรวมทั้งคณะ</td>
+                        <td className="py-2.5 px-3 font-bold tabular-nums">฿12,000,000 (จัดสรร ฿8.55M + สำรองกลาง ฿3.45M)</td>
+                        <td className="py-2.5 px-3">สภาวิทยาลัยศิลปะ สื่อ และเทคโนโลยี</td>
+                        <td className="py-2.5 px-3 text-[#366847] font-semibold">อนุมัติสมบูรณ์ 100%</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-3 font-bold">รองคณบดีฝ่ายบริหารและการคลัง</td>
-                        <td className="py-2.5 px-3">ผศ. สุรชัย วัฒนา</td>
-                        <td className="py-2.5 px-3 font-bold">฿100,001 - ฿500,000</td>
-                        <td className="py-2.5 px-3">CMU SSO</td>
+                        <td className="py-2.5 px-3 font-bold">อัตราสำรองงบกลางขั้นต่ำ (Reserve Fund)</td>
+                        <td className="py-2.5 px-3 font-bold text-[#994700] tabular-nums">28.75% (฿3,450,000)</td>
+                        <td className="py-2.5 px-3">คณะกรรมการบริหารวิทยาลัย (กบว.)</td>
+                        <td className="py-2.5 px-3 text-[#366847] font-semibold">เป็นไปตามเกณฑ์ 25%-30%</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-3 font-bold">หัวหน้าสำนักวิชา / ศูนย์</td>
-                        <td className="py-2.5 px-3">ผศ.ดร. วิเชียร นันตา</td>
-                        <td className="py-2.5 px-3 font-bold">฿50,001 - ฿100,000</td>
-                        <td className="py-2.5 px-3">CMU SSO</td>
+                        <td className="py-2.5 px-3 font-bold">เพดานปรับเกลี่ยงบข้ามหมวด</td>
+                        <td className="py-2.5 px-3 font-bold tabular-nums">฿200,000 ต่อครั้ง</td>
+                        <td className="py-2.5 px-3">คณบดี (Dean)</td>
+                        <td className="py-2.5 px-3 text-[#366847] font-semibold">มาตรฐานสภาวิทยาลัยฯ</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-3 font-bold">หัวหน้าสาขาวิชา (SE, DII, etc.)</td>
-                        <td className="py-2.5 px-3">หัวหน้าภาควิชาทั้ง 6</td>
-                        <td className="py-2.5 px-3 font-bold">ไม่เกิน ฿50,000</td>
-                        <td className="py-2.5 px-3">CMU SSO</td>
+                        <td className="py-2.5 px-3 font-bold">ระบบตรวจสอบและแจ้งเตือนอัตโนมัติ</td>
+                        <td className="py-2.5 px-3 font-bold">แจ้งเตือนอัตโนมัติทางระบบและอีเมล</td>
+                        <td className="py-2.5 px-3">CMU ERP &amp; Data Pipeline</td>
+                        <td className="py-2.5 px-3 text-[#366847] font-semibold">เปิดใช้งานเรียบร้อย</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
                 <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-1.5 text-[11px] text-[#564337]">
-                  <strong className="text-xs text-[#181c20] block">สถานะความพร้อมระบบเทคโนโลยีสารสนเทศ:</strong>
-                  <div>• API Gateway: เชื่อมต่อ CMU ERP, GFMIS, และ SSO สมบูรณ์ (Latency 0.84s)</div>
-                  <div>• ความถี่การซิงก์ข้อมูล: ซิงก์อัตโนมัติทุก 15 นาทีผ่าน CMU Financial Pipeline</div>
-                  <div>• การสำรองข้อมูล: Real-time Multi-zone Cloud Disaster Recovery 256-bit AES</div>
+                  <strong className="text-xs text-[#181c20] block">มาตรฐานธรรมาภิบาลและความปลอดภัยข้อมูล:</strong>
+                  <div>• ระบบตรวจสอบ: สอดคล้องตามมาตรฐาน EdPEx และข้อบังคับมหาวิทยาลัยเชียงใหม่ พ.ศ. 2568</div>
+                  <div>• ความถี่การซิงก์ข้อมูล: ดึงข้อมูลอัตโนมัติทุก 15 นาทีผ่าน CMU ERP Data Pipeline</div>
+                  <div>• การบันทึกรับรองการตั้งค่า: ผ่านระบบ CMU SSO &amp; 2FA (Session #CAMT-SEC-88219)</div>
                 </div>
               </div>
             )}

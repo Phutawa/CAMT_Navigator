@@ -89,7 +89,7 @@ export const OverviewScreen = ({
   const activeAllocated = isAllFilter ? totalAllocated : projectsAllocated;
   const activeSpent = filteredProjects.reduce((s, p) => s + p.spent, 0);
   const activeRemaining = Math.max(0, activeAllocated - activeSpent);
-  const activeSpentPct = activeAllocated > 0 ? ((activeSpent / activeAllocated) * 100).toFixed(1) : '0';
+  const activeSpentPct = projectsAllocated > 0 ? ((activeSpent / projectsAllocated) * 100).toFixed(1) : '0';
 
 
 
@@ -543,7 +543,13 @@ export const OverviewScreen = ({
             />
           </div>
           <div className="xl:col-span-2 flex flex-col h-full">
-            <BudgetDonutChart categories={categories} projects={quarterProjects} selectedQuarter={selectedQuarter} />
+            <BudgetDonutChart 
+              categories={categories} 
+              projects={quarterProjects} 
+              selectedQuarter={selectedQuarter} 
+              selectedCategoryId={selectedCategoryId}
+              onSelectCategory={setSelectedCategoryId}
+            />
           </div>
         </div>
       </section>

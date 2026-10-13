@@ -217,7 +217,14 @@ const getProjectCategory = (code: string, projectIndex: number, deptIndex = 0): 
   }
   if (code === 'STR') return (projectIndex + deptIndex) % 2 === 0 ? 'research' : 'academic';
   if (code === 'EDU-03') return (projectIndex + deptIndex) % 2 === 0 ? 'org' : 'student';
-  if (code.startsWith('ADM') || code.startsWith('FIN') || code === 'CEN' || code === 'PLN-01') return 'org';
+  if (code === 'CEN') {
+    const c = (projectIndex + deptIndex) % 4;
+    if (c === 0) return 'research';
+    if (c === 1) return 'academic';
+    if (c === 2) return 'student';
+    return 'org';
+  }
+  if (code.startsWith('ADM') || code.startsWith('FIN') || code === 'PLN-01') return 'org';
   if (code === 'EDU-02' || code === 'EDU-05') return 'student';
   if (code === 'EDU-04') return 'service';
   if (code === 'DITC') return (projectIndex + deptIndex) % 2 === 0 ? 'service' : 'academic';
@@ -313,6 +320,24 @@ const flagshipMap: Record<string, Partial<ProjectItem>[]> = {
       head: 'ศ.ดร. สมชาย มงคลศิลป์',
       quarter: 'q4',
       description: 'จัดสรรทุนวิจัยนำร่องโครงการต่อยอดเชิงพาณิชย์และตีพิมพ์วารสาร Q1 Top Tier',
+    },
+  ],
+  'RES-02': [
+    {
+      id: 'prj-res02-1',
+      code: 'PRJ-2569-RES02-01',
+      title: 'โครงการเครือข่ายความร่วมมือวิชาการและวิจัยระดับนานาชาติ (Global Academic MoU)',
+      head: 'ผศ.ดร. นันทกร อินเตอร์',
+      quarter: 'q2',
+      description: 'ประสานความร่วมมือและแลกเปลี่ยนนักศึกษา-บุคลากรกับมหาวิทยาลัยพันธมิตรในต่างประเทศ',
+    },
+    {
+      id: 'prj-res02-2',
+      code: 'PRJ-2569-RES02-02',
+      title: 'โครงการสนับสนุนการเผยแพร่ผลงานวิจัยและการแลกเปลี่ยนนักศึกษานานาชาติ',
+      head: 'ผศ.ดร. นันทกร อินเตอร์',
+      quarter: 'q3',
+      description: 'สนับสนุนทุนการศึกษาและค่าเดินทางนำเสนอผลงานวิชาการในระดับนานาชาติของคณาจารย์และนักศึกษา CAMT',
     },
   ],
   'EDU-02': [
@@ -417,77 +442,242 @@ const flagshipMap: Record<string, Partial<ProjectItem>[]> = {
   ],
 };
 
+const catKeys: StrategicCategory['id'][] = ['student', 'academic', 'research', 'service', 'org'];
+
 const buildAllSyncedProjects = (): ProjectItem[] => {
+  const targetDeptS = INITIAL_DEPARTMENTS.map(d => d.spent);
+  const targetDeptR = INITIAL_DEPARTMENTS.map(d => d.amount - d.spent);
+  const targetCatS = catKeys.map(c => INITIAL_CATEGORIES.find(cat => cat.id === c)!.actual);
+  const targetCatR = catKeys.map(c => {
+    const cat = INITIAL_CATEGORIES.find(item => item.id === c)!;
+    return cat.budget - cat.actual;
+  });
+
+  const mask = Array.from({ length: 37 }, () => Array(5).fill(0));
+  INITIAL_DEPARTMENTS.forEach((dept, dIdx) => {
+    for (let i = 0; i < dept.prjCount; i++) {
+      const cat = getProjectCategory(dept.code, i, dIdx);
+      const cIdx = catKeys.indexOf(cat);
+      mask[dIdx][cIdx] += 1;
+    }
+  });
+
+  function solveRAS(targetRow: number[], targetCol: number[], baseMask: number[][]) {
+    const M = baseMask.map(row => [...row]);
+    for (let iter = 0; iter < 2000; iter++) {
+      for (let r = 0; r < 37; r++) {
+        let rSum = 0;
+        for (let c = 0; c < 5; c++) rSum += M[r][c];
+        if (rSum > 0) {
+          const factor = targetRow[r] / rSum;
+          for (let c = 0; c < 5; c++) M[r][c] *= factor;
+        }
+      }
+      for (let c = 0; c < 5; c++) {
+        let cSum = 0;
+        for (let r = 0; r < 37; r++) cSum += M[r][c];
+        if (cSum > 0) {
+          const factor = targetCol[c] / cSum;
+          for (let r = 0; r < 37; r++) M[r][c] *= factor;
+        }
+      }
+    }
+    return M;
+  }
+
+  const matrixS = solveRAS(targetDeptS, targetCatS, mask);
+  const matrixR = solveRAS(targetDeptR, targetCatR, mask);
+
+  function roundMatrix(M: number[][], targetRow: number[], targetCol: number[]) {
+    const rounded = M.map(row => row.map(v => Math.round(v)));
+    
+    for (let r = 0; r < 37; r++) {
+      const currentSum = rounded[r].reduce((a, b) => a + b, 0);
+      const diff = targetRow[r] - currentSum;
+      if (diff !== 0) {
+        const candidates: { c: number; frac: number }[] = [];
+        for (let c = 0; c < 5; c++) {
+          if (M[r][c] > 0) {
+            candidates.push({ c, frac: M[r][c] - rounded[r][c] });
+          }
+        }
+        if (diff > 0) {
+          candidates.sort((a, b) => b.frac - a.frac);
+          for (let i = 0; i < diff; i++) {
+            rounded[r][candidates[i % candidates.length].c]++;
+          }
+        } else {
+          candidates.sort((a, b) => a.frac - b.frac);
+          for (let i = 0; i < -diff; i++) {
+            rounded[r][candidates[i % candidates.length].c]--;
+          }
+        }
+      }
+    }
+
+    for (let c = 0; c < 5; c++) {
+      let colSum = 0;
+      for (let r = 0; r < 37; r++) colSum += rounded[r][c];
+      let diff = targetCol[c] - colSum;
+      if (diff !== 0) {
+        for (let r = 0; r < 37 && diff !== 0; r++) {
+          if (M[r][c] > 0) {
+            for (let otherC = 0; otherC < 5 && diff !== 0; otherC++) {
+              if (otherC !== c && M[r][otherC] > 0) {
+                let otherColSum = 0;
+                for (let ro = 0; ro < 37; ro++) otherColSum += rounded[ro][otherC];
+                const otherDiff = targetCol[otherC] - otherColSum;
+                if (diff > 0 && otherDiff < 0 && rounded[r][otherC] > 0) {
+                  const shift = Math.min(diff, -otherDiff);
+                  rounded[r][c] += shift;
+                  rounded[r][otherC] -= shift;
+                  diff -= shift;
+                } else if (diff < 0 && otherDiff > 0 && rounded[r][c] > 0) {
+                  const shift = Math.min(-diff, otherDiff);
+                  rounded[r][c] -= shift;
+                  rounded[r][otherC] -= shift;
+                  diff += shift;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for (let r = 0; r < 37; r++) {
+      const currentSum = rounded[r].reduce((a, b) => a + b, 0);
+      const diff = targetRow[r] - currentSum;
+      if (diff !== 0) {
+        for (let c = 0; c < 5; c++) {
+          if (M[r][c] > 0) {
+            rounded[r][c] += diff;
+            break;
+          }
+        }
+      }
+    }
+
+    return rounded;
+  }
+
+  const intS = roundMatrix(matrixS, targetDeptS, targetCatS);
+  const intR = roundMatrix(matrixR, targetDeptR, targetCatR);
+
+  for (let c = 0; c < 5; c++) {
+    let colSum = 0;
+    for (let r = 0; r < 37; r++) colSum += intR[r][c];
+    const diff = targetCatR[c] - colSum;
+    if (diff !== 0) {
+      for (let r = 0; r < 37; r++) {
+        if (mask[r][c] > 0) {
+          for (let otherC = 0; otherC < 5; otherC++) {
+            if (otherC !== c && mask[r][otherC] > 0) {
+              let otherColSum = 0;
+              for (let ro = 0; ro < 37; ro++) otherColSum += intR[ro][otherC];
+              const otherDiff = targetCatR[otherC] - otherColSum;
+              if (diff > 0 && otherDiff < 0 && intR[r][otherC] >= diff) {
+                intR[r][c] += diff;
+                intR[r][otherC] -= diff;
+                break;
+              } else if (diff < 0 && otherDiff > 0 && intR[r][c] >= -diff) {
+                intR[r][c] += diff;
+                intR[r][otherC] -= diff;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   const result: ProjectItem[] = [];
 
-  INITIAL_DEPARTMENTS.forEach((dept, deptIdx) => {
-    const n = dept.prjCount;
+  INITIAL_DEPARTMENTS.forEach((dept, dIdx) => {
     const flagships = flagshipMap[dept.code] || [];
-
-    const baseAlloc = Math.floor(dept.amount / n);
-    const allocRemainder = dept.amount - baseAlloc * n;
-
-    // Determine quarters first to enforce Timeline Logic: Q4 is in the future -> spent MUST be 0!
-    const prjQuarters: ProjectQuarter[] = [];
-    for (let i = 0; i < n; i++) {
-      const flagship = flagships[i] || null;
-      const q: ProjectQuarter = flagship?.quarter || ((n === 1 || i === 0) ? 'q3' : quarters[(deptIdx * 2 + i) % quarters.length]);
-      prjQuarters.push(q);
+    const deptPrjs: { i: number; cat: StrategicCategory['id']; cIdx: number; quarter?: ProjectQuarter }[] = [];
+    for (let i = 0; i < dept.prjCount; i++) {
+      const cat = getProjectCategory(dept.code, i, dIdx);
+      const cIdx = catKeys.indexOf(cat);
+      deptPrjs.push({ i, cat, cIdx });
     }
 
-    const nonQ4Count = prjQuarters.filter(q => q !== 'q4').length;
-    const baseSpent = nonQ4Count > 0 ? Math.floor(dept.spent / nonQ4Count) : 0;
-    const spentRemainder = nonQ4Count > 0 ? dept.spent - baseSpent * nonQ4Count : 0;
+    catKeys.forEach((cat, cIdx) => {
+      const prjsInCat = deptPrjs.filter(p => p.cIdx === cIdx);
+      if (prjsInCat.length === 0) return;
 
-    let assignedNonQ4 = 0;
-    for (let i = 0; i < n; i++) {
-      const q = prjQuarters[i];
-      const alloc = i === 0 ? baseAlloc + allocRemainder : baseAlloc;
+      const cellS = intS[dIdx][cIdx];
+      const cellR = intR[dIdx][cIdx];
 
-      // Strict timeline logic: Q4 is in the future -> actual spent MUST be exactly 0!
-      let spent = 0;
-      if (q !== 'q4') {
-        spent = assignedNonQ4 === 0 ? baseSpent + spentRemainder : baseSpent;
-        assignedNonQ4++;
+      prjsInCat.forEach((p) => {
+        const flagship = flagships[p.i] || null;
+        let q: ProjectQuarter = flagship?.quarter || ((dept.prjCount === 1 || p.i === 0) ? 'q3' : quarters[(dIdx * 2 + p.i) % quarters.length]);
+        if (q === 'q4' && cellR <= 0) q = 'q3';
+        if (dept.code === 'RES-02') q = p.i === 0 ? 'q2' : 'q3';
+        p.quarter = q;
+      });
+
+      const nonQ4 = prjsInCat.filter(p => p.quarter !== 'q4');
+      let nonQ4Count = nonQ4.length;
+      if (nonQ4Count === 0 && cellS > 0) {
+        prjsInCat[0].quarter = 'q3';
+        nonQ4Count = 1;
       }
 
-      const cat = getProjectCategory(dept.code, i, deptIdx);
-      const themes = projectThemes[cat] || projectThemes.academic;
-      const theme = themes[i % themes.length];
-      const flagship = flagships[i] || null;
+      const baseSpent = nonQ4Count > 0 ? Math.floor(cellS / nonQ4Count) : 0;
+      const spentRem = nonQ4Count > 0 ? cellS - baseSpent * nonQ4Count : 0;
 
-      const pct = alloc > 0 ? Math.min(100, Math.round((spent / alloc) * 100)) : 0;
-      const status: ProjectItem['status'] =
-        q === 'q1' || q === 'q2'
-          ? 'approved'
-          : q === 'q3'
-            ? (pct >= 80 ? 'approved' : 'active')
-            : 'pending';
+      const baseR = prjsInCat.length > 0 ? Math.floor(cellR / prjsInCat.length) : 0;
+      const remR = prjsInCat.length > 0 ? cellR - baseR * prjsInCat.length : 0;
 
-      const completionPct =
-        q === 'q1' ? 100 : q === 'q2' ? 92 : q === 'q3' ? pct : 0;
+      let assignedNonQ4 = 0;
+      prjsInCat.forEach((p, idxInCat) => {
+        let spent = 0;
+        if (p.quarter !== 'q4') {
+          spent = assignedNonQ4 === 0 ? baseSpent + spentRem : baseSpent;
+          assignedNonQ4++;
+        }
+        const rShare = idxInCat === 0 ? baseR + remR : baseR;
+        const alloc = spent + rShare;
 
-      const project: ProjectItem = {
-        id: flagship?.id || `prj-${dept.code.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${i + 1}`,
-        code: flagship?.code || `PRJ-2569-${dept.code.replace(/[^A-Za-z0-9]/g, '')}-${String(i + 1).padStart(2, '0')}`,
-        title: flagship?.title || `${theme} • ${dept.name}`,
-        dept: `${dept.name} (${dept.code})`,
-        category: cat,
-        allocated: alloc,
-        spent: spent,
-        head: flagship?.head || (dept.head !== 'ผู้รับผิดชอบ (รอระบุ)' ? dept.head : `ผู้ประสานงาน${dept.name}`),
-        status,
-        completionPct,
-        quarter: q,
-        periodLabel: periodLabels[q],
-        description: flagship?.description || `โครงการดำเนินงานตามแผนปฏิบัติการประจำปีงบประมาณ 2569 ของ${dept.name} (${dept.code}) สอดคล้องกับยุทธศาสตร์การพัฒนาวิทยาลัย`,
-        fund3D: flagship?.fund3D,
-        act3D: flagship?.act3D,
-        id3D: flagship?.id3D,
-      };
+        const themes = projectThemes[cat] || projectThemes.academic;
+        const theme = themes[p.i % themes.length];
+        const flagship = flagships[p.i] || null;
 
-      result.push(project);
-    }
+        const pct = alloc > 0 ? Math.min(100, Math.round((spent / alloc) * 100)) : 0;
+        const status: ProjectItem['status'] =
+          p.quarter === 'q1' || p.quarter === 'q2'
+            ? 'approved'
+            : p.quarter === 'q3'
+              ? (pct >= 80 ? 'approved' : 'active')
+              : 'pending';
+
+        const completionPct =
+          p.quarter === 'q1' ? 100 : p.quarter === 'q2' ? 92 : p.quarter === 'q3' ? pct : 0;
+
+        const project: ProjectItem = {
+          id: flagship?.id || `prj-${dept.code.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${p.i + 1}`,
+          code: flagship?.code || `PRJ-2569-${dept.code.replace(/[^A-Za-z0-9]/g, '')}-${String(p.i + 1).padStart(2, '0')}`,
+          title: flagship?.title || `${theme} • ${dept.name}`,
+          dept: `${dept.name} (${dept.code})`,
+          category: cat,
+          allocated: alloc,
+          spent: spent,
+          head: flagship?.head || (dept.head !== 'ผู้รับผิดชอบ (รอระบุ)' ? dept.head : `ผู้ประสานงาน${dept.name}`),
+          status,
+          completionPct,
+          quarter: p.quarter!,
+          periodLabel: periodLabels[p.quarter!],
+          description: flagship?.description || `โครงการดำเนินงานตามแผนปฏิบัติการประจำปีงบประมาณ 2569 ของ${dept.name} (${dept.code}) สอดคล้องกับยุทธศาสตร์การพัฒนาวิทยาลัย`,
+          fund3D: flagship?.fund3D,
+          act3D: flagship?.act3D,
+          id3D: flagship?.id3D,
+        };
+
+        result.push(project);
+      });
+    });
   });
 
   return result;

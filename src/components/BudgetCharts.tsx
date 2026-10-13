@@ -48,20 +48,20 @@ export const DeptBudgetBarChart = ({
       const deptProjects = projects.filter((p) => p.dept.includes(`(${d.code})`));
       const allocated = deptProjects.reduce((sum, p) => sum + p.allocated, 0);
       const spent = deptProjects.reduce((sum, p) => sum + p.spent, 0);
+      const safeSpent = Math.min(spent, allocated);
       const prjCount = deptProjects.length;
 
-      const pct = allocated > 0 ? (spent / allocated) * 100 : 0;
+      const pct = allocated > 0 ? (safeSpent / allocated) * 100 : 0;
       return {
         name: d.code,
         fullName: d.name,
         en: d.en,
         prjCount,
         จัดสรร: allocated,
-        เบิกจ่าย: spent,
-        remaining: Math.max(0, allocated - spent),
+        เบิกจ่าย: safeSpent,
+        remaining: Math.max(0, allocated - safeSpent),
         pct,
         pctFormatted: pct.toFixed(1) + '%',
-        overBudget: spent > allocated,
       };
     })
     .filter((d) => d.จัดสรร > 0 || d.เบิกจ่าย > 0);
@@ -103,7 +103,7 @@ export const DeptBudgetBarChart = ({
               งบจัดสรร vs เบิกจ่ายจริง รายหน่วยงาน
             </h3>
             <span className="px-2 py-0.5 rounded-full bg-[#ffdbc8] text-[#743400] text-[10px] font-bold whitespace-nowrap">
-              {rawData.length} หน่วยงาน
+              {selectedCategoryId !== 'all' ? `${rawData.length} จาก 37 หน่วยงาน` : `${rawData.length} หน่วยงาน (ทั้งหมด 37)`}
             </span>
           </div>
         </div>
@@ -225,7 +225,7 @@ export const DeptBudgetBarChart = ({
                 ? { bg: '#b8f0c5', text: '#1d5031', border: '#366847' }
                 : d.pct >= 40
                 ? { bg: '#ffdbc8', text: '#743400', border: '#e87722' }
-                : { bg: '#ffdad6', text: '#ba1a1a', border: '#ba1a1a' };
+                : { bg: '#f1f4f9', text: '#564337', border: '#cbd5e1' };
 
             return (
               <div
@@ -284,32 +284,13 @@ export const DeptBudgetBarChart = ({
                       top: '50%',
                       transform: 'translateY(-50%)',
                       height: '18px',
-                      width: `${d.overBudget ? allocPct : spentPctOfMax}%`,
+                      width: `${Math.min(allocPct, spentPctOfMax)}%`,
                       zIndex: 2,
                       background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
                       boxShadow: '2px 0 8px rgba(0,0,0,0.22)',
                     }}
                     data-tooltip={`เบิกจ่ายจริง: ฿${d.เบิกจ่าย.toLocaleString()} (${d.pctFormatted})`}
                   />
-
-                  {/* Layer 3: Red overbudget segment */}
-                  {d.overBudget && (
-                    <div
-                      className="rounded-r-full"
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        height: '18px',
-                        left: `${allocPct}%`,
-                        width: `${spentPctOfMax - allocPct}%`,
-                        zIndex: 3,
-                        background: 'linear-gradient(90deg, #b91c1c 0%, #dc2626 50%, #ef4444 100%)',
-                        boxShadow: '2px 0 8px rgba(0,0,0,0.22)',
-                      }}
-                      data-tooltip="เบิกจ่ายเกินงบจัดสรร!"
-                    />
-                  )}
                 </div>
 
                 {/* Right: Percentage Pill Badge */}
@@ -340,9 +321,17 @@ interface BudgetDonutChartProps {
   categories: StrategicCategory[];
   projects: ProjectItem[];
   selectedQuarter: QuarterType;
+  selectedCategoryId?: string;
+  onSelectCategory?: (id: string) => void;
 }
 
-export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: BudgetDonutChartProps) => {
+export const BudgetDonutChart = ({
+  categories,
+  projects,
+  selectedQuarter,
+  selectedCategoryId = 'all',
+  onSelectCategory,
+}: BudgetDonutChartProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // High-contrast categorical color palette (User Recommendation #2)
@@ -385,7 +374,8 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
   const strategicExecutionData = donutData;
   const totalRemaining = strategicExecutionData.reduce((s, d) => s + d.remaining, 0);
 
-  const activeItem = hoveredIndex !== null ? donutData[hoveredIndex] : null;
+  const selectedCatItem = selectedCategoryId !== 'all' ? donutData.find((d) => d.id === selectedCategoryId) : null;
+  const activeItem = hoveredIndex !== null ? donutData[hoveredIndex] : selectedCatItem;
   const activePct = activeItem && total > 0 ? ((activeItem.value / total) * 100).toFixed(1) : null;
 
   // Direct Labeling inside donut slices (User Recommendation #4)
@@ -420,7 +410,7 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-xs border border-[#ddc1b2]/30 flex flex-col justify-between h-full">
-      {/* Card Header: Clean Title without redundant Total in Subtitle */}
+      {/* Card Header: Clean Title with Category Filter Indicator */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <div>
@@ -429,12 +419,22 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
               สัดส่วนประเภทงบประมาณ
             </h3>
             <p className="text-[11px] text-[#79564b] mt-0.5">
-              สัดส่วน 5 กลุ่มยุทธศาสตร์ (เรียงลำดับจากมากไปน้อยตามเข็มนาฬิกา)
+              สัดส่วน 5 กลุ่มยุทธศาสตร์ (คลิกหมวดหรือแถวเพื่อกรองข้อมูล)
             </p>
           </div>
-          <span className="px-2 py-0.5 rounded-full bg-[#f1f4f9] text-[#564337] text-[10px] font-bold whitespace-nowrap">
-            5 ยุทธศาสตร์
-          </span>
+          <div className="flex items-center gap-1.5">
+            {selectedCategoryId !== 'all' && (
+              <button
+                onClick={() => onSelectCategory?.('all')}
+                className="text-[10px] text-[#e87722] font-bold hover:underline cursor-pointer px-1.5 py-0.5 rounded bg-[#fff5ef] border border-[#ffdbc8]"
+              >
+                ล้างการเลือก
+              </button>
+            )}
+            <span className="px-2 py-0.5 rounded-full bg-[#f1f4f9] text-[#564337] text-[10px] font-bold whitespace-nowrap">
+              5 ยุทธศาสตร์
+            </span>
+          </div>
         </div>
 
         {/* Donut Chart + Legend Row */}
@@ -460,34 +460,56 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
                   onMouseEnter={(_, index) => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {donutData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.color}
-                      opacity={hoveredIndex === null || hoveredIndex === index ? 1 : 0.4}
-                      className="transition-all duration-200 cursor-pointer"
-                    />
-                  ))}
+                  {donutData.map((entry, index) => {
+                    const isSelected = selectedCategoryId === entry.id;
+                    const isDimmed =
+                      (hoveredIndex !== null && hoveredIndex !== index) ||
+                      (hoveredIndex === null && selectedCategoryId !== 'all' && !isSelected);
+
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                        opacity={isDimmed ? 0.35 : 1}
+                        stroke={isSelected ? '#e87722' : '#ffffff'}
+                        strokeWidth={isSelected ? 3 : 2}
+                        className="transition-all duration-200 cursor-pointer"
+                        onClick={() => onSelectCategory?.(isSelected ? 'all' : entry.id)}
+                      />
+                    );
+                  })}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
 
             {/* Interactive Center Inspector */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-1 transition-all duration-200">
+            <div
+              onClick={() => {
+                if (selectedCategoryId !== 'all') onSelectCategory?.('all');
+              }}
+              className={`absolute inset-0 flex flex-col items-center justify-center text-center px-1 transition-all duration-200 ${
+                selectedCategoryId !== 'all' ? 'cursor-pointer' : 'pointer-events-none'
+              }`}
+            >
               {activeItem ? (
                 <div className="animate-in fade-in zoom-in-95 duration-150 flex flex-col items-center">
                   <span
                     className="text-[8.5px] font-bold px-1.5 py-0.2 rounded-full mb-0.5 max-w-[110px] truncate shadow-2xs text-white"
                     style={{ backgroundColor: activeItem.color }}
                   >
-                    {activeItem.name}
+                    {activeItem.code ? `${activeItem.code} ` : ''}{activeItem.name}
                   </span>
                   <span className="text-sm font-extrabold text-[#181c20] tabular-nums tracking-tight">
-                    ฿{(activeItem.value / 1000000).toFixed(1)}M
+                    ฿{(activeItem.value / 1000000).toFixed(2)}M
                   </span>
                   <span className="text-[9.5px] font-extrabold tabular-nums" style={{ color: activeItem.color }}>
                     {activePct}% ของงบรวม
                   </span>
+                  {selectedCategoryId === activeItem.id && hoveredIndex === null && (
+                    <span className="text-[8px] text-[#e87722] font-semibold mt-0.5 flex items-center gap-0.5">
+                      <span>• กรองอยู่ (คลิกเพื่อปลด)</span>
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
@@ -495,7 +517,7 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
                     งบจัดสรรรวม
                   </span>
                   <span className="text-sm font-extrabold text-[#181c20] tabular-nums tracking-tight">
-                    ฿{(total / 1000000).toFixed(1)}M
+                    ฿{(total / 1000000).toFixed(2)}M
                   </span>
                   <span className="text-[8.5px] text-[#79564b] tabular-nums mt-0.5">
                     5 ยุทธศาสตร์
@@ -508,15 +530,19 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
           {/* Legend List on Right */}
           <div className="flex-1 w-full space-y-1 min-w-0">
             {donutData.map((item, idx) => {
-              const pct = total > 0 ? ((item.value / total) * 100).toFixed(0) : '0';
+              const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
+              const isSelected = selectedCategoryId === item.id;
               const isHovered = hoveredIndex === idx;
               return (
                 <div
                   key={item.name}
                   onMouseEnter={() => setHoveredIndex(idx)}
                   onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => onSelectCategory?.(isSelected ? 'all' : item.id)}
                   className={`px-1.5 py-1 rounded-xl transition-all flex items-center gap-2 border cursor-pointer ${
-                    isHovered
+                    isSelected
+                      ? 'bg-[#fff5ef] border-[#e87722] ring-1 ring-[#e87722]/50 shadow-xs'
+                      : isHovered
                       ? 'bg-[#fff8f5] border-[#ffdbc8] shadow-xs'
                       : 'border-transparent hover:bg-[#f8fafc]'
                   }`}
@@ -530,15 +556,22 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
                       <span className="font-bold text-[#181c20] truncate text-[10px]" data-tooltip={item.name}>
                         #{idx + 1} {item.name}
                       </span>
-                      <span
-                        className="font-extrabold text-[10px] tabular-nums flex-shrink-0 px-1 py-0.2 rounded bg-slate-100"
-                        style={{ color: item.color }}
-                      >
-                        {pct}%
-                      </span>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        {isSelected && (
+                          <span className="text-[8px] bg-[#e87722] text-white px-1 py-0.2 rounded font-bold">
+                            เลือก
+                          </span>
+                        )}
+                        <span
+                          className="font-extrabold text-[10px] tabular-nums px-1 py-0.2 rounded bg-slate-100"
+                          style={{ color: item.color }}
+                        >
+                          {pct}%
+                        </span>
+                      </div>
                     </div>
                     <div className="text-[9px] text-[#79564b] tabular-nums">
-                      ฿{(item.value / 1000000).toFixed(1)}M ({item.value.toLocaleString()} บาท)
+                      ฿{(item.value / 1000000).toFixed(2)}M ({item.value.toLocaleString()} บ.)
                     </div>
                   </div>
                 </div>
@@ -568,21 +601,25 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
         {/* 5 Strategic Execution Progress Rows */}
         <div className="space-y-1">
           {strategicExecutionData.map((item, idx) => {
+            const isSelected = selectedCategoryId === item.id;
             const isHovered = hoveredIndex === idx;
             const statusConfig =
               item.spentPct >= 65
                 ? { label: 'ตามเป้า', dot: 'bg-[#2e7d32]', text: 'text-[#2e7d32]' }
                 : item.spentPct >= 45
                 ? { label: 'ปานกลาง', dot: 'bg-[#e87722]', text: 'text-[#e87722]' }
-                : { label: 'เร่งรัด', dot: 'bg-[#ba1a1a]', text: 'text-[#ba1a1a]' };
+                : { label: 'กำลังเบิกจ่าย', dot: 'bg-[#f59e0b]', text: 'text-[#b45309]' };
 
             return (
               <div
                 key={item.id}
                 onMouseEnter={() => setHoveredIndex(idx)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => onSelectCategory?.(isSelected ? 'all' : item.id)}
                 className={`px-2 py-1.5 rounded-xl transition-all cursor-pointer border ${
-                  isHovered
+                  isSelected
+                    ? 'bg-[#fff5ef] border-[#e87722] ring-2 ring-[#e87722]/40 shadow-xs'
+                    : isHovered
                     ? 'bg-[#fff8f5] border-[#ffdbc8] shadow-xs ring-1 ring-[#e87722]/30'
                     : 'bg-[#f8fafc]/70 border-slate-100 hover:bg-[#f1f4f9] hover:border-slate-200'
                 }`}
@@ -602,6 +639,11 @@ export const BudgetDonutChart = ({ categories, projects, selectedQuarter }: Budg
                   </div>
 
                   <div className="flex items-center gap-1 flex-shrink-0">
+                    {isSelected && (
+                      <span className="text-[8px] bg-[#e87722] text-white px-1.5 py-0.2 rounded font-bold">
+                        เลือกอยู่
+                      </span>
+                    )}
                     <span className="flex items-center gap-1 text-[9.5px]">
                       <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`}></span>
                       <span className={`font-bold ${statusConfig.text}`}>
@@ -698,8 +740,8 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
         ))}
         {payload.length === 2 && payload[0].value && payload[1].value && (
           <div className="mt-1 pt-1 border-t border-[#ebeef3] text-[11px]">
-            <span className={payload[1].value >= payload[0].value ? 'text-[#366847]' : 'text-[#ba1a1a]'}>
-              {payload[1].value >= payload[0].value ? '✅ ตรงเป้า' : '⚠️ ต่ำกว่าเป้า'}{' '}
+            <span className={payload[1].value >= payload[0].value ? 'text-[#366847]' : 'text-[#e87722]'}>
+              {payload[1].value >= payload[0].value ? '✅ ตรงเป้า' : '⏳ ตามแผนงาน'}{' '}
               ({((payload[1].value / payload[0].value) * 100).toFixed(0)}%)
             </span>
           </div>
@@ -758,14 +800,14 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
           <Tooltip content={<CustomTrendTooltip />} />
           <ReferenceLine
             y={activeCeiling}
-            stroke="#ba1a1a"
+            stroke="#e87722"
             strokeDasharray="6 3"
             strokeWidth={1.5}
             label={{
               value: `เพดานงบ ฿${(activeCeiling / 1000000).toFixed(1)}M`,
               position: 'right',
               fontSize: 10,
-              fill: '#ba1a1a',
+              fill: '#e87722',
               fontWeight: 700,
             }}
           />

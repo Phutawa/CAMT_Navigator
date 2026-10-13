@@ -244,7 +244,7 @@ export const DisbursementScreen = ({
           <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2">
             {[
               { id: 'tab-overview', label: 'ติดตามเบิกจ่าย 186 โครงการทั้งหมด (37 ส่วนงาน)', icon: 'query_stats' },
-              { id: 'tab-departments', label: 'รายการโครงการค้างเบิกจ่าย (เกินกำหนด)', icon: 'account_tree' },
+              { id: 'tab-departments', label: 'รายการโครงการรอติดตามเบิกจ่าย', icon: 'account_tree' },
               { id: 'tab-commitments', label: 'รายการ PO และใบสำคัญผูกพันงบ', icon: 'receipt_long', badge: pendingCount > 0 ? pendingCount.toString() : undefined },
             ].map((t) => (
               <button
@@ -293,7 +293,7 @@ export const DisbursementScreen = ({
                     ฿5,820,000
                   </div>
                   <div className="text-xs text-[#366847] font-semibold mt-1">
-                    48.5% (เกินเป้าไตรมาส +3.5%)
+                    68.1% ของงบจัดสรร (บรรลุเป้าหมายตามแผนงาน)
                   </div>
                 </div>
 
@@ -576,13 +576,13 @@ export const DisbursementScreen = ({
             <div className="bg-white rounded-2xl border border-[#ddc1b2]/30 shadow-xs overflow-hidden">
               {/* Delayed Projects List */}
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="px-5 py-4 border-b border-[#e5e8ee] flex flex-wrap justify-between items-center gap-3 bg-[#fff0f1]">
+                <div className="px-5 py-4 border-b border-[#e5e8ee] flex flex-wrap justify-between items-center gap-3 bg-[#fff8f5]">
                   <div className="flex items-center gap-2.5">
-                    <h3 className="font-bold text-[#ba1a1a] flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px]">warning</span>
-                      รายการโครงการค้างเบิกจ่าย (เกินกำหนด)
+                    <h3 className="font-bold text-[#994700] flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px]">pending_actions</span>
+                      รายการโครงการรอติดตามเบิกจ่ายตามกำหนดเวลา
                     </h3>
-                    <span className="text-xs font-bold bg-[#ffdad6] text-[#93000a] px-2.5 py-1 rounded-md">
+                    <span className="text-xs font-bold bg-[#ffdbc8] text-[#743400] px-2.5 py-1 rounded-md">
                       {overdueProjects.length} รายการ
                     </span>
                   </div>
@@ -608,7 +608,7 @@ export const DisbursementScreen = ({
                               op.dept === 'ASC' ? 'บริการวิชาการแก่สังคม (ASC)' : 'บริหารจัดการและพัฒนาองค์กร (AGO)';
                         const daysLate = op.statusText.match(/\((.*?)\)/)?.[1] || '';
                         return (
-                          <tr key={op.code} className="hover:bg-[#fff0f1]/50 transition-colors">
+                          <tr key={op.code} className="hover:bg-[#fff8f5]/60 transition-colors">
                             <td className="py-3 px-5">
                               <div className="font-bold text-[#181c20]">{op.name}</div>
                               <div className="text-[10px] text-[#79564b]">{op.code}</div>
@@ -618,9 +618,9 @@ export const DisbursementScreen = ({
                               <div className="font-bold text-[#994700]">฿{remaining.toLocaleString()}</div>
                               <div className="text-[10px] text-[#79564b]">จากงบ ฿{op.bud.toLocaleString()} (เบิกแล้ว ฿{op.act.toLocaleString()})</div>
                             </td>
-                            <td className="py-3 px-5 text-right font-semibold text-[#ba1a1a] whitespace-nowrap">{op.deadline} <span className="text-[10px] font-normal">({daysLate})</span></td>
+                            <td className="py-3 px-5 text-right font-semibold text-[#b45309] whitespace-nowrap">{op.deadline} <span className="text-[10px] font-normal">({daysLate})</span></td>
                             <td className="py-3 px-5 text-center whitespace-nowrap">
-                              <span className="inline-flex items-center justify-center whitespace-nowrap bg-[#ffdad6] text-[#93000a] px-3 py-1 rounded-full text-[10.5px] font-bold shadow-2xs">
+                              <span className="inline-flex items-center justify-center whitespace-nowrap bg-[#ffdbc8] text-[#743400] px-3 py-1 rounded-full text-[10.5px] font-bold shadow-2xs">
                                 {op.issue}
                               </span>
                             </td>
@@ -631,9 +631,9 @@ export const DisbursementScreen = ({
                                 className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold inline-flex items-center gap-1 transition-colors cursor-pointer ${
                                   alertSent
                                     ? 'bg-[#f1f4f9] text-[#79564b] border-slate-200 cursor-not-allowed'
-                                    : 'bg-white border-[#ffdad6] text-[#ba1a1a] hover:bg-[#ffdad6]'
+                                    : 'bg-white border-[#ffdbc8] text-[#e87722] hover:bg-[#ffdbc8]'
                                 }`}
-                                title="ส่งหนังสือเร่งรัดโครงการนี้"
+                                title="ส่งหนังสือติดตามโครงการนี้"
                               >
                                 <span className="material-symbols-outlined text-[13px]">
                                   {alertSent ? 'check' : 'notifications_active'}
