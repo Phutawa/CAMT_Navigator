@@ -104,32 +104,31 @@ export const OverviewScreen = ({
   return (
     <div className="space-y-8">
       {/* Title & Quick Actions Row */}
-      <section className="sticky top-20 z-30 bg-[#f7f9ff]/95 backdrop-blur-md py-3 -mx-6 px-6 sm:-mx-8 sm:px-8 border-b border-[#ddc1b2]/40 shadow-xs flex flex-col xl:flex-row xl:items-end justify-between gap-4 transition-all">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 whitespace-nowrap">
-
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#366847]/10 text-[#366847] text-xs font-bold">
+      <section className="sticky top-20 z-30 bg-[#f7f9ff]/95 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-[#ddc1b2]/40 shadow-xs flex flex-col xl:flex-row xl:items-end justify-between gap-4 transition-all">
+        <div className="space-y-1.5 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#366847]/10 text-[#366847] text-xs font-bold whitespace-nowrap">
               <span className="w-1.5 h-1.5 rounded-full bg-[#366847]"></span>
               กำลังแสดง: {quarterLabels[selectedQuarter]}
             </span>
-            <span className="text-xs text-[#79564b] flex items-center gap-1">
+            <span className="text-xs text-[#79564b] flex items-center gap-1 whitespace-nowrap">
               <span className="material-symbols-outlined text-[16px]">schedule</span>
               ข้อมูลอัปเดต: วันนี้ 09:30 น.
             </span>
           </div>
 
-          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight whitespace-nowrap">
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
             ภาพรวมงบประมาณผู้บริหาร
           </h1>
-          <p className="text-sm text-[#564337]">
+          <p className="text-xs sm:text-sm text-[#564337]">
             วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • ปีงบประมาณ 2569 (CAMT CMU Fiscal Dashboard)
           </p>
         </div>
 
         {/* Quarter Filter & Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 flex-wrap">
           {/* Segmented Fiscal Quarter Control */}
-          <div className="inline-flex p-1 bg-[#ebeef3] rounded-xl shadow-xs text-xs font-bold">
+          <div className="inline-flex p-1 bg-[#ebeef3] rounded-xl shadow-xs text-xs font-bold overflow-x-auto max-w-full">
             {(['all', 'q1', 'q2', 'q3', 'q4'] as const).map((q) => {
               const label =
                 q === 'all'
@@ -139,14 +138,14 @@ export const OverviewScreen = ({
                     : q === 'q2'
                       ? 'ไตรมาส 2'
                       : q === 'q3'
-                        ? 'ไตรมาส 3 (ใช้งานอยู่)'
+                        ? 'ไตรมาส 3'
                         : 'ไตรมาส 4';
               const isActive = selectedQuarter === q;
               return (
                 <button
                   key={q}
                   onClick={() => onChangeQuarter(q)}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center whitespace-nowrap gap-1 ${isActive
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center whitespace-nowrap gap-1 ${isActive
                     ? 'bg-white text-[#994700] font-extrabold shadow-xs'
                     : 'text-[#564337] hover:text-[#181c20]'
                     }`}
@@ -158,26 +157,14 @@ export const OverviewScreen = ({
             })}
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onExportReport && onExportReport()}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer whitespace-nowrap"
-              data-tooltip="ดูข้อมูลก่อนส่งออกและพิมพ์รายงาน PDF"
-            >
-              <span className="material-symbols-outlined text-[18px] text-[#79564b]">download</span>
-              ส่งออกรายงาน
-            </button>
-            <button
-              onClick={onToggleApprovePending}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap ${pendingApproved || pendingCount === 0
-                ? 'bg-[#366847] text-white hover:bg-[#1d5031]'
-                : 'bg-[#e87722] hover:bg-[#994700] text-white'
-                }`}
-            >
-              <span className="material-symbols-outlined text-[18px]">verified</span>
-              {pendingApproved || pendingCount === 0 ? 'อนุมัติเรียบร้อยแล้ว ✓' : `อนุมัติรายการค้าง (${pendingCount} รายการ)`}
-            </button>
-          </div>
+          <button
+            onClick={() => onExportReport && onExportReport()}
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer whitespace-nowrap"
+            data-tooltip="ดูข้อมูลก่อนส่งออกและพิมพ์รายงาน PDF"
+          >
+            <span className="material-symbols-outlined text-[18px] text-[#79564b]">download</span>
+            <span>ส่งออกรายงาน</span>
+          </button>
         </div>
       </section>
 

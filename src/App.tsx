@@ -249,7 +249,7 @@ export default function App() {
       {/* Main Content Area - shifts dynamically with sidebar width */}
       <div
         className={`flex-1 min-w-0 w-full transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? 'pl-20' : 'pl-72'
+          isSidebarCollapsed ? 'pl-20' : 'pl-64'
         }`}
       >
         <Header
@@ -264,7 +264,7 @@ export default function App() {
           onSelectProject={handleOpenDetailModal}
         />
 
-        <main className="w-full max-w-[1600px] mx-auto px-6 sm:px-8 pt-28 pb-12 min-w-0">
+        <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 min-w-0">
           {currentTab === 'overview' && (
             <OverviewScreen
               categories={INITIAL_CATEGORIES}

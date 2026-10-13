@@ -241,9 +241,9 @@ export const DisbursementScreen = ({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2">
+          <div className="px-4 sm:px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex flex-wrap items-center gap-1.5 sm:gap-2 py-2">
             {[
-              { id: 'tab-overview', label: 'ติดตามเบิกจ่าย 186 โครงการทั้งหมด (37 ส่วนงาน)', icon: 'query_stats' },
+              { id: 'tab-overview', label: 'ติดตามเบิกจ่าย 186 โครงการ (37 ส่วนงาน)', icon: 'query_stats' },
               { id: 'tab-departments', label: 'รายการโครงการรอติดตามเบิกจ่าย', icon: 'account_tree' },
               { id: 'tab-commitments', label: 'รายการ PO และใบสำคัญผูกพันงบ', icon: 'receipt_long', badge: pendingCount > 0 ? pendingCount.toString() : undefined },
             ].map((t) => (

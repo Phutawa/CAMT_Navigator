@@ -163,7 +163,7 @@ export const AllocationScreen = ({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2">
+          <div className="px-4 sm:px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex flex-wrap items-center gap-1.5 sm:gap-2 py-2">
             {[
               { id: 'summary', label: 'สรุปการจัดสรรภาพรวม (Overall Summary)', icon: 'query_stats' },
               { id: 'departments', label: `แจกแจง 5 กลุ่ม/ส่วนงาน`, icon: 'apartment', badge: String(effectiveDepartments.length) },

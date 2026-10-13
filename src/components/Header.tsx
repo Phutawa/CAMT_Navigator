@@ -68,7 +68,7 @@ export const Header = ({
   return (
     <header
       className={`fixed top-0 right-0 h-20 bg-[#f7f9ff]/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-40 border-b border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'left-20' : 'left-72'
+        isCollapsed ? 'left-20' : 'left-64'
       }`}
     >
       <div className="h-20 w-full px-6 sm:px-8 flex items-center justify-between gap-4">

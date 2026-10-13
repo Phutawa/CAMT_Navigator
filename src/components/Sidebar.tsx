@@ -45,7 +45,7 @@ export const Sidebar = ({
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-full bg-[#f1f4f9] z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-r border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-72'
+      className={`fixed left-0 top-0 h-full bg-[#f1f4f9] z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-r border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
         }`}
     >
       {/* Floating Circular Toggle Button (half inside sidebar, half outside on the border like in reference) */}
