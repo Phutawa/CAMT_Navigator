@@ -76,7 +76,7 @@ export const ReportsScreen = ({
             <button
               onClick={onExportReport}
               className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
-              title="ดาวน์โหลด PDF รายงานสรุป"
+              data-tooltip="ดาวน์โหลด PDF รายงานสรุป"
             >
               <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
             </button>
@@ -138,7 +138,7 @@ export const ReportsScreen = ({
                 <button
                   onClick={() => setIsAiExpanded(!isAiExpanded)}
                   className="p-1 rounded-lg text-[#79564b] hover:bg-[#ebeef3] transition-colors cursor-pointer"
-                  title={isAiExpanded ? 'ย่อหน้าต่าง AI' : 'ขยายหน้าต่าง AI'}
+                  data-tooltip={isAiExpanded ? 'ย่อหน้าต่าง AI' : 'ขยายหน้าต่าง AI'}
                 >
                   <span className="material-symbols-outlined text-[20px]">
                     {isAiExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
@@ -558,7 +558,7 @@ export const ReportsScreen = ({
                           <td className="py-3.5 px-4 font-bold text-[#181c20]">
                             <div className="flex items-center gap-2">
                               {row.isTop && (
-                                <span className="material-symbols-outlined text-[16px] text-[#e87722]" title="อันดับ 1 สูงสุด">
+                                <span className="material-symbols-outlined text-[16px] text-[#e87722]" data-tooltip="อันดับ 1 สูงสุด">
                                   workspace_premium
                                 </span>
                               )}

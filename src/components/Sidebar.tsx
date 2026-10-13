@@ -52,7 +52,7 @@ export const Sidebar = ({
       <button
         onClick={onToggleCollapse}
         className="absolute -right-3.5 top-[26px] z-50 w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/50 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer group"
-        title={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
+        data-tooltip={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
         aria-label={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
       >
         {isCollapsed ? (
@@ -133,7 +133,7 @@ export const Sidebar = ({
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                title={isCollapsed ? item.label : undefined}
+                data-tooltip={isCollapsed ? item.label : undefined}
                 className={`w-full flex items-center rounded-xl transition-all text-[0.875rem] font-bold text-left cursor-pointer ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
                   } ${isActive
                     ? 'bg-[#e87722] text-white shadow-sm ring-2 ring-[#e87722]/30'
@@ -241,7 +241,7 @@ export const Sidebar = ({
               <button
                 onClick={() => setShowInfo(!showInfo)}
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20] cursor-pointer transition-colors"
-                title="ข้อมูลระบบ"
+                data-tooltip="ข้อมูลระบบ"
               >
                 <span className="material-symbols-outlined text-[18px]">help</span>
               </button>

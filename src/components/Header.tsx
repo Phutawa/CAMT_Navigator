@@ -171,7 +171,7 @@ export const Header = ({
           <button
             onClick={onRefreshSync}
             className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#ddc1b2]/50 shadow-xs text-[0.75rem] text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer"
-            title="กดเพื่ออัปเดตข้อมูลล่าสุด"
+            data-tooltip="กดเพื่ออัปเดตข้อมูลล่าสุด"
           >
             <span className="material-symbols-outlined text-[16px] text-[#e87722]">sync</span>
             <span>
@@ -184,7 +184,7 @@ export const Header = ({
             <button
               onClick={() => setShowNotif(!showNotif)}
               className="relative w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-[#ebeef3] shadow-xs border border-[#ddc1b2]/40 transition-colors cursor-pointer"
-              title="การแจ้งเตือน"
+              data-tooltip="การแจ้งเตือน"
             >
               <span className="material-symbols-outlined text-[22px]">notifications</span>
               <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#e87722] ring-2 ring-white"></span>

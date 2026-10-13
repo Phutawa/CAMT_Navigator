@@ -134,7 +134,7 @@ export const OverviewScreen = ({
             <button
               onClick={() => onExportReport && onExportReport()}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer whitespace-nowrap"
-              title="ดูข้อมูลก่อนส่งออกและพิมพ์รายงาน PDF"
+              data-tooltip="ดูข้อมูลก่อนส่งออกและพิมพ์รายงาน PDF"
             >
               <span className="material-symbols-outlined text-[18px] text-[#79564b]">download</span>
               ส่งออกรายงาน

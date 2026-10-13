@@ -74,7 +74,7 @@ export const ProjectDetailModal = ({
               <button
                 onClick={() => onExportPreview(currentProject)}
                 className="px-3 py-1.5 rounded-lg bg-[#ebeef3] hover:bg-[#e0e3e8] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="รายงานโครงการนี้ก่อนพิมพ์"
+                data-tooltip="รายงานโครงการนี้ก่อนพิมพ์"
               >
                 <span className="material-symbols-outlined text-[18px] text-[#e87722]">print</span>
                 <span>พิมพ์</span>
@@ -82,7 +82,7 @@ export const ProjectDetailModal = ({
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-lg hover:bg-[#ffdad6] hover:text-[#ba1a1a] flex items-center justify-center transition-colors cursor-pointer"
-                title="ปิด"
+                data-tooltip="ปิด"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
