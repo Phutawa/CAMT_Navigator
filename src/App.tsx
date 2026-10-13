@@ -16,6 +16,8 @@ import {
   INITIAL_CATEGORIES,
   INITIAL_DEPARTMENTS,
   INITIAL_PROJECTS,
+  INITIAL_COMMITMENTS,
+  CommitmentItem,
   ProjectItem,
   DepartmentSummary,
   QuarterType,
@@ -42,6 +44,7 @@ export default function App() {
   // Interactive Live Data State
   const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
   const [departments, setDepartments] = useState<DepartmentSummary[]>(INITIAL_DEPARTMENTS);
+  const [commitments, setCommitments] = useState<CommitmentItem[]>(INITIAL_COMMITMENTS);
   const [centralReserve, setCentralReserve] = useState<number>(3450000);
   const [pendingApproved, setPendingApproved] = useState<boolean>(false);
 
@@ -167,13 +170,42 @@ export default function App() {
     );
   };
 
-  // Approve Pending Items
+  // Dynamic Pending PO count
+  const pendingCommitmentsCount = commitments.filter((c) => !c.status.includes('อนุมัติ')).length;
+
+  // Handle individual PO approval
+  const handleApprovePO = (poNo: string) => {
+    setCommitments((prev) =>
+      prev.map((c) =>
+        c.no === poNo
+          ? { ...c, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }
+          : c
+      )
+    );
+    addToast('success', 'อนุมัติเบิกจ่ายสำเร็จ', `ตรวจรับและอนุมัติใบสั่งซื้อ ${poNo} เรียบร้อย`);
+  };
+
+  // Handle bulk PO approval
+  const handleBulkApprovePO = () => {
+    setCommitments((prev) =>
+      prev.map((c) => ({ ...c, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }))
+    );
+    setPendingApproved(true);
+    addToast('success', 'อนุมัติเบิกจ่ายทั้งหมดสำเร็จ', 'อนุมัติรายการค้างทั้งหมดผ่านระบบ ERP เรียบร้อยแล้ว');
+  };
+
+  // Toggle approve all pending items (Syncs across Overview and Disbursement)
   const handleToggleApprovePending = () => {
-    const newState = !pendingApproved;
-    setPendingApproved(newState);
-    if (newState) {
-      addToast('success', 'อนุมัติ 5 รายการค้างสำเร็จ', 'ลงนามรับรองใบเบิกจ่ายและเอกสารผูกพันงบทั้งหมดใน Q3 เรียบร้อย');
+    const isCurrentlyAllApproved = commitments.every((c) => c.status.includes('อนุมัติ'));
+    if (!isCurrentlyAllApproved) {
+      setCommitments((prev) =>
+        prev.map((c) => ({ ...c, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }))
+      );
+      setPendingApproved(true);
+      addToast('success', 'อนุมัติรายการค้างสำเร็จ', 'ลงนามรับรองใบเบิกจ่ายและเอกสารผูกพันงบทั้งหมดใน Q3 เรียบร้อย');
     } else {
+      setCommitments(INITIAL_COMMITMENTS);
+      setPendingApproved(false);
       addToast('info', 'ยกเลิกการอนุมัติ', 'ย้อนสถานะรายการกลับสู่รอการตรวจสอบ');
     }
   };
@@ -209,7 +241,7 @@ export default function App() {
       <Sidebar
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
-        pendingCount={pendingApproved ? 0 : 3}
+        pendingCount={pendingCommitmentsCount}
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
@@ -249,7 +281,8 @@ export default function App() {
               onOpenProjectModal={handleOpenDetailModal}
               onOpenReduceModal={handleOpenReduceModal}
               onOpenCloseModal={handleOpenCloseModal}
-              pendingApproved={pendingApproved}
+              pendingApproved={pendingCommitmentsCount === 0}
+              pendingCount={pendingCommitmentsCount}
               onToggleApprovePending={handleToggleApprovePending}
               onExportReport={(customProjects) => handleTriggerExportPreview('overview', undefined, customProjects)}
             />
@@ -271,15 +304,13 @@ export default function App() {
           {currentTab === 'disbursement' && (
             <DisbursementScreen
               searchQuery={searchQuery}
+              commitments={commitments}
+              pendingApproved={pendingCommitmentsCount === 0}
               onNotifyAlert={() => {
                 addToast('warning', 'ส่งการแจ้งเตือนเร่งรัดแล้ว', 'ส่งบันทึกติดตามผ่านระบบไปยังโครงการที่เบิกจ่ายล่าช้า');
               }}
-              onApprovePO={(poNo) => {
-                addToast('success', 'อนุมัติเบิกจ่ายสำเร็จ', `ตรวจรับและอนุมัติใบสั่งซื้อ ${poNo} เรียบร้อย`);
-              }}
-              onBulkApprovePO={() => {
-                addToast('success', 'อนุมัติเบิกจ่ายทั้งหมดสำเร็จ', 'อนุมัติรายการค้างทั้งหมดผ่านระบบ ERP เรียบร้อยแล้ว');
-              }}
+              onApprovePO={handleApprovePO}
+              onBulkApprovePO={handleBulkApprovePO}
               onExportReport={() => handleTriggerExportPreview('disbursement')}
               onOpenProjectModal={handleOpenDetailModal}
             />

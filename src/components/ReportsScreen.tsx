@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ProjectItem } from '../data/mockData';
 
 interface ReportsScreenProps {
-  onExportReport: () => void;
+  onExportReport?: () => void;
   onSignedSuccess: () => void;
   projects?: ProjectItem[];
   onExportProjectReport?: (prj: ProjectItem) => void;
@@ -53,9 +53,9 @@ export const ReportsScreen = ({
           <div className="h-1.5 w-full bg-gradient-to-r from-[#e87722] via-[#994700] to-[#366847] rounded-t-2xl"></div>
 
         {/* Header */}
-        <div className="px-6 py-3.5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="px-6 py-4 sm:py-5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full bg-[#ffdbc8] text-[#743400] text-[11px] font-bold tracking-wider">
                 #REP-2569-ANALYTICS
               </span>
@@ -64,22 +64,12 @@ export const ReportsScreen = ({
               </span>
               <span className="text-[11px] text-[#79564b]">รอบรายงานผลระดับนโยบาย</span>
             </div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#181c20]">
+            <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
               รายงานสรุปและสถิติงบประมาณ ประจำปีงบประมาณ 2569
             </h1>
-            <p className="text-[11px] text-[#564337]">
+            <p className="text-sm text-[#564337] mt-1">
               วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Intelligence &amp; Performance KPIs
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-
-            <button
-              onClick={onExportReport}
-              className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
-              data-tooltip="ดาวน์โหลด PDF รายงานสรุป"
-            >
-              <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-            </button>
           </div>
         </div>
 
@@ -238,7 +228,7 @@ export const ReportsScreen = ({
                   <div className="text-2xl font-black text-[#e87722] mt-2 tabular-nums">
                     4.65 <span className="text-xs text-[#79564b] font-normal">/ 5.00</span>
                   </div>
-                  <div className="text-xs text-[#564337] mt-1">ครอบคลุม 24 โครงการ</div>
+                  <div className="text-xs text-[#564337] mt-1">ครอบคลุม 186 โครงการ (37 ส่วนงาน)</div>
                 </div>
 
                 <div className="bg-white p-4 rounded-xl border border-[#ddc1b2]/30 shadow-xs">
@@ -250,10 +240,10 @@ export const ReportsScreen = ({
                 <div className="bg-white p-4 rounded-xl border border-[#366847]/40 shadow-xs">
                   <span className="text-xs text-[#79564b] font-bold">บรรลุเป้าหมายตามกำหนด</span>
                   <div className="text-2xl font-black text-[#366847] mt-2 tabular-nums">
-                    21 / 24 โครงการ
+                    165 / 186 โครงการ
                   </div>
                   <div className="text-xs text-[#366847] font-semibold mt-1">
-                    87.5% สำเร็จตามไทม์ไลน์
+                    88.7% สำเร็จตามไทม์ไลน์
                   </div>
                 </div>
               </div>
@@ -286,10 +276,10 @@ export const ReportsScreen = ({
                       en: 'Academic Excellence',
                       icon: 'school',
                       iconBg: 'bg-[#e0f2fe] text-[#0369a1]',
-                      budget: '฿3,500,000',
-                      spent: '฿2,450,000',
-                      disbPct: '70.0%',
-                      kpiScore: '91%',
+                      budget: '฿2,450,000',
+                      spent: '฿1,720,000',
+                      disbPct: '70.2%',
+                      kpiScore: '92%',
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
                       scope: '14 หลักสูตร (ตรี/โท/เอก)',
@@ -301,10 +291,10 @@ export const ReportsScreen = ({
                       en: 'Research & Innovation',
                       icon: 'science',
                       iconBg: 'bg-[#fef3c7] text-[#92400e]',
-                      budget: '฿2,800,000',
-                      spent: '฿1,120,000',
-                      disbPct: '40.0%',
-                      kpiScore: '86%',
+                      budget: '฿1,680,000',
+                      spent: '฿1,150,000',
+                      disbPct: '68.5%',
+                      kpiScore: '89%',
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
                       scope: '2 ศูนย์นวัตกรรม / 8 ทุน',
@@ -316,9 +306,9 @@ export const ReportsScreen = ({
                       en: 'Student Quality',
                       icon: 'diversity_3',
                       iconBg: 'bg-[#b8f0c5] text-[#1d5031]',
-                      budget: '฿2,200,000',
-                      spent: '฿1,430,000',
-                      disbPct: '65.0%',
+                      budget: '฿1,650,000',
+                      spent: '฿1,120,000',
+                      disbPct: '67.9%',
                       kpiScore: '94%',
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
@@ -331,9 +321,9 @@ export const ReportsScreen = ({
                       en: 'Academic Services',
                       icon: 'public',
                       iconBg: 'bg-[#dbeafe] text-[#1e40af]',
-                      budget: '฿1,500,000',
-                      spent: '฿600,000',
-                      disbPct: '40.0%',
+                      budget: '฿1,220,000',
+                      spent: '฿780,000',
+                      disbPct: '63.9%',
                       kpiScore: '88%',
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
@@ -346,9 +336,9 @@ export const ReportsScreen = ({
                       en: 'Smart Org & Ops',
                       icon: 'corporate_fare',
                       iconBg: 'bg-[#ffdbc8] text-[#743400]',
-                      budget: '฿2,000,000',
-                      spent: '฿1,220,000',
-                      disbPct: '61.0%',
+                      budget: '฿1,550,000',
+                      spent: '฿1,050,000',
+                      disbPct: '67.7%',
                       kpiScore: '95%',
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
@@ -366,22 +356,30 @@ export const ReportsScreen = ({
                             : 'border-[#ddc1b2]/40 hover:border-[#e87722]/50 hover:bg-[#fffaf6]'
                         }`}
                       >
-                        {isSelected && (
-                          <div className="absolute top-2 right-2 flex items-center gap-0.5 text-[9px] font-bold text-[#e87722] bg-[#fff0e6] px-1.5 py-0.5 rounded-full">
-                            <span className="material-symbols-outlined text-[12px]">check_circle</span>
-                            <span>กำลังเลือกดู</span>
-                          </div>
-                        )}
                         <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${card.iconBg}`}>
-                              <span className="material-symbols-outlined text-[16px]">{card.icon}</span>
-                            </span>
-                            <div className="min-w-0 pr-10">
-                              <span className="text-[10px] font-bold text-[#79564b] block">{card.code}</span>
-                              <h4 className="text-xs font-bold text-[#181c20] truncate">{card.title}</h4>
+                          {/* Top row: Icon + Code on left, subtle 'กำลังเลือกดู' status badge on right */}
+                          <div className="flex items-center justify-between gap-1 mb-1.5">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${card.iconBg}`}>
+                                <span className="material-symbols-outlined text-[15px]">{card.icon}</span>
+                              </span>
+                              <span className="text-[11px] font-black text-[#79564b]">{card.code}</span>
                             </div>
+                            {isSelected && (
+                              <div className="flex items-center gap-0.5 text-[8px] font-bold text-[#e87722] bg-[#fff2e8] px-1.5 py-0.5 rounded-full border border-[#f97316]/25 shadow-2xs shrink-0">
+                                <span className="material-symbols-outlined text-[10px]">check_circle</span>
+                                <span className="whitespace-nowrap">กำลังเลือกดู</span>
+                              </div>
+                            )}
                           </div>
+
+                          {/* Full width title without truncation - wraps cleanly up to 2 lines */}
+                          <h4
+                            className="text-xs font-bold text-[#181c20] leading-snug min-h-[32px] flex items-center line-clamp-2"
+                            title={card.title}
+                          >
+                            {card.title}
+                          </h4>
 
                           <div className="mt-2 space-y-1">
                             <div className="flex justify-between text-[11px] font-semibold text-[#564337]">
@@ -404,11 +402,13 @@ export const ReportsScreen = ({
                           </div>
                         </div>
 
-                        <div className="mt-2.5 pt-2 border-t border-[#ebeef3] flex items-center justify-between text-[10px]">
-                          <span className={`px-1.5 py-0.2 rounded font-bold ${card.badgeClass}`}>
+                        <div className="mt-2.5 pt-2 border-t border-[#ebeef3] flex items-center justify-between gap-1.5 min-w-0 text-[10px]">
+                          <span className={`whitespace-nowrap shrink-0 px-1.5 py-0.5 rounded font-bold ${card.badgeClass}`}>
                             KPI: {card.kpiScore} ({card.kpiRating})
                           </span>
-                          <span className="text-[9px] text-[#79564b] truncate">{card.scope}</span>
+                          <span className="text-[9px] text-[#79564b] truncate min-w-0 text-right" title={card.scope}>
+                            {card.scope}
+                          </span>
                         </div>
                       </button>
                     );
@@ -519,39 +519,39 @@ export const ReportsScreen = ({
                     <tbody className="divide-y divide-[#ebeef3]">
                       {(benchmarkSegment === 'academic'
                         ? [
-                            { dept: 'วิศวกรรมซอฟต์แวร์ (SE - International)', bud: '฿3,100,000', pct: '88.0%', metric: '฿14,200 / คน', score: '4.82 / 5.0', isTop: true, badge: 'ผลงานเด่น EdPEx' },
-                            { dept: 'บูรณาการอุตสาหกรรมดิจิทัล (DII)', bud: '฿2,400,000', pct: '86.4%', metric: '฿15,100 / คน', score: '4.70 / 5.0', isTop: false, badge: 'บัณฑิตตรงสายงาน 95%' },
-                            { dept: 'บัณฑิตศึกษา ป.โท/ป.เอก (Graduate Studies - DTM & KMI)', bud: '฿1,950,000', pct: '86.8%', metric: '฿18,200 / คน', score: '4.75 / 5.0', isTop: false, badge: 'งานวิจัยตีพิมพ์สากล Scopus' },
-                            { dept: 'แอนิเมชันและวิชวลเอฟเฟกต์ (ANIM)', bud: '฿2,200,000', pct: '84.2%', metric: '฿16,800 / คน', score: '4.60 / 5.0', isTop: false, badge: 'รางวัลนวัตกรรมระดับชาติ' },
-                            { dept: 'การจัดการความรู้และนวัตกรรม (MMIT)', bud: '฿1,800,000', pct: '81.5%', metric: '฿13,500 / คน', score: '4.55 / 5.0', isTop: false, badge: 'ต้นทุนประหยัดต่อหัวดีเด่น' },
+                            { dept: 'วิศวกรรมซอฟต์แวร์ (SE - International)', bud: '฿480,000', pct: '88.0%', metric: '฿14,200 / คน', score: '4.82 / 5.0', isTop: true, badge: 'ผลงานเด่น EdPEx' },
+                            { dept: 'บูรณาการอุตสาหกรรมดิจิทัล (DII)', bud: '฿380,000', pct: '86.4%', metric: '฿15,100 / คน', score: '4.70 / 5.0', isTop: false, badge: 'บัณฑิตตรงสายงาน 95%' },
+                            { dept: 'บัณฑิตศึกษา ป.โท/ป.เอก (Graduate Studies - DTM & KMI)', bud: '฿320,000', pct: '86.8%', metric: '฿18,200 / คน', score: '4.75 / 5.0', isTop: false, badge: 'งานวิจัยตีพิมพ์สากล Scopus' },
+                            { dept: 'แอนิเมชันและวิชวลเอฟเฟกต์ (ANIM)', bud: '฿350,000', pct: '84.2%', metric: '฿16,800 / คน', score: '4.60 / 5.0', isTop: false, badge: 'รางวัลนวัตกรรมระดับชาติ' },
+                            { dept: 'การจัดการความรู้และนวัตกรรม (MMIT)', bud: '฿280,000', pct: '81.5%', metric: '฿13,500 / คน', score: '4.55 / 5.0', isTop: false, badge: 'ต้นทุนประหยัดต่อหัวดีเด่น' },
                           ]
                         : benchmarkSegment === 'research'
                         ? [
-                            { dept: 'ศูนย์เทคโนโลยีและนวัตกรรมดิจิทัล (DITC)', bud: '฿1,250,000', pct: '84.0%', metric: '฿178,500 / โครงการ', score: '4.80 / 5.0', isTop: true, badge: 'ถ่ายทอดเทคโนโลยีเอกชน 100%' },
-                            { dept: 'ห้องปฏิบัติการวิจัยดิจิทัลและ AI Research Lab', bud: '฿650,000', pct: '82.0%', metric: '฿162,500 / โครงการ', score: '4.72 / 5.0', isTop: false, badge: 'ทุนวิจัยร่วมต่างประเทศ' },
-                            { dept: 'ศูนย์ WIL & BRIDGE (ความร่วมมืออุตสาหกรรม)', bud: '฿700,000', pct: '79.2%', metric: '฿175,000 / โครงการ', score: '4.70 / 5.0', isTop: false, badge: 'Regulatory Sandbox มช.' },
-                            { dept: 'หน่วยบริหารงานวิจัยและทรัพย์สินทางปัญญา (RES-01)', bud: '฿850,000', pct: '76.5%', metric: '฿141,600 / โครงการ', score: '4.65 / 5.0', isTop: false, badge: 'ยื่นจดสิทธิบัตร 5 รายการ' },
+                            { dept: 'ศูนย์เทคโนโลยีและนวัตกรรมดิจิทัล (DITC)', bud: '฿420,000', pct: '84.0%', metric: '฿178,500 / โครงการ', score: '4.80 / 5.0', isTop: true, badge: 'ถ่ายทอดเทคโนโลยีเอกชน 100%' },
+                            { dept: 'ห้องปฏิบัติการวิจัยดิจิทัลและ AI Research Lab', bud: '฿360,000', pct: '82.0%', metric: '฿162,500 / โครงการ', score: '4.72 / 5.0', isTop: false, badge: 'ทุนวิจัยร่วมต่างประเทศ' },
+                            { dept: 'ศูนย์ WIL & BRIDGE (ความร่วมมืออุตสาหกรรม)', bud: '฿340,000', pct: '79.2%', metric: '฿175,000 / โครงการ', score: '4.70 / 5.0', isTop: false, badge: 'Regulatory Sandbox มช.' },
+                            { dept: 'หน่วยบริหารงานวิจัยและทรัพย์สินทางปัญญา (RES-01)', bud: '฿380,000', pct: '76.5%', metric: '฿141,600 / โครงการ', score: '4.65 / 5.0', isTop: false, badge: 'ยื่นจดสิทธิบัตร 5 รายการ' },
                           ]
                         : benchmarkSegment === 'student'
                         ? [
-                            { dept: 'หน่วยวิเทศสัมพันธ์และความร่วมมือนานาชาติ (RES-02)', bud: '฿650,000', pct: '81.0%', metric: '88.5% แลกเปลี่ยน/Global', score: '4.80 / 5.0', isTop: true, badge: 'MOU 12 สถาบันคู่สัญญา' },
-                            { dept: 'โครงการเตรียมความพร้อมวิชาชีพและสหกิจศึกษา (WIL)', bud: '฿350,000', pct: '80.2%', metric: '96.0% อัตราได้งานทำ', score: '4.85 / 5.0', isTop: false, badge: 'นายจ้างพึงพอใจ 98%' },
-                            { dept: 'หน่วยกิจการนักศึกษาและศิษย์เก่าสัมพันธ์ (EDU-02)', bud: '฿480,000', pct: '86.5%', metric: '94.2% นศ. ร่วมกิจกรรม', score: '4.75 / 5.0', isTop: false, badge: 'จิตสาธารณะ & Soft skills' },
-                            { dept: 'ห้องสร้างสรรค์และบ่มเพาะทักษะนักศึกษา (EDU-05)', bud: '฿520,000', pct: '85.4%', metric: '91.0% อัตราการใช้พื้นที่', score: '4.68 / 5.0', isTop: false, badge: 'เปิด 24 ชม. ปลอดภัย' },
+                            { dept: 'หน่วยวิเทศสัมพันธ์และความร่วมมือนานาชาติ (RES-02)', bud: '฿420,000', pct: '81.0%', metric: '88.5% แลกเปลี่ยน/Global', score: '4.80 / 5.0', isTop: true, badge: 'MOU 12 สถาบันคู่สัญญา' },
+                            { dept: 'โครงการเตรียมความพร้อมวิชาชีพและสหกิจศึกษา (WIL)', bud: '฿280,000', pct: '80.2%', metric: '96.0% อัตราได้งานทำ', score: '4.85 / 5.0', isTop: false, badge: 'นายจ้างพึงพอใจ 98%' },
+                            { dept: 'หน่วยกิจการนักศึกษาและศิษย์เก่าสัมพันธ์ (EDU-02)', bud: '฿320,000', pct: '86.5%', metric: '94.2% นศ. ร่วมกิจกรรม', score: '4.75 / 5.0', isTop: false, badge: 'จิตสาธารณะ & Soft skills' },
+                            { dept: 'ห้องสร้างสรรค์และบ่มเพาะทักษะนักศึกษา (EDU-05)', bud: '฿350,000', pct: '85.4%', metric: '91.0% อัตราการใช้พื้นที่', score: '4.68 / 5.0', isTop: false, badge: 'เปิด 24 ชม. ปลอดภัย' },
                           ]
                         : benchmarkSegment === 'service'
                         ? [
-                            { dept: 'ศูนย์ Lifelong Learning & Micro-credentials', bud: '฿550,000', pct: '45.0%', metric: '850 คน / ปี', score: '4.80 / 5.0', isTop: true, badge: 'พัฒนาทักษะอาชีพดิจิทัล' },
-                            { dept: 'โครงการถ่ายทอดดิจิทัลคอนเทนต์สู่โรงเรียนชนบท', bud: '฿220,000', pct: '35.0%', metric: '650 นักเรียน', score: '4.85 / 5.0', isTop: false, badge: 'ลดความเหลื่อมล้ำดิจิทัล' },
-                            { dept: 'โครงการ AI Literacy สำหรับผู้สูงอายุและท้องถิ่น', bud: '฿350,000', pct: '40.0%', metric: '420 คน / ปี', score: '4.75 / 5.0', isTop: false, badge: 'บริการสังคมเพื่อความยั่งยืน' },
-                            { dept: 'ศูนย์ให้คำปรึกษานวัตกรรมดิจิทัล SME ภาคเหนือ', bud: '฿380,000', pct: '38.0%', metric: '24 วิสาหกิจ', score: '4.70 / 5.0', isTop: false, badge: 'เพิ่มมูลค่าธุรกิจชุมชน' },
+                            { dept: 'ศูนย์ Lifelong Learning & Micro-credentials', bud: '฿320,000', pct: '45.0%', metric: '850 คน / ปี', score: '4.80 / 5.0', isTop: true, badge: 'พัฒนาทักษะอาชีพดิจิทัล' },
+                            { dept: 'โครงการถ่ายทอดดิจิทัลคอนเทนต์สู่โรงเรียนชนบท', bud: '฿180,000', pct: '35.0%', metric: '650 นักเรียน', score: '4.85 / 5.0', isTop: false, badge: 'ลดความเหลื่อมล้ำดิจิทัล' },
+                            { dept: 'โครงการ AI Literacy สำหรับผู้สูงอายุและท้องถิ่น', bud: '฿250,000', pct: '40.0%', metric: '420 คน / ปี', score: '4.75 / 5.0', isTop: false, badge: 'บริการสังคมเพื่อความยั่งยืน' },
+                            { dept: 'ศูนย์ให้คำปรึกษานวัตกรรมดิจิทัล SME ภาคเหนือ', bud: '฿270,000', pct: '38.0%', metric: '24 วิสาหกิจ', score: '4.70 / 5.0', isTop: false, badge: 'เพิ่มมูลค่าธุรกิจชุมชน' },
                           ]
                         : [
-                            { dept: 'หน่วยคอมพิวเตอร์และพัฒนาระบบ IT (ADM-03)', bud: '฿580,000', pct: '91.2%', metric: '99.1% ระบบออนไลน์พร้อมใช้', score: '4.85 / 5.0', isTop: true, badge: 'Digital Transformation 100%' },
-                            { dept: 'หน่วยนโยบายและแผนฯ (PLN-01)', bud: '฿250,000', pct: '86.0%', metric: '98.5% รายงาน EdPEx ตรงเวลา', score: '4.80 / 5.0', isTop: false, badge: 'ติดตามงบประมาณเรียลไทม์' },
-                            { dept: 'หน่วยการเงินและพัสดุ (FIN-01 / FIN-02)', bud: '฿530,000', pct: '88.6%', metric: '97.4% เบิกจ่ายตรงรอบบัญชี', score: '4.75 / 5.0', isTop: false, badge: 'ตรวจสอบบัญชี 0 ข้อทักท้วง' },
-                            { dept: 'หน่วยบริหารงานบุคคล HR (ADM-01)', bud: '฿220,000', pct: '85.0%', metric: '98.0% สวัสดิการ/อบรมบุคลากร', score: '4.70 / 5.0', isTop: false, badge: 'ประเมิน KPI ครบถ้วน 100%' },
-                            { dept: 'หน่วยอาคารสถานที่และยานพาหนะ (ADM-04)', bud: '฿360,000', pct: '87.5%', metric: '96.5% ความปลอดภัย/บำรุงรักษา', score: '4.65 / 5.0', isTop: false, badge: 'Smart Green Campus' },
+                            { dept: 'หน่วยคอมพิวเตอร์และพัฒนาระบบ IT (ADM-03)', bud: '฿380,000', pct: '91.2%', metric: '99.1% ระบบออนไลน์พร้อมใช้', score: '4.85 / 5.0', isTop: true, badge: 'Digital Transformation 100%' },
+                            { dept: 'หน่วยนโยบายและแผนฯ (PLN-01)', bud: '฿220,000', pct: '86.0%', metric: '98.5% รายงาน EdPEx ตรงเวลา', score: '4.80 / 5.0', isTop: false, badge: 'ติดตามงบประมาณเรียลไทม์' },
+                            { dept: 'หน่วยการเงินและพัสดุ (FIN-01 / FIN-02)', bud: '฿350,000', pct: '88.6%', metric: '97.4% เบิกจ่ายตรงรอบบัญชี', score: '4.75 / 5.0', isTop: false, badge: 'ตรวจสอบบัญชี 0 ข้อทักท้วง' },
+                            { dept: 'หน่วยบริหารงานบุคคล HR (ADM-01)', bud: '฿180,000', pct: '85.0%', metric: '98.0% สวัสดิการ/อบรมบุคลากร', score: '4.70 / 5.0', isTop: false, badge: 'ประเมิน KPI ครบถ้วน 100%' },
+                            { dept: 'หน่วยอาคารสถานที่และยานพาหนะ (ADM-04)', bud: '฿250,000', pct: '87.5%', metric: '96.5% ความปลอดภัย/บำรุงรักษา', score: '4.65 / 5.0', isTop: false, badge: 'Smart Green Campus' },
                           ]
                       ).map((row, i) => (
                         <tr key={i} className="hover:bg-[#FFF7F0]/40 transition-colors">
@@ -596,7 +596,7 @@ export const ReportsScreen = ({
                             </span>
                           </td>
                           <td className="py-3.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded-md bg-[#f1f4f9] text-[#564337] text-[10px] font-semibold border border-[#e5e8ee]">
+                            <span className="whitespace-nowrap inline-block px-2 py-0.5 rounded-md bg-[#f1f4f9] text-[#564337] text-[10px] font-semibold border border-[#e5e8ee]">
                               {row.badge}
                             </span>
                           </td>

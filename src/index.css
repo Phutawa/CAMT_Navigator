@@ -135,3 +135,34 @@
   text-align: left;
   max-width: 280px;
 }
+
+/* Side tooltip variant (displays to the RIGHT of the element, for vertical sidebars) */
+[data-tooltip].tooltip-side::after {
+  bottom: auto;
+  top: 50%;
+  left: calc(100% + 12px);
+  right: auto;
+  transform: translateY(-50%) translateX(-4px);
+  white-space: nowrap;
+}
+
+[data-tooltip].tooltip-side::before {
+  bottom: auto;
+  top: 50%;
+  left: calc(100% + 4px);
+  right: auto;
+  border-top-color: transparent;
+  border-right-color: #2c1a0e;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+[data-tooltip].tooltip-side:hover::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+[data-tooltip].tooltip-side:hover::before {
+  transform: translateY(-50%) translateX(0);
+}
+

@@ -78,7 +78,7 @@ export const Sidebar = ({
         )}
       </button>
 
-      <div className="flex flex-col flex-1 overflow-y-auto">
+      <div className={`flex flex-col flex-1 ${isCollapsed ? 'overflow-visible' : 'overflow-y-auto'}`}>
         {/* Brand Header */}
         <div
           className={`h-20 flex items-center border-b border-[#ddc1b2]/20 transition-all duration-300 ${isCollapsed ? 'justify-center px-2' : 'justify-start px-5'
@@ -126,15 +126,14 @@ export const Sidebar = ({
         )}
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-2 space-y-1.5">
+        <nav className={`flex-1 px-3 py-2 space-y-1.5 ${isCollapsed ? 'overflow-visible' : ''}`}>
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                data-tooltip={isCollapsed ? item.label : undefined}
-                className={`w-full flex items-center rounded-xl transition-all text-[0.875rem] font-bold text-left cursor-pointer ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
+                className={`relative group w-full flex items-center rounded-xl transition-all text-[0.875rem] font-bold text-left cursor-pointer ${isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
                   } ${isActive
                     ? 'bg-[#e87722] text-white shadow-sm ring-2 ring-[#e87722]/30'
                     : 'text-[#564337] hover:bg-[#ebeef3] hover:text-[#181c20]'
@@ -152,6 +151,23 @@ export const Sidebar = ({
                     {item.badge}
                   </span>
                 ) : null}
+
+                {/* Sleek Floating Side Tooltip for Collapsed Sidebar (Appears on the RIGHT, never clipped) */}
+                {isCollapsed && (
+                  <div className="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out z-[9999] flex items-center drop-shadow-xl translate-x-1 group-hover:translate-x-0">
+                    {/* Tooltip Arrow pointing left */}
+                    <div className="w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-[#2c1a0e] mr-[-1px] shrink-0" />
+                    {/* Tooltip Bubble with unclipped full text */}
+                    <div className="bg-gradient-to-br from-[#2c1a0e] to-[#3d2416] text-[#fdf5ef] text-xs font-bold px-3 py-1.5 rounded-xl shadow-2xl border border-[#e87722]/30 whitespace-nowrap tracking-wide flex items-center gap-2">
+                      <span>{item.label}</span>
+                      {item.badge && item.badge > 0 ? (
+                        <span className="bg-[#e87722] text-white text-[10px] px-1.5 py-0.5 rounded-full font-black leading-none">
+                          {item.badge}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                )}
               </button>
             );
           })}

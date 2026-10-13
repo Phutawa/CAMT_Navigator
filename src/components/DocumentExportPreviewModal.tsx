@@ -107,13 +107,6 @@ export const DocumentExportPreviewModal = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={handlePrint}
-              className="w-10 h-10 rounded-xl bg-[#FFF7F0] border border-[#ddc1b2]/80 text-[#564337] hover:bg-[#ffdbc8] hover:text-[#994700] hover:border-[#e87722]/50 flex items-center justify-center shadow-xs cursor-pointer transition-colors tooltip-trigger"
-              title="พิมพ์ / บันทึกเป็น PDF"
-            >
-              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
-            </button>
-            <button
               onClick={onClose}
               className="p-2 rounded-xl hover:bg-[#ebeef3] text-[#79564b] transition-colors cursor-pointer"
               title="ปิด"
@@ -242,7 +235,7 @@ export const DocumentExportPreviewModal = ({
                         <th className="py-3 px-3 text-center">จำนวนโครงการ</th>
                         <th className="py-3 px-4 text-right">วงเงินจัดสรร (บาท)</th>
                         <th className="py-3 px-3 text-right">สัดส่วน</th>
-                        <th className="py-3 px-3 text-center">สถานะ</th>
+                        <th className="py-3 px-3 text-center min-w-[110px] whitespace-nowrap">สถานะ</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ebeef3]">
@@ -254,7 +247,7 @@ export const DocumentExportPreviewModal = ({
                           <td className="py-3 px-4 text-right font-black tabular-nums">฿{d.amount.toLocaleString()}</td>
                           <td className="py-3 px-3 text-right font-bold text-[#564337]">{d.share}</td>
                           <td className="py-3 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded-full bg-[#b8f0c5] text-[#1d5031] font-bold text-[10px]">
+                            <span className="px-2.5 py-1 rounded-full bg-[#b8f0c5] text-[#1d5031] font-bold text-[10px] whitespace-nowrap inline-flex items-center justify-center">
                               อนุมัติสมบูรณ์
                             </span>
                           </td>
@@ -347,7 +340,7 @@ export const DocumentExportPreviewModal = ({
                   <div>
                     <span className="text-[11px] text-[#79564b]">ดัชนีความคุ้มค่า ROI</span>
                     <div className="text-xl font-bold text-[#e87722]">4.65 / 5.0</div>
-                    <span className="text-[10px] text-[#564337]">24 โครงการ</span>
+                    <span className="text-[10px] text-[#564337]">186 โครงการ (37 ส่วนงาน)</span>
                   </div>
                   <div>
                     <span className="text-[11px] text-[#79564b]">ประหยัดงบรวมศูนย์</span>
@@ -356,8 +349,8 @@ export const DocumentExportPreviewModal = ({
                   </div>
                   <div>
                     <span className="text-[11px] text-[#79564b]">โครงการสำเร็จตามแผน</span>
-                    <div className="text-xl font-bold text-[#366847]">21 / 24</div>
-                    <span className="text-[10px] text-[#366847]">ร้อยละ 87.5%</span>
+                    <div className="text-xl font-bold text-[#366847]">165 / 186</div>
+                    <span className="text-[10px] text-[#366847]">ร้อยละ 88.7%</span>
                   </div>
                 </div>
 
@@ -365,24 +358,24 @@ export const DocumentExportPreviewModal = ({
                   <h4 className="font-bold text-xs text-[#181c20]">ผลการดำเนินงานเทียบ 5 ยุทธศาสตร์ (Strategic KPIs):</h4>
                   <div className="p-4 bg-[#f8fafc] rounded-xl border border-[#ddc1b2]/30 space-y-2">
                     <div className="flex justify-between">
-                      <span>1. พัฒนาศักยภาพนักศึกษา (Student Quality):</span>
-                      <strong className="text-[#366847]">บรรลุ 94% (ยอดใช้ ฿1,430,000)</strong>
+                      <span>1. ยกระดับวิชาการและหลักสูตร (Academic Excellence):</span>
+                      <strong className="text-[#366847]">บรรลุ 92% (ยอดใช้ ฿1,720,000 / กรอบ ฿2,450,000)</strong>
                     </div>
                     <div className="flex justify-between">
-                      <span>2. ยกระดับวิชาการและหลักสูตร (Academic Excellence):</span>
-                      <strong className="text-[#366847]">บรรลุ 91% (ยอดใช้ ฿2,450,000)</strong>
+                      <span>2. งานวิจัยและนวัตกรรมแนวหน้า (Research &amp; Innovation):</span>
+                      <strong className="text-[#366847]">บรรลุ 89% (ยอดใช้ ฿1,150,000 / กรอบ ฿1,680,000)</strong>
                     </div>
                     <div className="flex justify-between">
-                      <span>3. งานวิจัยและนวัตกรรมแนวหน้า (Research &amp; Innovation):</span>
-                      <strong className="text-[#366847]">บรรลุ 86% (ยอดใช้ ฿1,120,000)</strong>
+                      <span>3. พัฒนาศักยภาพนักศึกษา (Student Quality):</span>
+                      <strong className="text-[#366847]">บรรลุ 94% (ยอดใช้ ฿1,120,000 / กรอบ ฿1,650,000)</strong>
                     </div>
                     <div className="flex justify-between">
                       <span>4. บริการวิชาการสู่สังคม (Social Impact):</span>
-                      <strong className="text-[#366847]">บรรลุ 88% (ยอดใช้ ฿600,000)</strong>
+                      <strong className="text-[#366847]">บรรลุ 88% (ยอดใช้ ฿780,000 / กรอบ ฿1,220,000)</strong>
                     </div>
                     <div className="flex justify-between">
                       <span>5. บริหารจัดการองค์กรอัจฉริยะ (Smart Org):</span>
-                      <strong className="text-[#366847]">บรรลุ 95% (ยอดใช้ ฿1,220,000)</strong>
+                      <strong className="text-[#366847]">บรรลุ 95% (ยอดใช้ ฿1,050,000 / กรอบ ฿1,550,000)</strong>
                     </div>
                   </div>
                 </div>

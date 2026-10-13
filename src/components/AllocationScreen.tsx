@@ -7,7 +7,7 @@ interface AllocationScreenProps {
   searchQuery?: string;
   onCommitSuccess?: () => void;
   onOpenEditModal: () => void;
-  onExportReport: () => void;
+  onExportReport?: () => void;
   onOpenProjectModal?: (prj: any) => void;
 }
 
@@ -130,9 +130,9 @@ export const AllocationScreen = ({
           <div className="h-1.5 w-full bg-gradient-to-r from-[#e87722] via-[#b58d80] to-[#366847] rounded-t-2xl"></div>
 
           {/* Header */}
-          <div className="px-6 py-3.5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="px-6 py-4 sm:py-5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#ffdbc8] text-[#743400] text-[11px] font-bold uppercase tracking-wider">
                   #ALLOC-2569-PLAN
                 </span>
@@ -141,22 +141,25 @@ export const AllocationScreen = ({
                 </span>
                 <span className="text-[11px] text-[#79564b]">รอบการจัดสรรหลัก (Annual Quota)</span>
               </div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-[#181c20]">
+              <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
                 แผนการจัดสรรงบประมาณ ประจำปีงบประมาณ 2569
-              </h2>
-              <p className="text-[11px] text-[#564337]">
+              </h1>
+              <p className="text-sm text-[#564337] mt-1">
                 วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Allocation Master Matrix
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={onExportReport}
-                className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
-                title="ดาวน์โหลด PDF สรุปแผนงบ"
-              >
-                <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-              </button>
-            </div>
+            {activeTab === 'summary' && onExportReport && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onExportReport}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#181c20] text-xs font-bold shadow-xs hover:bg-[#ebeef3] transition-colors border border-[#ddc1b2]/40 cursor-pointer whitespace-nowrap"
+                  title="พิมพ์ / ดาวน์โหลด PDF เอกสารประกาศแผนจัดสรร"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-[#79564b]">picture_as_pdf</span>
+                  <span>ส่งออกแผนจัดสรร PDF</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Navigation Tabs */}
@@ -188,58 +191,60 @@ export const AllocationScreen = ({
             ))}
           </div>
 
-          {/* Strategic Filters */}
-          <div className="px-6 py-2.5 bg-white border-b border-[#e5e8ee]">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-xs font-bold text-[#181c20]">
-                การกระจายวงเงินตาม 5 กลุ่มหลักของวิทยาลัย (คลิกเพื่อคัดกรอง)
-              </h3>
-              {selectedCategory !== 'all' && (
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className="text-[11px] text-[#e87722] hover:underline font-bold cursor-pointer"
-                >
-                  ยกเลิกการกรอง (ดูทั้งหมด)
-                </button>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
-              {INITIAL_CATEGORIES.map((st) => {
-                const sharePct = ((st.budget / FACULTY_PROJECTS_TOTAL) * 100).toFixed(1) + '%';
-                const isSelected = selectedCategory === st.id;
-                return (
+          {/* Strategic Filters - Hidden on conditions tab as requested */}
+          {activeTab !== 'conditions' && (
+            <div className="px-6 py-2.5 bg-white border-b border-[#e5e8ee]">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-bold text-[#181c20]">
+                  การกระจายวงเงินตาม 5 กลุ่มหลักของวิทยาลัย (คลิกเพื่อคัดกรอง)
+                </h3>
+                {selectedCategory !== 'all' && (
                   <button
-                    key={st.id}
-                    onClick={() => setSelectedCategory(isSelected ? 'all' : st.id)}
-                    className={`text-left space-y-2 p-3 rounded-xl transition-all cursor-pointer border ${isSelected
-                      ? 'bg-[#fff5ef] border-[#e87722] shadow-sm ring-2 ring-[#e87722]/30'
-                      : 'bg-[#f1f4f9] border-transparent hover:bg-[#e0e3e8]'
-                      }`}
+                    onClick={() => setSelectedCategory('all')}
+                    className="text-[11px] text-[#e87722] hover:underline font-bold cursor-pointer"
                   >
-                    <div className="flex justify-between font-bold text-[#181c20] text-[11px] leading-snug">
-                      <span className="truncate pr-1" title={st.title}>{st.title}</span>
-                      <span className="text-[10px] text-[#79564b] shrink-0 font-mono font-bold">{st.code}</span>
-                    </div>
-                    <div className="flex justify-between font-bold items-end">
-                      <span className="tabular-nums text-[#e87722] text-sm leading-none">฿{st.budget.toLocaleString()}</span>
-                      <span className="tabular-nums text-[#79564b] text-[10px] leading-none bg-white px-1.5 py-0.5 rounded shadow-xs">{sharePct}</span>
-                    </div>
-                    <div className="w-full bg-[#ebeef3] h-1.5 rounded-full overflow-hidden shadow-inner">
-                      <div
-                        className="h-full rounded-full transition-all duration-500 shadow-2xs"
-                        style={{
-                          width: sharePct,
-                          background: isSelected
-                            ? 'linear-gradient(90deg, #9a4306 0%, #e87722 100%)'
-                            : 'linear-gradient(90deg, #8a7065 0%, #b58d80 100%)',
-                        }}
-                      />
-                    </div>
+                    ยกเลิกการกรอง (ดูทั้งหมด)
                   </button>
-                )
-              })}
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                {INITIAL_CATEGORIES.map((st) => {
+                  const sharePct = ((st.budget / FACULTY_PROJECTS_TOTAL) * 100).toFixed(1) + '%';
+                  const isSelected = selectedCategory === st.id;
+                  return (
+                    <button
+                      key={st.id}
+                      onClick={() => setSelectedCategory(isSelected ? 'all' : st.id)}
+                      className={`text-left space-y-2 p-3 rounded-xl transition-all cursor-pointer border ${isSelected
+                        ? 'bg-[#fff5ef] border-[#e87722] shadow-sm ring-2 ring-[#e87722]/30'
+                        : 'bg-[#f1f4f9] border-transparent hover:bg-[#e0e3e8]'
+                        }`}
+                    >
+                      <div className="flex justify-between font-bold text-[#181c20] text-[11px] leading-snug">
+                        <span className="truncate pr-1" title={st.title}>{st.title}</span>
+                        <span className="text-[10px] text-[#79564b] shrink-0 font-mono font-bold">{st.code}</span>
+                      </div>
+                      <div className="flex justify-between font-bold items-end">
+                        <span className="tabular-nums text-[#e87722] text-sm leading-none">฿{st.budget.toLocaleString()}</span>
+                        <span className="tabular-nums text-[#79564b] text-[10px] leading-none bg-white px-1.5 py-0.5 rounded shadow-xs">{sharePct}</span>
+                      </div>
+                      <div className="w-full bg-[#ebeef3] h-1.5 rounded-full overflow-hidden shadow-inner">
+                        <div
+                          className="h-full rounded-full transition-all duration-500 shadow-2xs"
+                          style={{
+                            width: sharePct,
+                            background: isSelected
+                              ? 'linear-gradient(90deg, #9a4306 0%, #e87722 100%)'
+                              : 'linear-gradient(90deg, #8a7065 0%, #b58d80 100%)',
+                          }}
+                        />
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Content Body */}
@@ -658,34 +663,36 @@ export const AllocationScreen = ({
           )}
         </div>
 
-        {/* Action Bar */}
-        <div className="px-6 py-4 bg-white border-t border-[#e5e8ee] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-[#79564b]">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#366847] animate-pulse"></span>
-            <span>บันทึกความปลอดภัย CMU SSO &amp; 2FA (เข้ารหัส 256-bit)</span>
+        {/* Action Bar - Hidden on conditions tab as requested */}
+        {activeTab !== 'conditions' && (
+          <div className="px-6 py-4 bg-white border-t border-[#e5e8ee] flex flex-col sm:flex-row items-center justify-between gap-3 rounded-b-2xl">
+            <div className="flex items-center gap-2 text-xs text-[#79564b]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#366847] animate-pulse"></span>
+              <span>บันทึกความปลอดภัย CMU SSO &amp; 2FA (เข้ารหัส 256-bit)</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={onOpenEditModal}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#564337] bg-[#ebeef3] hover:bg-[#e0e3e8] transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px]">edit</span>
+                ขอแก้ไขแผน
+              </button>
+              <button
+                onClick={handleSignAllocation}
+                className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm flex items-center gap-1.5 transition-all cursor-pointer ${isAllProcessed ? 'bg-[#366847] hover:bg-[#2b5338]' : 'bg-[#e87722] hover:bg-[#cc681d]'
+                  }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {isAllProcessed ? 'verified' : 'checklist'}
+                </span>
+                <span>
+                  {isAllProcessed ? 'ลงนามประกาศใช้แผนงบประมาณ' : `อนุมัติส่วนที่เหลือทั้งหมด (${pendingCount})`}
+                </span>
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={onOpenEditModal}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-[#564337] bg-[#ebeef3] hover:bg-[#e0e3e8] transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <span className="material-symbols-outlined text-[16px]">edit</span>
-              ขอแก้ไขแผน
-            </button>
-            <button
-              onClick={handleSignAllocation}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm flex items-center gap-1.5 transition-all cursor-pointer ${isAllProcessed ? 'bg-[#366847] hover:bg-[#2b5338]' : 'bg-[#e87722] hover:bg-[#cc681d]'
-                }`}
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                {isAllProcessed ? 'verified' : 'checklist'}
-              </span>
-              <span>
-                {isAllProcessed ? 'ลงนามประกาศใช้แผนงบประมาณ' : `อนุมัติส่วนที่เหลือทั้งหมด (${pendingCount})`}
-              </span>
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {rejectingDept && (

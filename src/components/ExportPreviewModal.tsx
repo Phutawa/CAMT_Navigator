@@ -55,13 +55,6 @@ export const ExportPreviewModal = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={handlePrint}
-              className="w-10 h-10 rounded-xl bg-[#FFF7F0] border border-[#ddc1b2]/80 text-[#564337] hover:bg-[#ffdbc8] hover:text-[#994700] hover:border-[#e87722]/50 flex items-center justify-center shadow-xs cursor-pointer transition-colors tooltip-trigger"
-              title="พิมพ์ / บันทึกเป็น PDF"
-            >
-              <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
-            </button>
-            <button
               onClick={onClose}
               className="p-2 rounded-xl hover:bg-[#ebeef3] text-[#79564b] transition-colors"
               title="ปิด"

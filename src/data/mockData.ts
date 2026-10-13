@@ -121,6 +121,23 @@ export interface DepartmentSummary {
   head: string;
 }
 
+export interface CommitmentItem {
+  no: string;
+  title: string;
+  vendor: string;
+  amt: string;
+  amountNumber: number;
+  status: string;
+}
+
+export const INITIAL_COMMITMENTS: CommitmentItem[] = [
+  { no: 'PO-2569-DG01', title: 'ค่าพาหนะและที่พักศึกษาดูงานดิจิทัลเกม (2569-DG-P1-001)', vendor: 'บจก. ทราเวล คอนเน็คชั่น แอนด์ ทรานสปอร์ต', amt: '฿310,440', amountNumber: 310440, status: 'ตรวจรับแล้ว รอเบิกจ่าย' },
+  { no: 'PO-2569-041', title: 'ชุดเซิร์ฟเวอร์ Cloud Lab SE', vendor: 'บจก. สยามเน็ตเวิร์ก โซลูชั่นส์', amt: '฿680,000', amountNumber: 680000, status: 'รอตรวจรับ (ส่งมอบ 80%)' },
+  { no: 'PO-2569-038', title: 'ลิขสิทธิ์ซอฟต์แวร์แอนิเมชัน ANIM', vendor: 'บจก. ดิจิทัล ซิสเต็มส์ คอนซัลติ้ง', amt: '฿520,000', amountNumber: 520000, status: 'ตรวจรับแล้ว รอเบิกจ่าย' },
+  { no: 'PO-2569-035', title: 'จ้างพัฒนาระบบ Hybrid Learning DTM', vendor: 'บจก. อินโนเวทีฟ เอ็ดดูเทค', amt: '฿380,000', amountNumber: 380000, status: 'ดำเนินงานงวด 2' },
+  { no: 'PO-2569-029', title: 'ชุดอุปกรณ์เซนเซอร์ IoT ห้อง FabLab DII', vendor: 'หจก. ลานนา ไมโครเทค', amt: '฿295,000', amountNumber: 295000, status: 'ส่งมอบครบถ้วน รอเบิกจ่าย' },
+];
+
 export interface StrategicCategory {
   id: string;
   title: string;
@@ -132,51 +149,51 @@ export interface StrategicCategory {
 }
 
 export const INITIAL_CATEGORIES: StrategicCategory[] = [
-  { id: 'student', code: 'SO-1', title: 'พัฒนาคุณภาพนักศึกษา', en: 'Student Quality & Experience', budget: 1651013, actual: 1077503, pct: '65.3%' },
-  { id: 'academic', code: 'SO-2', title: 'พัฒนาวิชาการและหลักสูตร', en: 'Academic & Curriculum Innovation', budget: 2397830, actual: 1496642, pct: '62.4%' },
-  { id: 'research', code: 'SO-3', title: 'ส่งเสริมการวิจัยและนวัตกรรม', en: 'Research & Global Innovation', budget: 1635793, actual: 993891, pct: '60.8%' },
-  { id: 'service', code: 'SO-4', title: 'บริการวิชาการแก่สังคม', en: 'Academic Services & Community Impact', budget: 1304834, actual: 705652, pct: '54.1%' },
-  { id: 'org', code: 'SO-5', title: 'บริหารจัดการและพัฒนาองค์กร', en: 'Agile Governance & Operations', budget: 1560530, actual: 885335, pct: '56.7%' },
+  { id: 'student', code: 'SO-1', title: 'พัฒนาคุณภาพนักศึกษา', en: 'Student Quality & Experience', budget: 1650000, actual: 1120000, pct: '67.9%' },
+  { id: 'academic', code: 'SO-2', title: 'พัฒนาวิชาการและหลักสูตร', en: 'Academic & Curriculum Innovation', budget: 2450000, actual: 1720000, pct: '70.2%' },
+  { id: 'research', code: 'SO-3', title: 'ส่งเสริมการวิจัยและนวัตกรรม', en: 'Research & Global Innovation', budget: 1680000, actual: 1150000, pct: '68.5%' },
+  { id: 'service', code: 'SO-4', title: 'บริการวิชาการแก่สังคม', en: 'Academic Services & Community Impact', budget: 1220000, actual: 780000, pct: '63.9%' },
+  { id: 'org', code: 'SO-5', title: 'บริหารจัดการและพัฒนาองค์กร', en: 'Agile Governance & Operations', budget: 1550000, actual: 1050000, pct: '67.7%' },
 ];
 
 export const INITIAL_DEPARTMENTS: DepartmentSummary[] = [
-  { code: 'EDU-01', name: 'หน่วยบริหารการศึกษา', en: 'Education Administration Unit', prjCount: 2, share: '3.6%', amount: 783750, spent: 319015, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'EDU-02', name: 'หน่วยกิจการนักศึกษา & INTER UNIT', en: 'Student Affairs & Inter Unit', prjCount: 1, share: '1.2%', amount: 268125, spent: 162039, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'EDU-03', name: 'หน่วยประชาสัมพันธ์ PR & Marketing', en: 'PR & Marketing Unit', prjCount: 5, share: '1.4%', amount: 296875, spent: 182872, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'EDU-04', name: 'ศูนย์ WIL & BRIDGE', en: 'WIL & BRIDGE Center', prjCount: 4, share: '2.5%', amount: 534375, spent: 185159, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'EDU-05', name: 'ห้องสร้างสรรค์', en: 'Creative Room', prjCount: 4, share: '2.4%', amount: 515625, spent: 376181, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'ADM-01', name: 'หน่วยบริหารงานบุคคล HR', en: 'HR Unit', prjCount: 3, share: '1.0%', amount: 83378, spent: 25912, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'ADM-02', name: 'หน่วยธุรการสารบรรณ', en: 'General Administration Unit', prjCount: 2, share: '2.6%', amount: 212234, spent: 111857, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'ADM-03', name: 'หน่วยคอมพิวเตอร์และพัฒนาระบบ', en: 'IT & System Development Unit', prjCount: 10, share: '3.0%', amount: 242553, spent: 219917, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'ADM-04', name: 'หน่วยอาคารและสถานที่', en: 'Building & Facility Unit', prjCount: 1, share: '1.9%', amount: 151596, spent: 114272, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'PLN-01', name: 'หน่วยนโยบายและแผนฯ', en: 'Policy & Planning Unit', prjCount: 6, share: '2.5%', amount: 204654, spent: 82079, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'RES-01', name: 'หน่วยวิจัย', en: 'Research Unit', prjCount: 6, share: '1.5%', amount: 506667, spent: 182544, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'RES-02', name: 'หน่วยวิเทศสัมพันธ์', en: 'International Relations Unit', prjCount: 2, share: '3.0%', amount: 1013333, spent: 862216, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'FIN-01', name: 'หน่วยการเงินและบัญชี', en: 'Finance & Accounting Unit', prjCount: 10, share: '2.4%', amount: 197074, spent: 162514, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'FIN-02', name: 'หน่วยพัสดุ', en: 'Procurement Unit', prjCount: 8, share: '4.1%', amount: 333511, spent: 127113, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'DITC', name: 'ศูนย์ DITC', en: 'DITC Center', prjCount: 7, share: '1.4%', amount: 475000, spent: 312942, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'CEN', name: 'ส่วนกลางวิทยาลัย (งบสำรองจ่าย/กองทุนพัฒนา)', en: 'Central Fund & Development', prjCount: 10, share: '3.1%', amount: 127193, spent: 85891, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'STR', name: 'ยุทธศาสตร์', en: 'Strategic Fund', prjCount: 2, share: '1.1%', amount: 237500, spent: 173332, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'ACA', name: 'สำนักวิชา', en: 'Academic Office', prjCount: 5, share: '1.4%', amount: 57815, spent: 49487, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'PHD-KMI', name: 'ป.เอก หลักสูตรการจัดการความรู้และนวัตกรรม', en: 'Ph.D. Knowledge Management & Innovation', prjCount: 2, share: '3.2%', amount: 131047, spent: 62992, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'PHD-DTM', name: 'ป.เอก หลักสูตรการจัดการเทคโนโลยีดิจิทัล', en: 'Ph.D. Digital Technology Management', prjCount: 6, share: '1.9%', amount: 77087, spent: 41675, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-KMI', name: 'ป.โท หลักสูตรการจัดการความรู้และนวัตกรรม', en: 'M.Sc. Knowledge Management & Innovation', prjCount: 4, share: '2.5%', amount: 104067, spent: 78694, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-SE', name: 'ป.โท หลักสูตรวิศวกรรมซอฟต์แวร์', en: 'M.S. Software Engineering', prjCount: 2, share: '4.5%', amount: 185008, spent: 131862, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-MIT', name: 'ป.โท DTM : การจัดการสมัยใหม่และเทคโนโลยีสารสนเทศ', en: 'M.Sc. DTM - Modern IT Management', prjCount: 9, share: '2.4%', amount: 96358, spent: 39142, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-HLT', name: 'ป.โท DTM : ดิจิทัลเทคโนโลยีทางด้านสุขภาพ', en: 'M.Sc. DTM - Digital Health Technology', prjCount: 7, share: '2.5%', amount: 104067, spent: 98155, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-EDU', name: 'ป.โท DTM : เทคโนโลยีการศึกษา', en: 'M.Sc. DTM - Educational Technology', prjCount: 9, share: '2.3%', amount: 92504, spent: 68915, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-CBE', name: 'ป.โท DTM : พาณิชย์อิเล็กทรอนิกส์ข้ามพรมแดน', en: 'M.Sc. DTM - Cross-border E-commerce', prjCount: 1, share: '2.3%', amount: 92504, spent: 77164, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-GAM', name: 'ป.โท DTM : เกมดิจิทัล', en: 'M.Sc. DTM - Digital Games', prjCount: 6, share: '3.3%', amount: 134901, spent: 63947, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-ANI', name: 'ป.โท DTM : แอนิเมชันและวิชวลเอฟเฟกต์', en: 'M.Sc. DTM - Animation & Visual Effects', prjCount: 4, share: '4.3%', amount: 177299, spent: 154186, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-TOU', name: 'ป.โท DTM : เทคโนโลยีการท่องเที่ยว', en: 'M.Sc. DTM - Tourism Technology', prjCount: 6, share: '2.2%', amount: 88650, spent: 64363, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-LAB', name: 'ป.โท DTM : แลปวิจัยนักศึกษา', en: 'M.Sc. DTM - Student Research Lab', prjCount: 7, share: '3.7%', amount: 150319, spent: 59055, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'MST-DTM-CEN', name: 'ป.โท DTM (งบประมาณกลาง)', en: 'M.Sc. DTM - Central Budget', prjCount: 3, share: '2.4%', amount: 96358, spent: 75568, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-SE', name: 'ป.ตรี หลักสูตรวิศวกรรมซอฟต์แวร์ (นานาชาติ)', en: 'B.Sc. Software Engineering (Intl)', prjCount: 9, share: '2.4%', amount: 100213, spent: 78723, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-ANI', name: 'ป.ตรี หลักสูตรแอนิเมชันและวิชวลเอฟเฟกต์', en: 'B.Sc. Animation & Visual Effects', prjCount: 7, share: '4.4%', amount: 181153, spent: 101375, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-MMIT', name: 'ป.ตรี หลักสูตรการจัดการสมัยใหม่ฯ', en: 'B.Sc. Modern Management & IT', prjCount: 4, share: '1.7%', amount: 69378, spent: 43791, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-DG', name: 'ป.ตรี หลักสูตรดิจิทัลเกม', en: 'B.Sc. Digital Games', prjCount: 2, share: '1.2%', amount: 50106, spent: 43077, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-DII', name: 'ป.ตรี หลักสูตรบูรณาการอุตสาหกรรมดิจิทัล', en: 'B.Sc. Digital Industry Integration', prjCount: 3, share: '4.7%', amount: 192716, spent: 77855, head: 'ผู้รับผิดชอบ (รอระบุ)' },
-  { code: 'BSC-DF', name: 'ป.ตรี หลักสูตรภาพยนตร์ดิจิตอล', en: 'B.Sc. Digital Film', prjCount: 7, share: '4.5%', amount: 185007, spent: 63142, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'EDU-01', name: 'หน่วยบริหารการศึกษา', en: 'Education Administration Unit', prjCount: 2, share: '3.6%', amount: 783750, spent: 359887, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'EDU-02', name: 'หน่วยกิจการนักศึกษา & INTER UNIT', en: 'Student Affairs & Inter Unit', prjCount: 1, share: '1.2%', amount: 268125, spent: 182800, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'EDU-03', name: 'หน่วยประชาสัมพันธ์ PR & Marketing', en: 'PR & Marketing Unit', prjCount: 5, share: '1.4%', amount: 296875, spent: 206301, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'EDU-04', name: 'ศูนย์ WIL & BRIDGE', en: 'WIL & BRIDGE Center', prjCount: 4, share: '2.5%', amount: 534375, spent: 208882, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'EDU-05', name: 'ห้องสร้างสรรค์', en: 'Creative Room', prjCount: 4, share: '2.4%', amount: 515625, spent: 424378, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'ADM-01', name: 'หน่วยบริหารงานบุคคล HR', en: 'HR Unit', prjCount: 3, share: '1.0%', amount: 83378, spent: 29232, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'ADM-02', name: 'หน่วยธุรการสารบรรณ', en: 'General Administration Unit', prjCount: 2, share: '2.6%', amount: 212234, spent: 126188, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'ADM-03', name: 'หน่วยคอมพิวเตอร์และพัฒนาระบบ', en: 'IT & System Development Unit', prjCount: 10, share: '3.0%', amount: 242553, spent: 242553, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'ADM-04', name: 'หน่วยอาคารและสถานที่', en: 'Building & Facility Unit', prjCount: 1, share: '1.9%', amount: 151596, spent: 128913, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'PLN-01', name: 'หน่วยนโยบายและแผนฯ', en: 'Policy & Planning Unit', prjCount: 6, share: '2.5%', amount: 204654, spent: 92595, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'RES-01', name: 'หน่วยวิจัย', en: 'Research Unit', prjCount: 6, share: '1.5%', amount: 506667, spent: 205932, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'RES-02', name: 'หน่วยวิเทศสัมพันธ์', en: 'International Relations Unit', prjCount: 2, share: '3.0%', amount: 1013333, spent: 984889, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'FIN-01', name: 'หน่วยการเงินและบัญชี', en: 'Finance & Accounting Unit', prjCount: 10, share: '2.4%', amount: 197074, spent: 183335, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'FIN-02', name: 'หน่วยพัสดุ', en: 'Procurement Unit', prjCount: 8, share: '4.1%', amount: 333511, spent: 143399, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'DITC', name: 'ศูนย์ DITC', en: 'DITC Center', prjCount: 7, share: '1.4%', amount: 475000, spent: 353036, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'CEN', name: 'ส่วนกลางวิทยาลัย (งบสำรองจ่าย/กองทุนพัฒนา)', en: 'Central Fund & Development', prjCount: 10, share: '3.1%', amount: 127193, spent: 96895, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'STR', name: 'ยุทธศาสตร์', en: 'Strategic Fund', prjCount: 2, share: '1.1%', amount: 237500, spent: 195539, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'ACA', name: 'สำนักวิชา', en: 'Academic Office', prjCount: 5, share: '1.4%', amount: 57815, spent: 55827, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'PHD-KMI', name: 'ป.เอก หลักสูตรการจัดการความรู้และนวัตกรรม', en: 'Ph.D. Knowledge Management & Innovation', prjCount: 2, share: '3.2%', amount: 131047, spent: 71063, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'PHD-DTM', name: 'ป.เอก หลักสูตรการจัดการเทคโนโลยีดิจิทัล', en: 'Ph.D. Digital Technology Management', prjCount: 6, share: '1.9%', amount: 77087, spent: 47014, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-KMI', name: 'ป.โท หลักสูตรการจัดการความรู้และนวัตกรรม', en: 'M.Sc. Knowledge Management & Innovation', prjCount: 4, share: '2.5%', amount: 104067, spent: 88776, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-SE', name: 'ป.โท หลักสูตรวิศวกรรมซอฟต์แวร์', en: 'M.S. Software Engineering', prjCount: 2, share: '4.5%', amount: 185008, spent: 148756, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-MIT', name: 'ป.โท DTM : การจัดการสมัยใหม่และเทคโนโลยีสารสนเทศ', en: 'M.Sc. DTM - Modern IT Management', prjCount: 9, share: '2.4%', amount: 96358, spent: 44157, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-HLT', name: 'ป.โท DTM : ดิจิทัลเทคโนโลยีทางด้านสุขภาพ', en: 'M.Sc. DTM - Digital Health Technology', prjCount: 7, share: '2.5%', amount: 104067, spent: 104067, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-EDU', name: 'ป.โท DTM : เทคโนโลยีการศึกษา', en: 'M.Sc. DTM - Educational Technology', prjCount: 9, share: '2.3%', amount: 92504, spent: 77744, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-CBE', name: 'ป.โท DTM : พาณิชย์อิเล็กทรอนิกส์ข้ามพรมแดน', en: 'M.Sc. DTM - Cross-border E-commerce', prjCount: 1, share: '2.3%', amount: 92504, spent: 87050, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-GAM', name: 'ป.โท DTM : เกมดิจิทัล', en: 'M.Sc. DTM - Digital Games', prjCount: 6, share: '3.3%', amount: 134901, spent: 72140, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-ANI', name: 'ป.โท DTM : แอนิเมชันและวิชวลเอฟเฟกต์', en: 'M.Sc. DTM - Animation & Visual Effects', prjCount: 4, share: '4.3%', amount: 177299, spent: 173940, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-TOU', name: 'ป.โท DTM : เทคโนโลยีการท่องเที่ยว', en: 'M.Sc. DTM - Tourism Technology', prjCount: 6, share: '2.2%', amount: 88650, spent: 72609, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-LAB', name: 'ป.โท DTM : แลปวิจัยนักศึกษา', en: 'M.Sc. DTM - Student Research Lab', prjCount: 7, share: '3.7%', amount: 150319, spent: 66621, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'MST-DTM-CEN', name: 'ป.โท DTM (งบประมาณกลาง)', en: 'M.Sc. DTM - Central Budget', prjCount: 3, share: '2.4%', amount: 96358, spent: 85250, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-SE', name: 'ป.ตรี หลักสูตรวิศวกรรมซอฟต์แวร์ (นานาชาติ)', en: 'B.Sc. Software Engineering (Intl)', prjCount: 9, share: '2.4%', amount: 100213, spent: 88809, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-ANI', name: 'ป.ตรี หลักสูตรแอนิเมชันและวิชวลเอฟเฟกต์', en: 'B.Sc. Animation & Visual Effects', prjCount: 7, share: '4.4%', amount: 181153, spent: 114363, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-MMIT', name: 'ป.ตรี หลักสูตรการจัดการสมัยใหม่ฯ', en: 'B.Sc. Modern Management & IT', prjCount: 4, share: '1.7%', amount: 69378, spent: 49402, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-DG', name: 'ป.ตรี หลักสูตรดิจิทัลเกม', en: 'B.Sc. Digital Games', prjCount: 2, share: '1.2%', amount: 50106, spent: 48596, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-DII', name: 'ป.ตรี หลักสูตรบูรณาการอุตสาหกรรมดิจิทัล', en: 'B.Sc. Digital Industry Integration', prjCount: 3, share: '4.7%', amount: 192716, spent: 87830, head: 'ผู้รับผิดชอบ (รอระบุ)' },
+  { code: 'BSC-DF', name: 'ป.ตรี หลักสูตรภาพยนตร์ดิจิตอล', en: 'B.Sc. Digital Film', prjCount: 7, share: '4.5%', amount: 185007, spent: 71232, head: 'ผู้รับผิดชอบ (รอระบุ)' },
 ];
 
 type ProjectQuarter = 'q1' | 'q2' | 'q3' | 'q4';
@@ -410,19 +427,35 @@ const buildAllSyncedProjects = (): ProjectItem[] => {
     const baseAlloc = Math.floor(dept.amount / n);
     const allocRemainder = dept.amount - baseAlloc * n;
 
-    const baseSpent = Math.floor(dept.spent / n);
-    const spentRemainder = dept.spent - baseSpent * n;
-
+    // Determine quarters first to enforce Timeline Logic: Q4 is in the future -> spent MUST be 0!
+    const prjQuarters: ProjectQuarter[] = [];
     for (let i = 0; i < n; i++) {
+      const flagship = flagships[i] || null;
+      const q: ProjectQuarter = flagship?.quarter || ((n === 1 || i === 0) ? 'q3' : quarters[(deptIdx * 2 + i) % quarters.length]);
+      prjQuarters.push(q);
+    }
+
+    const nonQ4Count = prjQuarters.filter(q => q !== 'q4').length;
+    const baseSpent = nonQ4Count > 0 ? Math.floor(dept.spent / nonQ4Count) : 0;
+    const spentRemainder = nonQ4Count > 0 ? dept.spent - baseSpent * nonQ4Count : 0;
+
+    let assignedNonQ4 = 0;
+    for (let i = 0; i < n; i++) {
+      const q = prjQuarters[i];
       const alloc = i === 0 ? baseAlloc + allocRemainder : baseAlloc;
-      const spent = i === 0 ? baseSpent + spentRemainder : baseSpent;
+
+      // Strict timeline logic: Q4 is in the future -> actual spent MUST be exactly 0!
+      let spent = 0;
+      if (q !== 'q4') {
+        spent = assignedNonQ4 === 0 ? baseSpent + spentRemainder : baseSpent;
+        assignedNonQ4++;
+      }
+
       const cat = getProjectCategory(dept.code, i, deptIdx);
       const themes = projectThemes[cat] || projectThemes.academic;
       const theme = themes[i % themes.length];
-
       const flagship = flagships[i] || null;
 
-      const q: ProjectQuarter = flagship?.quarter || ((n === 1 || i === 0) ? 'q3' : quarters[(deptIdx * 2 + i) % quarters.length]);
       const pct = alloc > 0 ? Math.min(100, Math.round((spent / alloc) * 100)) : 0;
       const status: ProjectItem['status'] =
         q === 'q1' || q === 'q2'
@@ -432,7 +465,7 @@ const buildAllSyncedProjects = (): ProjectItem[] => {
             : 'pending';
 
       const completionPct =
-        q === 'q1' ? 100 : q === 'q2' ? 92 : q === 'q3' ? pct : 15;
+        q === 'q1' ? 100 : q === 'q2' ? 92 : q === 'q3' ? pct : 0;
 
       const project: ProjectItem = {
         id: flagship?.id || `prj-${dept.code.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${i + 1}`,
@@ -461,6 +494,7 @@ const buildAllSyncedProjects = (): ProjectItem[] => {
 };
 
 export const INITIAL_PROJECTS: ProjectItem[] = buildAllSyncedProjects();
+export const ALL_SYNCED_PROJECTS: ProjectItem[] = INITIAL_PROJECTS;
 
 export const OFFICIAL_REPORT_2569_DG_P1_001: OfficialProjectReportData = {
   projectCode: '2569-DG-P1-001',

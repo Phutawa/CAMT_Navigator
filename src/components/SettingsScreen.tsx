@@ -41,9 +41,9 @@ export const SettingsScreen = ({
           <div className="h-1.5 w-full bg-gradient-to-r from-[#994700] via-[#e87722] to-[#366847] rounded-t-2xl"></div>
 
         {/* Header */}
-        <div className="px-6 py-3.5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="px-6 py-4 sm:py-5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded bg-[#ebeef3] font-mono text-[11px] font-bold text-[#181c20]">
                 #CONFIG-2569-GOV
               </span>
@@ -54,10 +54,10 @@ export const SettingsScreen = ({
                 Compliance Verified
               </span>
             </div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#181c20]">
+            <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
               การตั้งค่าระบบและการกำกับดูแล ประจำปีงบประมาณ 2569
             </h1>
-            <p className="text-[11px] text-[#564337]">
+            <p className="text-sm text-[#564337] mt-1">
               วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Policy &amp; System Matrix
             </p>
           </div>

@@ -658,7 +658,7 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
 
   if (selectedCat) {
     const ratio = selectedCat.budget / 8550000;
-    const spentRatio = selectedCat.actual / 5159023; // Total actual spent across department projects is 5,159,023
+    const spentRatio = selectedCat.actual / 5820000; // Total actual spent across department projects is 5,820,000
     chartData = chartData.map(d => ({
       ...d,
       plan: Math.round(d.plan * ratio),
@@ -825,7 +825,7 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
             <span>ส่วนขยายย่อย: สรุปยอดเบิกจ่ายและพยากรณ์รายไตรมาส (Q1 - Q4 Fiscal Run-Rate Forecast)</span>
           </button>
           <span className="text-[10px] font-bold text-[#79564b] bg-[#f1f4f9] px-2 py-0.5 rounded-md">
-            เป้าหมาย: ฿2.85M / ไตรมาส
+            กรอบจัดสรรส่วนงาน: ฿8.55M (เบิกจริง ฿5.82M + แผน Q4 ฿2.73M)
           </span>
         </div>
 
@@ -843,15 +843,15 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
                 {/* Q1 */}
                 <div className="flex flex-col items-center justify-end h-full z-20">
                   <div className="mb-2 text-center">
-                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿2.80M</span>
-                    <span className="text-[10px] text-[#564337] font-semibold block">98.2% ของเป้า</span>
+                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿1.80M</span>
+                    <span className="text-[10px] text-[#564337] font-semibold block">เบิกจริงสะสม Q1</span>
                   </div>
-                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[101px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
-                    ฿2.80M
+                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[78px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
+                    ฿1.80M
                   </div>
                   <div className="pt-2 w-full max-w-[135px]">
                     <span className="px-2 py-0.5 rounded-md bg-[#dcfce7] text-[#166534] border border-[#86efac]/50 text-[10px] font-bold block truncate">
-                      Q1 (สำเร็จ 98%)
+                      Q1 (สำเร็จ 100%)
                     </span>
                   </div>
                 </div>
@@ -859,15 +859,15 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
                 {/* Q2 */}
                 <div className="flex flex-col items-center justify-end h-full z-20">
                   <div className="mb-2 text-center">
-                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿3.00M</span>
-                    <span className="text-[10px] text-[#166534] font-semibold block">105.3% ของเป้า</span>
+                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿2.05M</span>
+                    <span className="text-[10px] text-[#166534] font-semibold block">เบิกจริงงวด Q2</span>
                   </div>
-                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[108px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
-                    ฿3.00M
+                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[88px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
+                    ฿2.05M
                   </div>
                   <div className="pt-2 w-full max-w-[135px]">
                     <span className="px-2 py-0.5 rounded-md bg-[#bbf7d0] text-[#14532d] border border-[#4ade80] text-[10px] font-extrabold block truncate shadow-xs">
-                      Q2 (ทะลุเป้า 105%)
+                      Q2 (สำเร็จ 100%)
                     </span>
                   </div>
                 </div>
@@ -875,15 +875,15 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
                 {/* Q3 */}
                 <div className="flex flex-col items-center justify-end h-full z-20">
                   <div className="mb-2 text-center">
-                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿2.70M</span>
-                    <span className="text-[10px] text-[#92400e] font-semibold block">94.7% ของเป้า</span>
+                    <span className="font-extrabold text-xs sm:text-sm text-[#181c20] block">฿1.97M</span>
+                    <span className="text-[10px] text-[#92400e] font-semibold block">เบิกจริงงวด Q3</span>
                   </div>
-                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[98px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
-                    ฿2.70M
+                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#264b33] to-[#366847] hover:brightness-110 transition-all rounded-t-xl h-[85px] shadow-sm flex items-center justify-center text-white text-xs font-bold">
+                    ฿1.97M
                   </div>
                   <div className="pt-2 w-full max-w-[135px]">
                     <span className="px-2 py-0.5 rounded-md bg-[#fef3c7] text-[#92400e] border border-[#fcd34d] text-[10px] font-bold block truncate">
-                      Q3 (ปิดรอบ 95%)
+                      Q3 (ปิดรอบ 96%)
                     </span>
                   </div>
                 </div>
@@ -891,15 +891,15 @@ export const DisbursementTrendChart = ({ selectedQuarter, selectedCategoryId = '
                 {/* Q4 */}
                 <div className="flex flex-col items-center justify-end h-full z-20">
                   <div className="mb-2 text-center">
-                    <span className="font-extrabold text-xs sm:text-sm text-[#e87722] block">฿3.50M</span>
-                    <span className="text-[10px] text-[#e87722] font-semibold block">แผนเร่งรัด 123%</span>
+                    <span className="font-extrabold text-xs sm:text-sm text-[#e87722] block">฿2.73M</span>
+                    <span className="text-[10px] text-[#e87722] font-semibold block">แผนคงเหลือ/คาดการณ์</span>
                   </div>
-                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#c2410c] to-[#e87722] hover:brightness-110 transition-all rounded-t-xl h-[126px] border-2 border-dashed border-[#994700] shadow-sm flex items-center justify-center text-white text-xs font-bold">
-                    ฿3.50M Est.
+                  <div className="w-16 sm:w-20 md:w-24 bg-gradient-to-t from-[#c2410c] to-[#e87722] hover:brightness-110 transition-all rounded-t-xl h-[118px] border-2 border-dashed border-[#994700] shadow-sm flex items-center justify-center text-white text-xs font-bold">
+                    ฿2.73M Est.
                   </div>
                   <div className="pt-2 w-full max-w-[135px]">
                     <span className="px-2 py-0.5 rounded-md bg-[#ffdbc8] text-[#743400] border border-[#e87722]/40 text-[10px] font-bold block truncate">
-                      Q4 (คาดการณ์)
+                      Q4 (คาดการณ์ 0 บาทจริง)
                     </span>
                   </div>
                 </div>

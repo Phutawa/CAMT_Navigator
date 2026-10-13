@@ -1,25 +1,36 @@
-import { useState, useEffect } from 'react';
-
-interface CommitmentItem {
-  no: string;
-  title: string;
-  vendor: string;
-  amt: string;
-  amountNumber: number;
-  status: string;
-}
+import { useState, useEffect, useMemo } from 'react';
+import { CommitmentItem, INITIAL_COMMITMENTS, ALL_SYNCED_PROJECTS } from '../data/mockData';
 
 interface DisbursementScreenProps {
   searchQuery?: string;
+  commitments?: CommitmentItem[];
+  pendingApproved?: boolean;
   onNotifyAlert: () => void;
   onApprovePO: (poNo: string) => void;
   onBulkApprovePO?: () => void;
-  onExportReport: () => void;
+  onExportReport?: () => void;
   onOpenProjectModal?: (project: any) => void;
 }
 
+const CATEGORY_TO_DEPT_CODE: Record<string, 'SQE' | 'ACI' | 'RGI' | 'ASC' | 'AGO'> = {
+  student: 'SQE',
+  academic: 'ACI',
+  research: 'RGI',
+  service: 'ASC',
+  org: 'AGO',
+};
+
+const getVisiblePages = (current: number, total: number): (number | string)[] => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, '...', total];
+  if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '...', current - 1, current, current + 1, '...', total];
+};
+
 export const DisbursementScreen = ({
   searchQuery = '',
+  commitments: propCommitments,
+  pendingApproved = false,
   onNotifyAlert,
   onApprovePO,
   onBulkApprovePO,
@@ -31,13 +42,16 @@ export const DisbursementScreen = ({
   const [alertSent, setAlertSent] = useState(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
 
-  const [commitments, setCommitments] = useState<CommitmentItem[]>([
-    { no: 'PO-2569-DG01', title: 'ค่าพาหนะและที่พักศึกษาดูงานดิจิทัลเกม (2569-DG-P1-001)', vendor: 'บจก. ทราเวล คอนเน็คชั่น แอนด์ ทรานสปอร์ต', amt: '฿310,440', amountNumber: 310440, status: 'ตรวจรับแล้ว รอเบิกจ่าย' },
-    { no: 'PO-2569-041', title: 'ชุดเซิร์ฟเวอร์ Cloud Lab SE', vendor: 'บจก. สยามเน็ตเวิร์ก โซลูชั่นส์', amt: '฿680,000', amountNumber: 680000, status: 'รอตรวจรับ (ส่งมอบ 80%)' },
-    { no: 'PO-2569-038', title: 'ลิขสิทธิ์ซอฟต์แวร์แอนิเมชัน ANIM', vendor: 'บจก. ดิจิทัล ซิสเต็มส์ คอนซัลติ้ง', amt: '฿520,000', amountNumber: 520000, status: 'ตรวจรับแล้ว รอเบิกจ่าย' },
-    { no: 'PO-2569-035', title: 'จ้างพัฒนาระบบ Hybrid Learning DTM', vendor: 'บจก. อินโนเวทีฟ เอ็ดดูเทค', amt: '฿380,000', amountNumber: 380000, status: 'ดำเนินงานงวด 2' },
-    { no: 'PO-2569-029', title: 'ชุดอุปกรณ์เซนเซอร์ IoT ห้อง FabLab DII', vendor: 'หจก. ลานนา ไมโครเทค', amt: '฿295,000', amountNumber: 295000, status: 'ส่งมอบครบถ้วน รอเบิกจ่าย' },
-  ]);
+  const [localCommitments, setLocalCommitments] = useState<CommitmentItem[]>(INITIAL_COMMITMENTS);
+  const commitments = propCommitments ?? localCommitments;
+
+  useEffect(() => {
+    if (pendingApproved && !propCommitments) {
+      setLocalCommitments((prev) =>
+        prev.map((item) => ({ ...item, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }))
+      );
+    }
+  }, [pendingApproved, propCommitments]);
 
   const [departmentFilter, setDepartmentFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -48,32 +62,59 @@ export const DisbursementScreen = ({
     setCurrentPage(1);
   }, [departmentFilter, statusFilter, amountFilter]);
 
-  const [projects] = useState([
-    { code: '2569-DG-P1-001', name: 'โครงการศึกษาดูงานนักศึกษาชั้นปีที่ 3 สาขาวิชาดิจิทัลเกม', dept: 'SQE', bud: 386000, act: 386000, po: 0, status: 'due', statusText: 'เบิกจ่ายครบตามแผน 100%' },
-    { code: 'PRJ-2569-ACI-01', name: 'โครงการปรับปรุงหลักสูตรสมัยใหม่', dept: 'ACI', bud: 500000, act: 250000, po: 120000, status: 'overdue', statusText: 'เลยกำหนด (15 วัน)', deadline: '15 พ.ค. 2569', issue: 'รอตรวจรับ' },
-    { code: 'PRJ-2569-SQE-03', name: 'อบรมพัฒนาศักยภาพนักศึกษา', dept: 'SQE', bud: 120000, act: 100000, po: 0, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ต.ค.)' },
-    { code: 'PRJ-2569-RGI-02', name: 'โครงการจัดซื้ออุปกรณ์ห้อง Lab วิจัย', dept: 'RGI', bud: 300000, act: 180000, po: 120000, status: 'due', statusText: 'ครบกำหนดสัปดาห์นี้' },
-    { code: 'PRJ-2569-SQE-05', name: 'โครงการประกวดนวัตกรรมนักศึกษา', dept: 'SQE', bud: 150000, act: 65000, po: 20000, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (พ.ย.)' },
-    { code: 'PRJ-2569-RGI-01', name: 'ทุนอุดหนุนการวิจัยขั้นสูง', dept: 'RGI', bud: 200000, act: 50000, po: 150000, status: 'overdue', statusText: 'เลยกำหนด (10 วัน)', deadline: '5 มิ.ย. 2569', issue: 'ขาดเอกสารรายงาน' },
-    { code: 'PRJ-2569-ASC-01', name: 'บริการวิชาการแก่ชุมชนรอบมหาวิทยาลัย', dept: 'ASC', bud: 450000, act: 150000, po: 50000, status: 'due', statusText: 'ครบกำหนดวันนี้' },
-    { code: 'PRJ-2569-AGO-02', name: 'ค่าใช้จ่ายบริหารจัดการองค์กร', dept: 'AGO', bud: 1200000, act: 800000, po: 250000, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ธ.ค.)' },
-    { code: 'PRJ-2569-SQE-01', name: 'สวัสดิการและทุนการศึกษานักศึกษา', dept: 'SQE', bud: 850000, act: 600000, po: 150000, status: 'due', statusText: 'ครบกำหนดพรุ่งนี้' },
-    { code: 'PRJ-2569-AGO-03', name: 'จ้างเหมาบริการรักษาความสะอาด', dept: 'AGO', bud: 80000, act: 40000, po: 20000, status: 'overdue', statusText: 'เลยกำหนด (5 วัน)', deadline: '20 มิ.ย. 2569', issue: 'รอใบเสร็จ' },
-    { code: 'PRJ-2569-ACI-03', name: 'จัดซื้อครุภัณฑ์สำหรับห้องเรียน', dept: 'ACI', bud: 650000, act: 200000, po: 350000, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ม.ค.)' },
-    { code: 'PRJ-2569-ASC-03', name: 'ส่งเสริมการถ่ายทอดเทคโนโลยีสู่สังคม', dept: 'ASC', bud: 400000, act: 150000, po: 150000, status: 'due', statusText: 'ครบกำหนดสัปดาห์นี้' },
-    { code: 'PRJ-2569-AGO-01', name: 'โครงการพัฒนาระบบสารสนเทศองค์กร', dept: 'AGO', bud: 350000, act: 120000, po: 80000, status: 'overdue', statusText: 'เลยกำหนด (20 วัน)', deadline: '10 พ.ค. 2569', issue: 'รอเอกสารชี้แจง' },
-    { code: 'PRJ-2569-ACI-04', name: 'พัฒนาทักษะดิจิทัลสำหรับอาจารย์', dept: 'ACI', bud: 200000, act: 50000, po: 0, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (พ.ย.)' },
-    { code: 'PRJ-2569-SQE-06', name: 'ค่ายอาสาพัฒนาชนบท', dept: 'SQE', bud: 180000, act: 180000, po: 0, status: 'due', statusText: 'ครบกำหนดวันนี้' },
-    { code: 'PRJ-2569-RGI-04', name: 'เผยแพร่ผลงานวิชาการระดับนานาชาติ', dept: 'RGI', bud: 400000, act: 200000, po: 50000, status: 'overdue', statusText: 'เลยกำหนด (7 วัน)', deadline: '8 มิ.ย. 2569', issue: 'รอตรวจรับงานพิมพ์' },
-    { code: 'PRJ-2569-ASC-04', name: 'คลินิกเทคโนโลยีชุมชน', dept: 'ASC', bud: 150000, act: 80000, po: 20000, status: 'due', statusText: 'ครบกำหนดสัปดาห์หน้า' },
-    { code: 'PRJ-2569-AGO-05', name: 'ปรับปรุงภูมิทัศน์และสภาพแวดล้อม', dept: 'AGO', bud: 600000, act: 100000, po: 450000, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ก.พ.)' },
-    { code: 'PRJ-2569-ACI-05', name: 'โครงการผลิตสื่อการเรียนรู้ VR/AR', dept: 'ACI', bud: 750000, act: 250000, po: 100000, status: 'overdue', statusText: 'เลยกำหนด (30 วัน)', deadline: '1 เม.ย. 2569', issue: 'ผู้รับจ้างส่งงานช้า' },
-    { code: 'PRJ-2569-SQE-07', name: 'แข่งขัน E-Sports ภายในวิทยาลัย', dept: 'SQE', bud: 80000, act: 30000, po: 0, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (มี.ค.)' },
-    { code: 'PRJ-2569-RGI-05', name: 'จัดตั้งหน่วยวิจัยปัญญาประดิษฐ์', dept: 'RGI', bud: 1500000, act: 1000000, po: 400000, status: 'due', statusText: 'ครบกำหนดพรุ่งนี้' },
-    { code: 'PRJ-2569-ASC-05', name: 'อบรมโค้ดดิ้งสำหรับโรงเรียนมัธยม', dept: 'ASC', bud: 250000, act: 150000, po: 50000, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ธ.ค.)' },
-    { code: 'PRJ-2569-AGO-06', name: 'ซ่อมบำรุงระบบปรับอากาศ', dept: 'AGO', bud: 420000, act: 200000, po: 200000, status: 'overdue', statusText: 'เลยกำหนด (2 วัน)', deadline: '25 มิ.ย. 2569', issue: 'รอใบส่งของ' },
-    { code: 'PRJ-2569-ACI-06', name: 'เชิญผู้เชี่ยวชาญพิเศษบรรยายพิเศษ', dept: 'ACI', bud: 100000, act: 50000, po: 0, status: 'upcoming', statusText: 'ยังไม่ถึงกำหนด (ส.ค.)' },
-  ]);
+  // Derive all 186 projects from the master Single Source of Truth
+  const projects = useMemo(() => {
+    return ALL_SYNCED_PROJECTS.map((p, idx) => {
+      const deptCode = CATEGORY_TO_DEPT_CODE[p.category] || 'ACI';
+      const remaining = p.allocated - p.spent;
+
+      let status: 'due' | 'overdue' | 'upcoming' = 'due';
+      let statusText = 'เบิกจ่ายครบตามแผน 100%';
+      let po = 0;
+      let deadline: string | undefined;
+      let issue: string | undefined;
+
+      if (p.quarter === 'q4') {
+        status = 'upcoming';
+        statusText = 'ยังไม่ถึงกำหนด (รอเปิดรอบ Q4)';
+        po = 0;
+      } else if (p.quarter === 'q1') {
+        status = 'due';
+        statusText = 'เบิกจ่ายครบตามแผน 100%';
+        po = 0;
+      } else {
+        // Q2 and Q3 projects: Flag 7 projects as overdue with specific deadlines for governance tracking
+        if (idx === 1 || idx === 5 || idx === 11 || idx === 17 || idx === 23 || idx === 31 || idx === 45) {
+          status = 'overdue';
+          statusText = `เลยกำหนด (${(idx % 15) + 5} วัน)`;
+          deadline = `${(idx % 20) + 1} มิ.ย. 2569`;
+          issue = idx % 2 === 0 ? 'รอตรวจรับงวดงาน' : 'ขาดเอกสารรายงานเบิกจ่าย';
+          po = Math.round(remaining * 0.45);
+        } else if (p.spent >= p.allocated) {
+          status = 'due';
+          statusText = 'เบิกจ่ายครบตามแผน 100%';
+          po = 0;
+        } else {
+          status = idx % 2 === 0 ? 'due' : 'upcoming';
+          statusText = status === 'upcoming' ? 'ยังไม่ถึงกำหนด' : 'ครบกำหนดสัปดาห์นี้';
+          po = Math.round(remaining * 0.35);
+        }
+      }
+
+      return {
+        code: p.code,
+        name: p.title,
+        dept: deptCode,
+        bud: p.allocated,
+        act: p.spent,
+        po,
+        status,
+        statusText,
+        deadline,
+        issue,
+      };
+    });
+  }, []);
 
   const filteredProjects = projects.filter(p => {
     let match = true;
@@ -89,7 +130,7 @@ export const DisbursementScreen = ({
 
   const overdueProjects = projects.filter(p => p.status === 'overdue');
 
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 8;
   const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
   const paginatedProjects = filteredProjects.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
@@ -113,7 +154,7 @@ export const DisbursementScreen = ({
   };
 
   const handleProcessPO = (poNo: string) => {
-    setCommitments((prev) =>
+    setLocalCommitments((prev) =>
       prev.map((item) =>
         item.no === poNo
           ? { ...item, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }
@@ -124,7 +165,7 @@ export const DisbursementScreen = ({
   };
 
   const handleBulkApprove = () => {
-    setCommitments((prev) =>
+    setLocalCommitments((prev) =>
       prev.map((item) => ({ ...item, status: 'อนุมัติเบิกจ่ายเรียบร้อย (ERP Cleared)' }))
     );
     if (onBulkApprovePO) {
@@ -141,9 +182,9 @@ export const DisbursementScreen = ({
           <div className="h-1.5 w-full bg-gradient-to-r from-[#e87722] via-[#994700] to-[#366847] rounded-t-2xl"></div>
 
           {/* Header */}
-          <div className="px-6 py-3.5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="px-6 py-4 sm:py-5 border-b border-[#e5e8ee] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#ffdbc8] text-[#743400] text-[11px] font-bold tracking-wider">
                   #DISB-2569-TRACK
                 </span>
@@ -153,10 +194,10 @@ export const DisbursementScreen = ({
                 </span>
                 <span className="text-[11px] text-[#79564b]">รอบตรวจสอบประจำไตรมาส 3</span>
               </div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-[#181c20]">
+              <h1 className="text-2xl lg:text-3xl font-extrabold text-[#181c20] tracking-tight">
                 ติดตามการเบิกจ่ายงบประมาณ ประจำปีงบประมาณ 2569
-              </h2>
-              <p className="text-[11px] text-[#564337]">
+              </h1>
+              <p className="text-sm text-[#564337] mt-1">
                 วิทยาลัยศิลปะ สื่อ และเทคโนโลยี มหาวิทยาลัยเชียงใหม่ • Fiscal Burn-Rate &amp; Risk Monitor
               </p>
             </div>
@@ -196,23 +237,15 @@ export const DisbursementScreen = ({
                   </span>
                 </button>
               )}
-
-              <button
-                onClick={onExportReport}
-                className="p-2 rounded-xl text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer border border-[#ddc1b2]/40 bg-white"
-                title="ดาวน์โหลด PDF รายงานเบิกจ่าย"
-              >
-                <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-              </button>
             </div>
           </div>
 
           {/* Navigation Tabs */}
           <div className="px-6 bg-[#f1f4f9] border-b border-[#e5e8ee] flex gap-2 overflow-x-auto py-2">
             {[
-              { id: 'tab-overview', label: `ติดตามเบิกจ่าย ${projects.length} โครงการทั้งหมด`, icon: 'query_stats' },
+              { id: 'tab-overview', label: 'ติดตามเบิกจ่าย 186 โครงการทั้งหมด (37 ส่วนงาน)', icon: 'query_stats' },
               { id: 'tab-departments', label: 'รายการโครงการค้างเบิกจ่าย (เกินกำหนด)', icon: 'account_tree' },
-              { id: 'tab-commitments', label: 'รายการ PO และใบสำคัญผูกพันงบ', icon: 'receipt_long', badge: commitments.length.toString() },
+              { id: 'tab-commitments', label: 'รายการ PO และใบสำคัญผูกพันงบ', icon: 'receipt_long', badge: pendingCount > 0 ? pendingCount.toString() : undefined },
             ].map((t) => (
               <button
                 key={t.id}
@@ -506,18 +539,24 @@ export const DisbursementScreen = ({
                         Previous
                       </button>
 
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${currentPage === page
-                            ? 'bg-[#e87722] text-white'
-                            : 'text-[#564337] bg-white border border-[#e5e8ee] hover:bg-[#f1f4f9]'
-                            }`}
-                        >
-                          {page}
-                        </button>
-                      ))}
+                      {getVisiblePages(currentPage, totalPages).map((page, idx) =>
+                        typeof page === 'number' ? (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${currentPage === page
+                              ? 'bg-[#e87722] text-white'
+                              : 'text-[#564337] bg-white border border-[#e5e8ee] hover:bg-[#f1f4f9]'
+                              }`}
+                          >
+                            {page}
+                          </button>
+                        ) : (
+                          <span key={`ellipsis-${idx}`} className="px-1 text-xs text-[#79564b]">
+                            ...
+                          </span>
+                        )
+                      )}
 
                       <button
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}

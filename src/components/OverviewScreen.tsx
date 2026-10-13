@@ -15,6 +15,7 @@ interface OverviewScreenProps {
   onOpenReduceModal: (prj: ProjectItem) => void;
   onOpenCloseModal: (prj: ProjectItem) => void;
   pendingApproved: boolean;
+  pendingCount?: number;
   onToggleApprovePending: () => void;
   onExportReport?: (projects?: ProjectItem[]) => void;
 }
@@ -32,10 +33,37 @@ export const OverviewScreen = ({
   onOpenReduceModal,
   onOpenCloseModal,
   pendingApproved,
+  pendingCount = 5,
   onToggleApprovePending,
   onExportReport,
 }: OverviewScreenProps) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isAiExpanded, setIsAiExpanded] = useState(false);
+
+  const handleAiSubmit = (customQuery?: string) => {
+    const q = (customQuery !== undefined ? customQuery : aiQuery).trim();
+    if (!q) return;
+
+    const lowerQ = q.toLowerCase();
+
+    if (lowerQ.includes('2569') || lowerQ.includes('ดิจิทัลเกม') || lowerQ.includes('ดูงาน')) {
+      setAiResponse('รายงานโครงการ 2569-DG-P1-001: ศึกษาดูงานนักศึกษาดิจิทัลเกม ปี 3 (ปีการศึกษา 2568) วงเงิน ฿386,000 ได้รับการอนุมัติผ่านระบบ CMU ERP เรียบร้อย มีลายเซ็นอนุมัติครบ 4 ลำดับขั้น รหัสบัญชี Fund3D: 0201001 Act3D: 690101010000022 ID3D: 69222D532C00120');
+    } else if (lowerQ.includes('ค้างท่อ') || lowerQ.includes('ผิดปกติ') || lowerQ.includes('ล่าช้า') || lowerQ.includes('เร่งรัด')) {
+      setAiResponse('ผลการสแกนความผิดปกติงบประมาณ: พบ 3 รายการที่มีการเบิกจ่ายล่าช้ากว่ากำหนดเฉลี่ย 15 วันในหมวดจัดซื้อครุภัณฑ์ Lab โดยระบบแนะนำให้ปรับเกลี่ยคืนงบกลาง ฿840,000');
+    } else if (lowerQ.includes('ซ้ำซ้อน') || lowerQ.includes('ปิดโครงการ') || lowerQ.includes('ร่างสรุป')) {
+      setAiResponse('ไม่พบคำขอตั้งงบซ้ำซ้อนในระบบ CMU ERP ประจำปี 2569 และมี 21 โครงการที่พร้อมจัดทำร่างปิดโครงการและสรุปผลตามมาตรฐาน EdPEx');
+    } else if (lowerQ.includes('scenario') || lowerQ.includes('จำลอง') || lowerQ.includes('แนวทาง')) {
+      setAiResponse('ผลการจำลอง AI Scenario: หากเร่งรัดการเบิกจ่ายโครงการในไตรมาส 3 ให้บรรลุ 75% คาดว่างบคงเหลือสุทธิสิ้นปีจะอยู่ที่ ฿1.15 ล้านบาท (9.6%) แนะนำให้เตรียมปรับเกลี่ยเข้าสู่งบกลางเพื่อรองรับโครงการพัฒนาระบบ AI ในปีงบประมาณถัดไป');
+    } else if (lowerQ.includes('งบกลาง') || lowerQ.includes('สำรอง') || lowerQ.includes('คงเหลือ')) {
+      setAiResponse(`สถานะงบกลางคงเหลือแบบเรียลไทม์อยู่ที่ ${(centralReserve / 1000000).toFixed(2)} ล้านบาท (${((centralReserve / totalAllocated) * 100).toFixed(1)}%) ภาพรวมการเบิกจ่ายจริงของวิทยาลัยสะสมอยู่ที่ ${activeSpentPct}% (฿${(activeSpent / 1000000).toFixed(2)}M จากกรอบ ฿${(activeAllocated / 1000000).toFixed(1)}M)`);
+    } else if (lowerQ.includes('สรุป') || lowerQ.includes('ผู้บริหาร') || lowerQ.includes('ภาพรวม')) {
+      setAiResponse(`สรุปภาพรวมผู้บริหาร: สถานะงบกลางคงเหลือแบบเรียลไทม์อยู่ที่ ${(centralReserve / 1000000).toFixed(2)} ล้านบาท (${((centralReserve / totalAllocated) * 100).toFixed(1)}%) ภาพรวมการเบิกจ่ายจริงของวิทยาลัยสะสมอยู่ที่ ${activeSpentPct}% (฿${(activeSpent / 1000000).toFixed(2)}M จากกรอบ ฿${(activeAllocated / 1000000).toFixed(1)}M) กลุ่มที่เบิกจ่ายสูงสุดคือ "พัฒนาวิชาการและหลักสูตร" (62.4%) และกลุ่มที่ต้องเร่งรัดคือ "บริการวิชาการ" (54.1%)`);
+    } else {
+      setAiResponse(`ประมวลผลข้อมูลสำหรับ: "${q}" - จากฐานข้อมูล CMU ERP พบว่าการเบิกจ่ายรวมของวิทยาลัยอยู่ที่ 92.4% มีประสิทธิภาพอยู่ในเกณฑ์ EdPEx ยอดเยี่ยม`);
+    }
+  };
 
   // Filter projects by search, category, and selected quarter
   const quarterProjects = selectedQuarter === 'all'
@@ -141,48 +169,159 @@ export const OverviewScreen = ({
             </button>
             <button
               onClick={onToggleApprovePending}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap ${pendingApproved
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap ${pendingApproved || pendingCount === 0
                 ? 'bg-[#366847] text-white hover:bg-[#1d5031]'
                 : 'bg-[#e87722] hover:bg-[#994700] text-white'
                 }`}
             >
               <span className="material-symbols-outlined text-[18px]">verified</span>
-              {pendingApproved ? 'อนุมัติเรียบร้อยแล้ว ✓' : 'อนุมัติรายการค้าง (5 รายการ)'}
+              {pendingApproved || pendingCount === 0 ? 'อนุมัติเรียบร้อยแล้ว ✓' : `อนุมัติรายการค้าง (${pendingCount} รายการ)`}
             </button>
           </div>
         </div>
       </section>
 
-      {/* AI Executive Summary Box */}
-      <section className="bg-gradient-to-r from-[#FFF7F0] to-white border border-[#e87722]/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-        <div className="absolute -top-4 -right-4 p-4 opacity-5">
-          <span className="material-symbols-outlined text-[80px] text-[#e87722]">smart_toy</span>
-        </div>
-        <div className="relative z-10 flex gap-3">
-          <div className="mt-1">
-            <div className="w-8 h-8 rounded-full bg-[#e87722]/10 flex items-center justify-center text-[#e87722]">
-              <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+      {/* AI Assistant (Collapsible - Same as ReportsScreen) */}
+      <div className="bg-white rounded-xl p-3 shadow-xs border border-[#e87722]/30 flex flex-col gap-2 transition-all">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setIsAiExpanded(!isAiExpanded)}
+            className="flex items-center gap-2.5 text-left cursor-pointer group"
+          >
+            <div className="w-7 h-7 rounded-lg bg-[#fff5ef] border border-[#ffdbc8] flex items-center justify-center text-[#e87722] shadow-xs">
+              <span className="material-symbols-outlined text-[18px]">smart_toy</span>
             </div>
+            <div>
+              <span className="font-bold text-xs sm:text-sm text-[#181c20] group-hover:text-[#e87722] transition-colors">
+                ผู้ช่วย AI ประมวลผลและถาม-ตอบข้อมูล
+              </span>
+              <span className="hidden sm:inline-block text-[11px] text-[#79564b] ml-2">
+                ({isAiExpanded ? 'คลิกเพื่อย่อหน้าต่าง' : 'คลิกเพื่อเปิดถามข้อมูล หรือใช้ปุ่มคำสั่งด่วน'})
+              </span>
+            </div>
+          </button>
+          <div className="flex items-center gap-2">
+            {!isAiExpanded && (
+              <button
+                onClick={() => setIsAiExpanded(true)}
+                className="text-[11px] font-bold text-[#e87722] bg-[#fff5ef] px-2.5 py-1 rounded-lg border border-[#ffdbc8] hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[14px]">chat</span>
+                พิมพ์ถาม AI
+              </button>
+            )}
+            <button
+              onClick={() => setIsAiExpanded(!isAiExpanded)}
+              className="p-1 rounded-lg text-[#79564b] hover:bg-[#ebeef3] transition-colors cursor-pointer"
+              data-tooltip={isAiExpanded ? 'ย่อหน้าต่าง AI' : 'ขยายหน้าต่าง AI'}
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                {isAiExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+              </span>
+            </button>
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-[#994700] mb-1">AI ผู้ช่วยสรุปภาพรวมผู้บริหาร</h3>
-            <p className="text-xs text-[#564337] leading-relaxed max-w-4xl">
-              สถานะงบกลางคงเหลือแบบเรียลไทม์อยู่ที่ <span className="font-bold text-[#181c20]">{(centralReserve / 1000000).toFixed(2)} ล้านบาท</span> ({((centralReserve / totalAllocated) * 100).toFixed(1)}%)
-              {selectedCategoryId === 'all' ? (
-                <> ภาพรวมการเบิกจ่ายจริงของวิทยาลัยสะสมอยู่ที่ <span className="font-bold text-[#e87722]">{activeSpentPct}%</span> (฿{(activeSpent / 1000000).toFixed(2)}M จากกรอบ ฿{(activeAllocated / 1000000).toFixed(1)}M) กลุ่มที่เบิกจ่ายสูงสุดคือ "พัฒนาวิชาการและหลักสูตร" (62.4%) และกลุ่มที่ต้องเร่งรัดคือ "บริการวิชาการ" (54.1%)</>
-              ) : (
-                <> ขณะนี้กำลังกรองดูเฉพาะกลุ่ม <span className="font-bold text-[#181c20]">"{categories.find(c => c.id === selectedCategoryId)?.title}"</span> มียอดอนุมัติ ฿{(activeAllocated / 1000000).toFixed(2)}M เบิกจ่ายจริงแล้ว ฿{(activeSpent / 1000000).toFixed(2)}M (<span className="font-bold text-[#366847]">{activeSpentPct}%</span>)</>
-              )}
-            </p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              <button className="text-[11px] font-bold px-3 py-1.5 bg-white border border-[#ddc1b2] rounded-lg text-[#564337] hover:bg-[#ebeef3] transition-colors flex items-center gap-1 cursor-pointer shadow-xs">
-                <span className="material-symbols-outlined text-[14px]">query_stats</span>
+        </div>
+
+        {/* Expanded AI Panel */}
+        {isAiExpanded && (
+          <div className="pt-2 border-t border-[#e5e8ee] space-y-3 animate-in fade-in duration-150">
+            <div className="flex gap-2">
+              <input
+                id="dashboard-ai-input"
+                type="text"
+                value={aiQuery}
+                onChange={(e) => setAiQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAiSubmit();
+                  }
+                }}
+                placeholder="พิมพ์ถามข้อมูลรายงาน เช่น วิเคราะห์งบโครงการ 2569-DG-P1-001 หรือ สรุป 3 หน่วยงานที่เบิกจ่ายสูงสุด..."
+                className="flex-1 bg-[#f1f4f9] rounded-xl px-4 py-2 text-xs text-[#181c20] focus:outline-none focus:ring-2 focus:ring-[#e87722]/50 border border-transparent focus:border-[#e87722]"
+              />
+              <button
+                id="dashboard-ai-submit-btn"
+                type="button"
+                onClick={() => handleAiSubmit()}
+                className="bg-[#e87722] hover:bg-[#994700] text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <span className="material-symbols-outlined text-[16px]">send</span>
+                ถาม
+              </button>
+            </div>
+
+            {aiResponse && (
+              <div className="p-3 bg-[#FFF7F0] border border-[#ffdbc8] rounded-xl text-xs text-[#743400] flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-[18px] text-[#e87722] mt-0.5">auto_awesome</span>
+                  <p className="leading-relaxed font-medium">{aiResponse}</p>
+                </div>
+                <button
+                  onClick={() => setAiResponse(null)}
+                  className="text-[#994700] hover:text-black p-0.5 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-[10px] text-[#79564b] font-semibold">ปุ่มควิกแอคชัน:</span>
+              <button
+                onClick={() => {
+                  setAiQuery('วิเคราะห์งบประมาณโครงการ 2569-DG-P1-001 (ศึกษาดูงานดิจิทัลเกม)');
+                  handleAiSubmit('วิเคราะห์งบประมาณโครงการ 2569-DG-P1-001');
+                }}
+                className="text-[10px] px-2.5 py-1.5 bg-[#FFF7F0] text-[#e87722] border border-[#ffdbc8] rounded-full hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1 font-bold"
+              >
+                <span className="material-symbols-outlined text-[12px]">menu_book</span>
+                วิเคราะห์งบดูงานดิจิทัลเกม 2569-DG-P1-001 (฿386,000)
+              </button>
+              <button
+                onClick={() => {
+                  setAiQuery('ตรวจจับความผิดปกติงบค้างท่อ');
+                  setAiResponse('ผลการสแกนความผิดปกติงบประมาณ: พบ 3 รายการที่มีการเบิกจ่ายล่าช้ากว่ากำหนดเฉลี่ย 15 วันในหมวดจัดซื้อครุภัณฑ์ Lab โดยระบบแนะนำให้ปรับเกลี่ยคืนงบกลาง ฿840,000');
+                }}
+                className="text-[10px] px-2.5 py-1.5 bg-[#FFF7F0] text-[#e87722] border border-[#ffdbc8] rounded-full hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[12px]">search_insights</span>
+                ตรวจจับความผิดปกติงบค้างท่อ
+              </button>
+              <button
+                onClick={() => {
+                  setAiQuery('ตรวจสอบข้อมูลซ้ำซ้อน & ร่างสรุปปิดโครงการ');
+                  setAiResponse('ไม่พบคำขอตั้งงบซ้ำซ้อนในระบบ CMU ERP ประจำปี 2569 และมี 21 โครงการที่พร้อมจัดทำร่างปิดโครงการและสรุปผลตามมาตรฐาน EdPEx');
+                }}
+                className="text-[10px] px-2.5 py-1.5 bg-[#FFF7F0] text-[#e87722] border border-[#ffdbc8] rounded-full hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[12px]">edit_document</span>
+                ตรวจสอบข้อมูลซ้ำซ้อน & ร่างสรุปปิดโครงการ
+              </button>
+              <button
+                onClick={() => {
+                  setAiQuery('วิเคราะห์จำลองแนวทางบริหารงบ (AI Scenario)');
+                  setAiResponse('ผลการจำลอง AI Scenario: หากเร่งรัดการเบิกจ่ายโครงการในไตรมาส 3 ให้บรรลุ 75% คาดว่างบคงเหลือสุทธิสิ้นปีจะอยู่ที่ ฿1.15 ล้านบาท (9.6%) แนะนำให้เตรียมปรับเกลี่ยเข้าสู่งบกลางเพื่อรองรับโครงการพัฒนาระบบ AI ในปีงบประมาณถัดไป');
+                }}
+                className="text-[10px] px-2.5 py-1.5 bg-[#FFF7F0] text-[#e87722] border border-[#ffdbc8] rounded-full hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1 font-bold"
+              >
+                <span className="material-symbols-outlined text-[12px]">query_stats</span>
                 วิเคราะห์จำลองแนวทางบริหารงบ (AI Scenario)
+              </button>
+              <button
+                onClick={() => {
+                  setAiQuery('สรุปภาพรวมผู้บริหาร & สถานะงบกลาง');
+                  setAiResponse(`สรุปภาพรวมผู้บริหาร: สถานะงบกลางคงเหลือแบบเรียลไทม์อยู่ที่ ${(centralReserve / 1000000).toFixed(2)} ล้านบาท (${((centralReserve / totalAllocated) * 100).toFixed(1)}%) ภาพรวมการเบิกจ่ายจริงของวิทยาลัยสะสมอยู่ที่ ${activeSpentPct}% (฿${(activeSpent / 1000000).toFixed(2)}M จากกรอบ ฿${(activeAllocated / 1000000).toFixed(1)}M) กลุ่มที่เบิกจ่ายสูงสุดคือ "พัฒนาวิชาการและหลักสูตร" (62.4%) และกลุ่มที่ต้องเร่งรัดคือ "บริการวิชาการ" (54.1%)`);
+                }}
+                className="text-[10px] px-2.5 py-1.5 bg-[#FFF7F0] text-[#e87722] border border-[#ffdbc8] rounded-full hover:bg-[#ffdbc8] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[12px]">savings</span>
+                สรุปภาพรวมผู้บริหาร & สถานะงบกลาง (฿{(centralReserve / 1000000).toFixed(2)}M)
               </button>
             </div>
           </div>
-        </div>
-      </section>
+        )}
+      </div>
 
       {/* Row 1: KPI Cards (Adapt to selected quarter or annual) */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -240,14 +379,16 @@ export const OverviewScreen = ({
         <div className="bg-white rounded-2xl p-6 shadow-xs border border-[#ddc1b2]/30 flex flex-col justify-between hover:border-[#e87722] transition-colors">
           <div>
             <div className="flex justify-between items-center text-xs text-[#79564b] uppercase font-bold tracking-wider">
-              <span>{isAllFilter ? 'ยอดเบิกจ่ายจริงสะสม' : selectedQuarter === 'all' ? 'เบิกจ่ายจริงกลุ่มนี้' : `เบิกจ่ายแล้วใน ${selectedQuarter.toUpperCase()}`}</span>
+              <span>{isAllFilter ? 'ยอดเบิกจ่ายจริงสะสม' : selectedQuarter === 'all' ? 'เบิกจ่ายจริงกลุ่มนี้' : selectedQuarter === 'q4' ? 'เบิกจ่ายจริงใน Q4 (ยังไม่ถึงกำหนด)' : `เบิกจ่ายแล้วใน ${selectedQuarter.toUpperCase()}`}</span>
               <span className="text-[#564337] font-bold">{filteredProjects.length} โครงการ</span>
             </div>
             <div className="text-3xl font-black text-[#181c20] mt-3 tabular-nums">
               {activeSpent.toLocaleString()}{' '}
               <span className="text-sm font-semibold text-[#564337]">บาท</span>
             </div>
-            <div className="text-xs text-[#564337] mt-1.5">บันทึกใบเสร็จและ PO เรียบร้อย</div>
+            <div className="text-xs text-[#564337] mt-1.5">
+              {selectedQuarter === 'q4' ? 'ยังไม่มีการเบิกจ่ายจริง (รอเปิดรอบ ก.ค. - ก.ย. 69)' : 'บันทึกใบเสร็จและ PO เรียบร้อย'}
+            </div>
           </div>
           <div className="mt-5 pt-3 border-t border-[#ebeef3] text-xs flex justify-between text-[#79564b]">
             <span>คงเหลือเบิกจ่าย</span>
@@ -263,17 +404,17 @@ export const OverviewScreen = ({
             <div className="flex justify-between items-center text-xs text-[#79564b] uppercase font-bold tracking-wider">
               <span>เปอร์เซ็นต์เบิกจ่ายจริงรวม</span>
               <span className="text-[#366847] font-bold">
-                {selectedQuarter === 'q1' || selectedQuarter === 'q2' ? 'Completed' : 'On Track'}
+                {selectedQuarter === 'q4' ? 'Upcoming (ไตรมาส 4)' : selectedQuarter === 'q1' || selectedQuarter === 'q2' ? 'Completed' : 'On Track'}
               </span>
             </div>
             <div className="text-3xl font-black text-[#366847] mt-3 tabular-nums">
-              {activeSpentPct}%
+              {selectedQuarter === 'q4' ? '0.0%' : `${activeSpentPct}%`}
             </div>
             <div className="w-full bg-[#ebeef3] rounded-full h-3 overflow-hidden mt-3 shadow-inner">
               <div
                 className="h-full rounded-full transition-all duration-500 shadow-xs"
                 style={{
-                  width: `${Math.min(100, Number(activeSpentPct))}%`,
+                  width: `${Math.min(100, Number(selectedQuarter === 'q4' ? 0 : activeSpentPct))}%`,
                   background: 'linear-gradient(90deg, #164e22 0%, #246d33 35%, #2e7d32 75%, #3fa64d 100%)',
                 }}
               />
@@ -282,7 +423,7 @@ export const OverviewScreen = ({
           <div className="mt-5 pt-3 border-t border-[#ebeef3] text-xs flex justify-between text-[#79564b]">
             <span>เป้าหมายงวด</span>
             <span className="text-[#366847] font-bold">
-              {selectedQuarter === 'q1' ? '100% สำเร็จ' : selectedQuarter === 'q2' ? '95.2% สำเร็จ' : selectedQuarter === 'q3' ? '+3.5% สูงกว่าเป้า' : 'อยู่ระหว่างดำเนินการ'}
+              {selectedQuarter === 'q4' ? 'แผนเปิดรอบ Q4 (0 บาทจริง)' : selectedQuarter === 'q1' ? '100% สำเร็จ' : selectedQuarter === 'q2' ? '95.2% สำเร็จ' : selectedQuarter === 'q3' ? '+3.5% สูงกว่าเป้า' : 'อยู่ระหว่างดำเนินการ'}
             </span>
           </div>
         </div>
@@ -343,7 +484,9 @@ export const OverviewScreen = ({
                       </span>
                     )}
                   </div>
-                  <div className="font-bold text-sm text-[#181c20] line-clamp-1">{cat.title}</div>
+                  <div className="font-bold text-xs sm:text-sm text-[#181c20] line-clamp-2 min-h-[38px] flex items-center leading-snug" title={cat.title}>
+                    {cat.title}
+                  </div>
                   <div className="text-[11px] text-[#79564b] mb-3 truncate">{cat.en}</div>
                   <div className="text-xs space-y-1.5 pt-1 border-t border-[#ebeef3]">
                     <div className="flex justify-between text-[#564337]">
