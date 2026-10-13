@@ -198,7 +198,7 @@ export const BudgetReductionModal = ({
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl bg-[#ebeef3] font-bold text-[#564337] hover:bg-[#e0e3e8] cursor-pointer"
               >
-                {remaining <= 0 ? 'ปิดหน้าต่าง' : 'ยกเลิก'}
+                ยกเลิก
               </button>
               <button
                 type="submit"

@@ -194,12 +194,6 @@ export const ExportPreviewModal = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[#ebeef3] hover:bg-[#e0e3e8] font-bold text-xs text-[#564337] cursor-pointer transition-colors"
-            >
-              ปิดหน้าต่าง
-            </button>
-            <button
               onClick={handlePrint}
               className="px-5 py-2.5 rounded-xl bg-[#e87722] hover:bg-[#994700] text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
             >

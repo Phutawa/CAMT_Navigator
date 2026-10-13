@@ -20,7 +20,7 @@ export const ReportsScreen = ({
   const [aiQuery, setAiQuery] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiExpanded, setIsAiExpanded] = useState(false);
-  const [benchmarkSegment, setBenchmarkSegment] = useState<'academic' | 'research' | 'student' | 'service' | 'support'>('academic');
+  const [benchmarkSegment, setBenchmarkSegment] = useState<'academic' | 'research' | 'student' | 'service' | 'support'>('student');
 
   const handleAiSubmit = (customQuery?: string) => {
     const q = customQuery !== undefined ? customQuery : aiQuery;
@@ -270,6 +270,21 @@ export const ReportsScreen = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                   {[
                     {
+                      id: 'student' as const,
+                      code: 'SO-1',
+                      title: 'พัฒนาศักยภาพนักศึกษา',
+                      en: 'Student Quality',
+                      icon: 'diversity_3',
+                      iconBg: 'bg-[#b8f0c5] text-[#1d5031]',
+                      budget: '฿1,650,000',
+                      spent: '฿1,120,000',
+                      disbPct: '67.9%',
+                      kpiScore: '94%',
+                      kpiRating: 'ดีเยี่ยม',
+                      badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
+                      scope: 'นศ. มีส่วนร่วม 94.2%',
+                    },
+                    {
                       id: 'academic' as const,
                       code: 'SO-2',
                       title: 'ยกระดับวิชาการและหลักสูตร',
@@ -298,21 +313,6 @@ export const ReportsScreen = ({
                       kpiRating: 'ดีเยี่ยม',
                       badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
                       scope: '2 ศูนย์นวัตกรรม / 8 ทุน',
-                    },
-                    {
-                      id: 'student' as const,
-                      code: 'SO-1',
-                      title: 'พัฒนาศักยภาพนักศึกษา',
-                      en: 'Student Quality',
-                      icon: 'diversity_3',
-                      iconBg: 'bg-[#b8f0c5] text-[#1d5031]',
-                      budget: '฿1,650,000',
-                      spent: '฿1,120,000',
-                      disbPct: '67.9%',
-                      kpiScore: '94%',
-                      kpiRating: 'ดีเยี่ยม',
-                      badgeClass: 'bg-[#b8f0c5] text-[#1d5031]',
-                      scope: 'นศ. มีส่วนร่วม 94.2%',
                     },
                     {
                       id: 'service' as const,
@@ -430,11 +430,11 @@ export const ReportsScreen = ({
                   {/* Switcher Buttons in a single row - guaranteed no overflow */}
                   <div className="flex items-center gap-1 p-1 bg-[#f1f4f9] rounded-xl border border-[#e5e8ee] overflow-x-auto max-w-full min-w-0">
                     {[
-                      { id: 'academic' as const, label: 'วิชาการ', icon: 'school', count: '5' },
-                      { id: 'research' as const, label: 'วิจัย', icon: 'science', count: '4' },
-                      { id: 'student' as const, label: 'พัฒนานักศึกษา', icon: 'diversity_3', count: '4' },
-                      { id: 'service' as const, label: 'บริการวิชาการ', icon: 'public', count: '4' },
-                      { id: 'support' as const, label: 'สนับสนุน', icon: 'corporate_fare', count: '5' },
+                      { id: 'student' as const, label: 'พัฒนานักศึกษา (SO-1)', icon: 'diversity_3', count: '4' },
+                      { id: 'academic' as const, label: 'วิชาการ (SO-2)', icon: 'school', count: '5' },
+                      { id: 'research' as const, label: 'วิจัย (SO-3)', icon: 'science', count: '4' },
+                      { id: 'service' as const, label: 'บริการวิชาการ (SO-4)', icon: 'public', count: '4' },
+                      { id: 'support' as const, label: 'สนับสนุน (SO-5)', icon: 'corporate_fare', count: '5' },
                     ].map((seg) => (
                       <button
                         key={seg.id}

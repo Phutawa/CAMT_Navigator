@@ -460,7 +460,7 @@ export const DisbursementScreen = ({
                         <th className="py-3 px-3 text-right">วงเงินจัดสรร</th>
                         <th className="py-3 px-3 text-right">เบิกจ่ายจริง</th>
                         <th className="py-3 px-3 text-right">ภาระผูกพัน PO</th>
-                        <th className="py-3 px-3 text-center">สถานะเบิกจ่าย</th>
+                        <th className="py-3 px-3 text-center whitespace-nowrap min-w-[140px]">สถานะเบิกจ่าย</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ebeef3]">
@@ -478,21 +478,21 @@ export const DisbursementScreen = ({
                                 <div className="font-bold text-[#181c20]">{d.name}</div>
                                 <div className="text-[10px] text-[#79564b]">{d.code}</div>
                               </td>
-                              <td className="py-3.5 px-4 text-[#564337] font-semibold">
+                              <td className="py-3.5 px-4 text-[#564337] font-semibold whitespace-nowrap">
                                 {d.dept === 'SQE' ? 'พัฒนาคุณภาพนักศึกษา' :
                                   d.dept === 'ACI' ? 'พัฒนาวิชาการและหลักสูตร' :
                                     d.dept === 'RGI' ? 'ส่งเสริมการวิจัยและนวัตกรรม' :
                                       d.dept === 'ASC' ? 'บริการวิชาการแก่สังคม' : 'บริหารจัดการและพัฒนาองค์กร'}
                               </td>
-                              <td className="py-3.5 px-3 text-right tabular-nums text-[#564337]">฿{d.bud.toLocaleString()}</td>
-                              <td className="py-3.5 px-3 text-right text-[#366847] font-bold tabular-nums">
+                              <td className="py-3.5 px-3 text-right tabular-nums text-[#564337] whitespace-nowrap">฿{d.bud.toLocaleString()}</td>
+                              <td className="py-3.5 px-3 text-right text-[#366847] font-bold tabular-nums whitespace-nowrap">
                                 ฿{d.act.toLocaleString()}
                               </td>
-                              <td className="py-3.5 px-3 text-right text-[#994700] font-bold tabular-nums">
+                              <td className="py-3.5 px-3 text-right text-[#994700] font-bold tabular-nums whitespace-nowrap">
                                 ฿{d.po.toLocaleString()}
                               </td>
-                              <td className="py-3.5 px-3 text-center">
-                                <span className={`px-2.5 py-1.5 rounded-full font-bold text-[10px] ${d.status === 'overdue' ? 'bg-[#ffdad6] text-[#ba1a1a]' :
+                              <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                                <span className={`inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full font-bold text-[10.5px] ${d.status === 'overdue' ? 'bg-[#ffdad6] text-[#ba1a1a]' :
                                   d.status === 'due' ? 'bg-[#ffeedb] text-[#994700]' :
                                     'bg-[#e2f5e8] text-[#366847]'
                                   }`}>
@@ -593,10 +593,10 @@ export const DisbursementScreen = ({
                       <tr className="bg-[#f9fafc] text-[#79564b] border-b border-[#e5e8ee]">
                         <th className="py-3 px-5 font-bold">ชื่อโครงการ / รหัส</th>
                         <th className="py-3 px-4 font-bold">หน่วยงาน</th>
-                        <th className="py-3 px-4 font-bold text-right">ยอดค้างเบิกจ่าย</th>
-                        <th className="py-3 px-5 font-bold text-right">กำหนดส่งเอกสาร (Deadline)</th>
-                        <th className="py-3 px-5 font-bold text-center">สถานะ</th>
-                        <th className="py-3 px-5 font-bold text-center">การดำเนินการ</th>
+                        <th className="py-3 px-4 font-bold text-right whitespace-nowrap">ยอดค้างเบิกจ่าย</th>
+                        <th className="py-3 px-5 font-bold text-right whitespace-nowrap">กำหนดส่งเอกสาร (Deadline)</th>
+                        <th className="py-3 px-5 font-bold text-center whitespace-nowrap min-w-[170px]">สถานะ</th>
+                        <th className="py-3 px-5 font-bold text-center whitespace-nowrap min-w-[110px]">การดำเนินการ</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ebeef3]">
@@ -613,16 +613,18 @@ export const DisbursementScreen = ({
                               <div className="font-bold text-[#181c20]">{op.name}</div>
                               <div className="text-[10px] text-[#79564b]">{op.code}</div>
                             </td>
-                            <td className="py-3 px-4 text-[#564337]">{deptText}</td>
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-3 px-4 text-[#564337] whitespace-nowrap">{deptText}</td>
+                            <td className="py-3 px-4 text-right whitespace-nowrap">
                               <div className="font-bold text-[#994700]">฿{remaining.toLocaleString()}</div>
                               <div className="text-[10px] text-[#79564b]">จากงบ ฿{op.bud.toLocaleString()} (เบิกแล้ว ฿{op.act.toLocaleString()})</div>
                             </td>
-                            <td className="py-3 px-5 text-right font-semibold text-[#ba1a1a]">{op.deadline} <span className="text-[10px] font-normal">({daysLate})</span></td>
-                            <td className="py-3 px-5 text-center">
-                              <span className="bg-[#ffdad6] text-[#93000a] px-2 py-0.5 rounded text-[10px] font-bold">{op.issue}</span>
+                            <td className="py-3 px-5 text-right font-semibold text-[#ba1a1a] whitespace-nowrap">{op.deadline} <span className="text-[10px] font-normal">({daysLate})</span></td>
+                            <td className="py-3 px-5 text-center whitespace-nowrap">
+                              <span className="inline-flex items-center justify-center whitespace-nowrap bg-[#ffdad6] text-[#93000a] px-3 py-1 rounded-full text-[10.5px] font-bold shadow-2xs">
+                                {op.issue}
+                              </span>
                             </td>
-                            <td className="py-3 px-5 text-center">
+                            <td className="py-3 px-5 text-center whitespace-nowrap">
                               <button
                                 onClick={handleSendAlertClick}
                                 disabled={alertSent}

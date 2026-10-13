@@ -51,7 +51,7 @@ export const Sidebar = ({
       {/* Floating Circular Toggle Button (half inside sidebar, half outside on the border like in reference) */}
       <button
         onClick={onToggleCollapse}
-        className="absolute right-0 top-10 -translate-y-1/2 translate-x-1/2 z-[60] w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group"
+        className="absolute right-0 top-10 -translate-y-1/2 translate-x-1/2 z-[60] w-7 h-7 bg-white rounded-full border border-[#ddc1b2]/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-slate-50 hover:shadow-md hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group tooltip-side"
         data-tooltip={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
         aria-label={isCollapsed ? 'ขยายแถบเมนู' : 'ย่อแถบเมนู'}
       >
@@ -154,14 +154,14 @@ export const Sidebar = ({
 
                 {/* Sleek Floating Side Tooltip for Collapsed Sidebar (Appears on the RIGHT, never clipped) */}
                 {isCollapsed && (
-                  <div className="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out z-[9999] flex items-center drop-shadow-xl translate-x-1 group-hover:translate-x-0">
+                  <div className="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-150 ease-out z-[9999] flex items-center drop-shadow-2xl translate-x-1 group-hover:translate-x-0">
                     {/* Tooltip Arrow pointing left */}
-                    <div className="w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-[#2c1a0e] mr-[-1px] shrink-0" />
-                    {/* Tooltip Bubble with unclipped full text */}
-                    <div className="bg-gradient-to-br from-[#2c1a0e] to-[#3d2416] text-[#fdf5ef] text-xs font-bold px-3 py-1.5 rounded-xl shadow-2xl border border-[#e87722]/30 whitespace-nowrap tracking-wide flex items-center gap-2">
+                    <div className="w-0 h-0 border-y-[6px] border-y-transparent border-r-[7px] border-r-[#1a0f07] mr-[-1px] shrink-0" />
+                    {/* Tooltip Bubble with unclipped full text and solid background */}
+                    <div className="bg-[#1a0f07] text-[#fdf5ef] text-[12px] font-bold px-3.5 py-1.5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-[#e87722]/50 whitespace-nowrap tracking-wide flex items-center gap-2">
                       <span>{item.label}</span>
                       {item.badge && item.badge > 0 ? (
-                        <span className="bg-[#e87722] text-white text-[10px] px-1.5 py-0.5 rounded-full font-black leading-none">
+                        <span className="bg-[#e87722] text-white text-[10px] px-1.5 py-0.5 rounded-full font-black leading-none shadow-xs">
                           {item.badge}
                         </span>
                       ) : null}
@@ -232,7 +232,8 @@ export const Sidebar = ({
         )}
 
         <div
-          className={`flex items-center rounded-xl bg-white shadow-xs border border-[#ddc1b2]/30 ${isCollapsed ? 'justify-center p-2' : 'justify-between p-2.5'
+          onClick={() => isCollapsed && setShowInfo(!showInfo)}
+          className={`flex items-center rounded-xl bg-white shadow-xs border border-[#ddc1b2]/30 relative group ${isCollapsed ? 'justify-center p-2 cursor-pointer hover:border-[#e87722]/50 hover:bg-[#fff9f5]' : 'justify-between p-2.5'
             }`}
         >
           <div className="flex items-center gap-2.5 overflow-hidden">
@@ -252,6 +253,15 @@ export const Sidebar = ({
               </div>
             )}
           </div>
+          {isCollapsed && (
+            <div className="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-150 ease-out z-[9999] flex items-center drop-shadow-2xl translate-x-1 group-hover:translate-x-0">
+              <div className="w-0 h-0 border-y-[6px] border-y-transparent border-r-[7px] border-r-[#1a0f07] mr-[-1px] shrink-0" />
+              <div className="bg-[#1a0f07] text-[#fdf5ef] text-[12px] font-bold px-3 py-1.5 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-[#e87722]/50 whitespace-nowrap tracking-wide flex flex-col">
+                <span>รศ.ดร. นพดล ผู้บริหาร</span>
+                <span className="text-[10px] text-[#e87722] font-semibold">คณบดี (Dean CAMT)</span>
+              </div>
+            </div>
+          )}
           {!isCollapsed && (
             <div className="flex items-center gap-1">
               <button
