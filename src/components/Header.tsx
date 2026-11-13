@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { AVATAR_IMG, ProjectItem } from '../data/mockData';
+import { Search, X, RefreshCw, Bell } from 'lucide-react';
+import { ProjectItem } from '../data/mockData';
+
 interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -18,7 +20,6 @@ export const Header = ({
   syncTime = '5 นาทีที่แล้ว',
   onRefreshSync,
   isCollapsed,
-  onToggleCollapse,
   onNavigate,
   projects = [],
   onSelectProject,
@@ -52,37 +53,42 @@ export const Header = ({
     setShowNotif(false);
   };
 
-  const suggestions = projects.filter((p) => 
-    localSearch.trim() !== '' && 
-    (p.title.toLowerCase().includes(localSearch.toLowerCase()) || 
-     p.code.toLowerCase().includes(localSearch.toLowerCase()) ||
-     p.category.toLowerCase().includes(localSearch.toLowerCase()))
-  ).slice(0, 5);
+  const suggestions = projects
+    .filter(
+      (p) =>
+        localSearch.trim() !== '' &&
+        (p.title.toLowerCase().includes(localSearch.toLowerCase()) ||
+          p.code.toLowerCase().includes(localSearch.toLowerCase()) ||
+          p.category.toLowerCase().includes(localSearch.toLowerCase()))
+    )
+    .slice(0, 5);
 
   const handleSearchSubmit = (query: string = localSearch) => {
     setLocalSearch(query);
     onSearchChange(query);
     setShowSuggestions(false);
   };
-  
+
   return (
     <header
-      className={`fixed top-0 right-0 h-20 bg-[#f7f9ff]/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-40 border-b border-[#ddc1b2]/30 transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'left-20' : 'left-64'
+      className={`fixed top-0 right-0 h-14 bg-[#f7f6f2]/95 backdrop-blur-sm z-40 border-b border-[#18181b]/8 transition-[left] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        isCollapsed ? 'left-16' : 'left-64'
       }`}
     >
-      <div className="h-20 w-full px-6 sm:px-8 flex items-center justify-between gap-4">
+      <div className="h-14 w-full max-w-[1520px] mx-auto px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Search Bar */}
-        <div className="flex-1 max-w-xl flex items-center gap-3">
-
-          <div className="relative flex items-center flex-1 z-40">
-            <span className="material-symbols-outlined absolute left-3.5 text-[#79564b] text-[20px]">
-              search
-            </span>
+        <div className="flex-1 max-w-md">
+          <div className="relative flex items-center">
+            <Search
+              size={16}
+              strokeWidth={1.5}
+              className="absolute left-3 text-[#71717a] pointer-events-none"
+            />
             <input
               value={localSearch}
               onChange={(e) => {
                 setLocalSearch(e.target.value);
+                onSearchChange(e.target.value);
                 setShowSuggestions(true);
               }}
               onKeyDown={(e) => {
@@ -90,33 +96,26 @@ export const Header = ({
               }}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="w-full pl-11 pr-[100px] py-2 rounded-xl bg-white text-[#181c20] placeholder:text-[#8a7265] text-[0.875rem] outline-none shadow-xs border border-[#ddc1b2]/50 focus:border-[#e87722] focus:ring-2 focus:ring-[#e87722]/20 transition-all"
-              placeholder="ค้นหาโครงการ, หมวดงบประมาณ, รหัสกิจกรรม..."
+              className="w-full h-9 pl-9 pr-8 rounded-lg bg-white text-[#18181b] placeholder:text-[#71717a] text-sm outline-none border border-[#18181b]/10 focus:border-[#c85a17] transition-colors duration-150"
+              placeholder="ค้นหาโครงการหรือรหัส..."
               type="text"
             />
-            <div className="absolute right-2 flex items-center gap-1">
-              {localSearch && (
-                <button
-                  onClick={() => {
-                    setLocalSearch('');
-                    onSearchChange('');
-                  }}
-                  className="p-1 flex items-center text-[#79564b] hover:text-[#181c20] cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[16px]">close</span>
-                </button>
-              )}
+            {localSearch && (
               <button
-                onClick={() => handleSearchSubmit()}
-                className="bg-[#e87722] text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-[#994700] shadow-sm transition-colors cursor-pointer"
+                onClick={() => {
+                  setLocalSearch('');
+                  onSearchChange('');
+                }}
+                className="absolute right-2.5 p-0.5 flex items-center text-[#71717a] hover:text-[#18181b] cursor-pointer"
+                aria-label="ล้างคำค้นหา"
               >
-                ค้นหา
+                <X size={14} strokeWidth={1.5} />
               </button>
-            </div>
+            )}
 
             {/* Suggestions Dropdown */}
             {showSuggestions && localSearch && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-[#ddc1b2]/40 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-[#18181b]/10 overflow-hidden divide-y divide-[#18181b]/6">
                 {suggestions.map((p) => (
                   <div
                     key={p.id}
@@ -130,11 +129,11 @@ export const Header = ({
                       setLocalSearch('');
                       onSearchChange('');
                     }}
-                    className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] cursor-pointer flex flex-col"
+                    className="px-3.5 py-2.5 hover:bg-[#f7f6f2] cursor-pointer flex items-center justify-between gap-3"
                   >
-                    <span className="text-sm font-bold text-[#181c20] truncate">{p.title}</span>
-                    <span className="text-[11px] text-[#79564b] mt-0.5">
-                      รหัส: {p.code} • กลุ่ม: {p.category}
+                    <span className="text-sm font-medium text-[#18181b] truncate">{p.title}</span>
+                    <span className="px-1.5 py-0.5 rounded bg-[#f0eee9] border border-[#18181b]/10 font-mono text-[11px] text-[#52525b] flex-shrink-0">
+                      {p.code}
                     </span>
                   </div>
                 ))}
@@ -145,102 +144,80 @@ export const Header = ({
 
         {/* Right Info & Actions */}
         <div className="flex items-center gap-3">
-          {/* Fiscal Year Date Range */}
-          <div className="hidden sm:flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#ddc1b2]/50 shadow-xs">
-            <span className="material-symbols-outlined text-[#e87722] text-[20px]">date_range</span>
-            <div className="flex flex-col text-left">
-              <span className="text-[11px] text-[#79564b] leading-tight font-bold">
-                ปีงบประมาณ 2569 (CAMT)
-              </span>
-              <span className="text-[0.75rem] text-[#181c20] font-bold">
-                01 ต.ค. 2568 - 30 ก.ย. 2569
-              </span>
-            </div>
-            <span className="material-symbols-outlined text-[#8a7265] text-[18px]">calendar_month</span>
+          {/* Fiscal Year Meta */}
+          <div className="hidden md:flex items-center gap-2 text-xs text-[#52525b]">
+            <span>ปีงบประมาณ 2569</span>
+            <span className="text-[#18181b]/20">•</span>
+            <span className="text-[#71717a] tabular-nums">1 ต.ค. 68 – 30 ก.ย. 69</span>
           </div>
 
-          {/* Auto Sync Pill */}
-          <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#366847]/10 border border-[#366847]/30">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#366847] animate-pulse"></span>
-            <span className="text-[0.6875rem] text-[#366847] font-extrabold uppercase">
-              ดึงข้อมูล CMU ERP สด
-            </span>
-          </div>
+          <div className="hidden md:block h-4 w-px bg-[#18181b]/10" />
 
-          {/* Refresh sync */}
+          {/* ERP Sync Status & Refresh (Signature live status dot) */}
           <button
             onClick={onRefreshSync}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#ddc1b2]/50 shadow-xs text-[0.75rem] text-[#564337] hover:bg-[#ebeef3] transition-colors cursor-pointer"
-            data-tooltip="กดเพื่ออัปเดตข้อมูลล่าสุด"
+            className="h-8 px-3 rounded-lg bg-white border border-[#18181b]/10 text-xs text-[#52525b] hover:bg-[#f0eee9] hover:text-[#18181b] transition-colors duration-150 cursor-pointer flex items-center gap-2"
+            data-tooltip="คลิกเพื่อดึงข้อมูลล่าสุดจาก CMU ERP"
           >
-            <span className="material-symbols-outlined text-[16px] text-[#e87722]">sync</span>
-            <span>
-              ซิงก์: <strong className="text-[#181c20]">{syncTime}</strong>
-            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a] flex-shrink-0" />
+            <span className="hidden sm:inline">CMU ERP</span>
+            <span className="text-[#71717a] tabular-nums">{syncTime}</span>
+            <RefreshCw size={13} strokeWidth={1.5} className="text-[#71717a]" />
           </button>
 
           {/* Notification Button */}
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotif(!showNotif)}
-              className="relative w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#564337] hover:text-[#181c20] hover:bg-[#ebeef3] shadow-xs border border-[#ddc1b2]/40 transition-colors cursor-pointer"
+              className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center text-[#52525b] hover:text-[#18181b] hover:bg-[#f0eee9] border border-[#18181b]/10 transition-colors duration-150 cursor-pointer"
               data-tooltip="การแจ้งเตือน"
+              aria-label="การแจ้งเตือน"
             >
-              <span className="material-symbols-outlined text-[22px]">notifications</span>
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#e87722] ring-2 ring-white"></span>
+              <Bell size={16} strokeWidth={1.5} />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#c85a17]" />
             </button>
-            
+
             {/* Dropdown */}
             {showNotif && (
-              <div className="absolute top-full right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#ddc1b2]/30 overflow-hidden z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-                <div className="px-4 py-3 border-b border-[#ebeef3] flex justify-between items-center bg-[#f7f9ff]">
-                  <h3 className="font-bold text-[#181c20] text-sm">การแจ้งเตือน</h3>
-                  <span className="text-[10px] bg-[#e87722]/10 text-[#e87722] font-bold px-2 py-0.5 rounded-full">2 ใหม่</span>
+              <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] border border-[#18181b]/10 overflow-hidden z-50">
+                <div className="px-4 py-3 border-b border-[#18181b]/8 flex justify-between items-center bg-[#f7f6f2]">
+                  <h3 className="font-medium text-[#18181b] text-xs">การแจ้งเตือน</h3>
+                  <span className="font-mono text-[11px] text-[#71717a]">2 รายการใหม่</span>
                 </div>
-                <div className="max-h-[300px] overflow-y-auto">
-                  <div 
+                <div className="max-h-[300px] overflow-y-auto divide-y divide-[#18181b]/6">
+                  <div
                     onClick={() => handleNotificationClick('reports')}
-                    className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] cursor-pointer transition-colors relative"
+                    className="px-4 py-3 hover:bg-[#f7f6f2] cursor-pointer transition-colors duration-150"
                   >
-                    <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>
-                    <div className="pl-3">
-                      <p className="text-xs text-[#181c20] font-bold">มี 3 รายการเสี่ยงเบิกจ่ายช้าใน Q3</p>
-                      <p className="text-[11px] text-[#564337] mt-1">ระบบ AI ตรวจพบช่องว่างการเบิกจ่ายล่าช้าเกิน 15 วัน โปรดตรวจสอบ</p>
-                      <p className="text-[10px] text-[#79564b] mt-1.5">10 นาทีที่แล้ว</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs text-[#18181b] font-medium">3 โครงการเบิกจ่ายล่าช้าในไตรมาส 3</p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c85a17] flex-shrink-0" />
                     </div>
+                    <p className="text-xs text-[#52525b] mt-1">ล่าช้าเกินกำหนดเฉลี่ย 15 วันในหมวดครุภัณฑ์</p>
+                    <p className="text-[11px] text-[#71717a] mt-1 font-mono">10 นาทีที่แล้ว</p>
                   </div>
-                  <div 
+                  <div
                     onClick={() => handleNotificationClick('disbursement')}
-                    className="px-4 py-3 border-b border-[#ebeef3] hover:bg-[#f7f9ff] cursor-pointer transition-colors relative"
+                    className="px-4 py-3 hover:bg-[#f7f6f2] cursor-pointer transition-colors duration-150"
                   >
-                    <span className="absolute top-4 left-2 w-1.5 h-1.5 rounded-full bg-[#e87722]"></span>
-                    <div className="pl-3">
-                      <p className="text-xs text-[#181c20] font-bold">PO #041 รอการตรวจรับ</p>
-                      <p className="text-[11px] text-[#564337] mt-1">โครงการสัมมนาหลักสูตร ประจำปี มีเอกสารส่งถึงมือแล้ว</p>
-                      <p className="text-[10px] text-[#79564b] mt-1.5">1 ชั่วโมงที่แล้ว</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs text-[#18181b] font-medium">PO #041 รอการตรวจรับ</p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c85a17] flex-shrink-0" />
                     </div>
+                    <p className="text-xs text-[#52525b] mt-1">โครงการสัมมนาหลักสูตรประจำปีส่งเอกสารครบแล้ว</p>
+                    <p className="text-[11px] text-[#71717a] mt-1 font-mono">1 ชั่วโมงที่แล้ว</p>
                   </div>
-                  <div 
+                  <div
                     onClick={() => handleNotificationClick('overview')}
-                    className="px-4 py-3 hover:bg-[#f7f9ff] cursor-pointer transition-colors opacity-60"
+                    className="px-4 py-3 hover:bg-[#f7f6f2] cursor-pointer transition-colors duration-150"
                   >
-                    <div className="pl-3">
-                      <p className="text-xs text-[#181c20] font-bold">อัปเดตระบบ AI สำเร็จ</p>
-                      <p className="text-[11px] text-[#564337] mt-1">โมเดลคาดการณ์งบประมาณได้รับการอัปเดตเป็นเวอร์ชันล่าสุด</p>
-                      <p className="text-[10px] text-[#79564b] mt-1.5">เมื่อวาน 14:30 น.</p>
-                    </div>
+                    <p className="text-xs text-[#52525b] font-medium">ซิงก์ข้อมูลรอบบัญชีสำเร็จ</p>
+                    <p className="text-xs text-[#71717a] mt-1">อัปเดตข้อมูลโครงการและงบกลางจากระบบ CMU ERP</p>
+                    <p className="text-[11px] text-[#71717a] mt-1 font-mono">เมื่อวาน 14:30 น.</p>
                   </div>
                 </div>
               </div>
             )}
-          </div>
-          {/* Profile Thumbnail */}
-          <div className="flex items-center gap-2 pl-2 border-l border-[#ddc1b2]/40">
-            <img
-              alt="Profile"
-              className="w-9 h-9 rounded-full object-cover ring-2 ring-[#e87722]/30"
-              src={AVATAR_IMG}
-            />
           </div>
         </div>
       </div>

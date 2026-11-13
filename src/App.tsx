@@ -236,7 +236,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#f7f9ff] text-[#181c20] w-full">
+    <div className="min-h-screen flex bg-[#f7f6f2] text-[#18181b] w-full">
       {/* Collapsible Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -248,8 +248,8 @@ export default function App() {
 
       {/* Main Content Area - shifts dynamically with sidebar width */}
       <div
-        className={`flex-1 min-w-0 w-full transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? 'pl-20' : 'pl-64'
+        className={`flex-1 min-w-0 w-full transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isSidebarCollapsed ? 'pl-16' : 'pl-64'
         }`}
       >
         <Header
@@ -264,7 +264,7 @@ export default function App() {
           onSelectProject={handleOpenDetailModal}
         />
 
-        <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 min-w-0">
+        <main className="w-full max-w-[1520px] mx-auto px-6 lg:px-8 pt-20 pb-12 min-w-0">
           {currentTab === 'overview' && (
             <OverviewScreen
               categories={INITIAL_CATEGORIES}
